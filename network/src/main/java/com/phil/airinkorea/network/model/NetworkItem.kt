@@ -27,6 +27,7 @@ data class NetworkAirData(
     val pm10Grade: String?
 ):NetworkItem()
 
+
 @Serializable
 data class NetworkLocation(
     val sggName: String?,

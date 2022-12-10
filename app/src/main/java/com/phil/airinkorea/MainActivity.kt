@@ -11,9 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.phil.airinkorea.network.retrofit.RetrofitAikNetwork
 import com.phil.airinkorea.ui.theme.AirinkoreaTheme
-import kotlinx.coroutines.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

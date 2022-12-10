@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -49,6 +50,7 @@ android {
 dependencies {
 
     implementation project(path: ':network')
+    implementation project(path: ':database')
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
@@ -64,4 +66,11 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+
+    implementation("androidx.room:room-runtime:2.4.3")
+    kapt "androidx.room:room-compiler:2.4.3"
+//    testImplementation("androidx.room:room-testing:2.4.3")
+    implementation("androidx.room:room-ktx:2.4.3") // for coroutines
 }

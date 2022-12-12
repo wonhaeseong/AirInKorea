@@ -1,10 +1,6 @@
-package com.phil.airinkorea.network.model
+package com.phil.airinkorea.model
 
-import kotlinx.serialization.Serializable
-sealed class NetworkItem
-
-@Serializable
-data class NetworkAirData(
+data class AirData(
     val pm10Value: String?,
     val pm25Value: String?,
     val so2Value: String?,
@@ -25,21 +21,4 @@ data class NetworkAirData(
     val dataTime: String?,
     val coGrade: String?,
     val pm10Grade: String?
-):NetworkItem()
-
-
-@Serializable
-data class NetworkLocation(
-    val sggName: String?,
-    val umdName: String?,
-    val tmX: String?,
-    val tmY: String?,
-    val sidoName: String?
-):NetworkItem()
-
-@Serializable
-data class NetworkNearbyStation(
-    val tm: Int?,
-    val addr: String?,
-    val stationName: String?
-):NetworkItem()
+)

@@ -3,6 +3,7 @@ package com.phil.airinkorea.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.phil.airinkorea.model.AirData
 
 
 @Entity(tableName = "airData")
@@ -27,8 +28,31 @@ data class AirDataEntity(
     @ColumnInfo(name = "khai_grade") val khaiGrade: String?,
     @ColumnInfo(name = "no2_grade") val no2Grade: String?,
     @ColumnInfo(name = "dataTime") val dataTime: String?,
-){
+) {
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "rowid") val rowId: Int = 0
+    @ColumnInfo(name = "rowid")
+    val rowId: Int = 0
 }
 
+fun AirDataEntity.asExternalModel() = AirData(
+    pm10Value = pm10Value,
+    pm25Value = pm25Value,
+    so2Value = so2Value,
+    coValue = coValue,
+    o3Value = o3Value,
+    no2Value = no2Value,
+    pm10Flag = pm10Flag,
+    pm25Flag = pm25Flag,
+    so2Grade = so2Grade,
+    coFlag = coFlag,
+    o3Grade = o3Grade,
+    khaiValue = khaiValue,
+    khaiGrade = khaiGrade,
+    no2Flag = no2Flag,
+    no2Grade = no2Grade,
+    o3Flag = o3Flag,
+    so2Flag = so2Flag,
+    dataTime = dataTime,
+    coGrade = coGrade,
+    pm10Grade = pm10Grade
+)

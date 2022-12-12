@@ -16,3 +16,4 @@ rootProject.name = "airinkorea"
 include ':app'
 include ':network'
 include ':database'
+include ':data'

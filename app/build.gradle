@@ -73,4 +73,8 @@ dependencies {
     kapt "androidx.room:room-compiler:2.4.3"
 //    testImplementation("androidx.room:room-testing:2.4.3")
     implementation("androidx.room:room-ktx:2.4.3") // for coroutines
+
+    implementation("androidx.compose.material3:material3:1.0.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.0.1")
+
 }

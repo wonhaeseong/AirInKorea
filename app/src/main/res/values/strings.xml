@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">airinkorea</string>
+    <string name="pm_2.5">PM 2.5</string>
+    <string name="pm_10">PM 10</string>
+    <string name="yellow_dust">Yellow Dust</string>
+    <string name="so2">SO₂</string>
+    <string name="CO">CO</string>
+    <string name="o3">O₃</string>
+    <string name="micro_per_square_meter">µg/m3 %1$d</string>
 </resources>

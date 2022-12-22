@@ -7,4 +7,6 @@
     <string name="CO">CO</string>
     <string name="o3">O₃</string>
     <string name="micro_per_square_meter">µg/m3 %1$d</string>
+    <string name="no2">NO₂</string>
+    <string name="ppm">ppm</string>
 </resources>

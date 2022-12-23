@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.ui.icon.AikIcons
 import com.phil.airinkorea.ui.theme.*
+import java.lang.reflect.Type
 
 enum class DetailType {
     Main,
@@ -39,7 +40,7 @@ fun Details(
         DetailsBar(
             expandedState = expandedState
         ) { expandedState = !expandedState }
-        Spacer(modifier = Modifier.size(5.dp))
+        Spacer(modifier = Modifier.size(8.dp))
         DetailExpandableCard(
             expandedState = expandedState
         ) { expandedState = !expandedState }
@@ -60,7 +61,8 @@ fun DetailsBar(
     ) {
         Text(
             text = "Details",
-            color = Color.White
+            color = Color.White,
+            style = AikTypography.titleMedium
         )
         if (expandedState) {
             IconButton(

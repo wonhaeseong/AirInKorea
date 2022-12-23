@@ -8,3 +8,9 @@ import androidx.compose.ui.tooling.preview.Preview
 fun HourlyForecast() {
 
 }
+
+@Preview
+@Composable
+fun HourlyForecastBar() {
+
+}

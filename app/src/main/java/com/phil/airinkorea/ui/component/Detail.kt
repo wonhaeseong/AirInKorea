@@ -1,5 +1,6 @@
 package com.phil.airinkorea.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -138,7 +139,7 @@ fun DetailExpandableCard(
                         .weight(1f)
                 )
             }
-            if (expandedState) {
+            AnimatedVisibility (expandedState) {
                 Divider(
                     color = dividerColor,
                     modifier = Modifier

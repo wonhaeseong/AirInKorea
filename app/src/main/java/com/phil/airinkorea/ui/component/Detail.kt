@@ -7,17 +7,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.icon.AikIcons
-import com.phil.airinkorea.ui.theme.AikTypography
 import com.phil.airinkorea.R
-import com.phil.airinkorea.ui.theme.Shapes
-import com.phil.airinkorea.ui.theme.dividerColor
-import com.phil.airinkorea.ui.theme.level1_primaryContainer
+import com.phil.airinkorea.ui.icon.AikIcons
+import com.phil.airinkorea.ui.theme.*
 
 enum class DetailType {
     Main,
@@ -29,21 +27,29 @@ enum class DetailType {
 fun Details(
     modifier: Modifier = Modifier
 ) {
+    var expandedState by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        DetailsBar()
+        DetailsBar(
+            expandedState = expandedState
+        ) { expandedState = !expandedState }
         Spacer(modifier = Modifier.size(5.dp))
-        DetailExpandableCard()
+        DetailExpandableCard(
+            expandedState = expandedState
+        ) { expandedState = !expandedState }
     }
 }
 
-@Preview
 @Composable
 fun DetailsBar(
-    modifier: Modifier = Modifier
+    expandedState: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -55,38 +61,56 @@ fun DetailsBar(
             text = "Details",
             color = Color.White
         )
-        Icon(
-            imageVector = AikIcons.ArrowDropDown,
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier
-                .size(24.dp)
-        )
+        if (expandedState) {
+            IconButton(
+                onClick = onClick,
+                modifier = Modifier
+                    .size(24.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = AikIcons.ArrowDropUp),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        } else {
+            IconButton(
+                onClick = onClick,
+                modifier = Modifier
+                    .size(24.dp)
+            ) {
+                Icon(
+                    imageVector = AikIcons.ArrowDropDown,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(backgroundColor = 0x000000)
 @Composable
-fun DetailExpandableCard() {
-    var expandedState by remember {
-        mutableStateOf(false)
-    }
-    ElevatedCard(
-        onClick = { expandedState = !expandedState },
+fun DetailExpandableCard(
+    expandedState: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
         shape = Shapes.medium,
         modifier = Modifier
-            .background(level1_primaryContainer)
             .fillMaxWidth()
-
     ) {
-        Column{
+        Column(
+            modifier = Modifier
+                .background(level1_primaryContainer)
+        ){
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .height(IntrinsicSize.Min)
+                    .fillMaxWidth()
             ) {
                 DetailsForm(
                     title = stringResource(id = R.string.pm_10),
@@ -273,4 +297,26 @@ fun DetailsForm(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun DetailsBarPreview() {
+    var expandedState by remember {
+        mutableStateOf(false)
+    }
+    DetailsBar(
+        expandedState = expandedState
+    ) { expandedState = !expandedState }
+}
+
+@Preview(backgroundColor = 0xFF000A63)
+@Composable
+fun DetailsExpandableCardPreview() {
+    var expandedState by remember {
+        mutableStateOf(true)
+    }
+    DetailExpandableCard(
+        expandedState = expandedState
+    ) { expandedState = !expandedState }
 }

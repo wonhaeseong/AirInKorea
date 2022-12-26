@@ -1,5 +1,6 @@
 package com.phil.airinkorea.ui.component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -107,7 +108,7 @@ fun DetailExpandableCard(
         Column(
             modifier = Modifier
                 .background(level1_primaryContainer)
-        ){
+        ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +142,7 @@ fun DetailExpandableCard(
                         .weight(1f)
                 )
             }
-            AnimatedVisibility (expandedState) {
+            AnimatedVisibility(expandedState) {
                 Divider(
                     color = dividerColor,
                     modifier = Modifier
@@ -319,7 +320,7 @@ fun DetailsExpandableCardPreview() {
     var expandedState by remember {
         mutableStateOf(true)
     }
-    DetailExpandableCard(
-        expandedState = expandedState
-    ) { expandedState = !expandedState }
+    DetailExpandableCard(expandedState = expandedState) {
+        expandedState = !expandedState
+    }
 }

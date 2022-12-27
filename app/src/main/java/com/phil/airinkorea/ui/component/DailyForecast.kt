@@ -1,13 +1,14 @@
 package com.phil.airinkorea.ui.component
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,20 +16,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.ui.theme.AikTypography
+import com.phil.airinkorea.ui.theme.Shapes
 import com.phil.airinkorea.ui.theme.level1_primaryContainer
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Preview
 @Composable
-fun DailyForecastExpandableCard(
-    expandedState: Boolean,
-    onClick: () -> Unit = {}
-) {
-    Card(
+fun DailyForecast() {
+    var expandedState by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(level1_primaryContainer)
-            .clickable { onClick() }
+    ) {
+        DailyForecastBar(
+            modifier = Modifier
+                .padding(start = 10.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        DailyForecastExpandableCard(
+            expandedState = expandedState,
+            modifier = Modifier
+                .padding(start = 10.dp, top = 0.dp, end = 10.dp, bottom = 0.dp)
+        ) {
+            expandedState = !expandedState
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DailyForecastExpandableCard(
+    modifier: Modifier = Modifier,
+    expandedState: Boolean,
+    backgroundColor: Color = level1_primaryContainer,
+    onClick: () -> Unit
+) {
+    Card(
+        shape = Shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        modifier = modifier
+            .fillMaxWidth(),
+        onClick = onClick
     ) {
         for (i in 0..2) {
             DailyForecastComponent(
@@ -44,7 +76,6 @@ fun DailyForecastExpandableCard(
         }
         AnimatedVisibility(expandedState) {
             Column() {
-                //Todo: 3번 실행되는 이유 찾기
                 for (i in 0..3) {
                     DailyForecastComponent(
                         backgroundColor = Color.White,
@@ -56,7 +87,6 @@ fun DailyForecastExpandableCard(
                         value = "Excellent",
                         lineColor = Color.Red
                     )
-                    Log.d("dlrj","$i 생성됨")
                 }
             }
         }
@@ -65,12 +95,13 @@ fun DailyForecastExpandableCard(
 
 @Preview
 @Composable
-fun DailyForecastBar() {
+fun DailyForecastBar(
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
     ) {
         Text(
             text = "Daily Forecast",

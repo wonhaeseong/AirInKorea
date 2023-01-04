@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 val dividerColor = Color(0x33000000)
-
+val snackBarColor = Color(0xFF313033)
 val level1_primary = Color(0xFF001FC5)
 val level1_primary15 = Color(0x2B001FC5)
 val level1_onPrimaryContainer = Color(0xFF000A63)

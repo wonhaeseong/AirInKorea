@@ -23,7 +23,7 @@ import java.util.*
 
 @Preview
 @Composable
-fun DailyForecast() {
+fun AikDailyForecast() {
     var expandedState by remember {
         mutableStateOf(false)
     }

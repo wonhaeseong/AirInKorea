@@ -15,7 +15,7 @@ import com.phil.airinkorea.ui.theme.AikTypography
 import com.phil.airinkorea.ui.theme.Shapes
 //TODO: 컴포넌트 padding은 외부에서 Modifier를 이용해 정한다.
 @Composable
-fun HourlyForecast(
+fun AikHourlyForecast(
     hourlyForecastDatas: List<String>,
     modifier: Modifier = Modifier
 ) {
@@ -98,8 +98,8 @@ fun HourlyForecastComponent() {
 
 @Preview(showBackground = true, backgroundColor = 0xFF001FC5)
 @Composable
-fun HourlyForecastPreview() {
-    HourlyForecast(
+fun AikHourlyForecastPreview() {
+    AikHourlyForecast(
         hourlyForecastDatas = listOf(
             "d",
             "d",

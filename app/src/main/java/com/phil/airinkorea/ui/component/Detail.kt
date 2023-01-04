@@ -27,7 +27,7 @@ enum class DetailType {
 
 @Preview(showBackground = true, backgroundColor = 0xFF001FC5)
 @Composable
-fun Details(
+fun AikDetails(
     modifier: Modifier = Modifier
 ) {
     var expandedState by remember {

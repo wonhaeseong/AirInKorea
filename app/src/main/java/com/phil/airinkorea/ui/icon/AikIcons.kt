@@ -12,4 +12,5 @@ object AikIcons {
     val Star = R.drawable.ic_star
     val ArrowDropDown = Icons.Filled.ArrowDropDown
     val ArrowDropUp = R.drawable.ic_arrow_drop_up
+    val Error = R.drawable.ic_error_outline
 }

@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,58 +47,69 @@ fun AikSnackBar(
     }
 }
 
+val CustomSnackBarHost: @Composable (SnackbarHostState) -> Unit =
+    { snackbarHostState: SnackbarHostState ->
+        SnackbarHost(
+            hostState = snackbarHostState
+        ) { snackbarData ->
+            Card(
+                shape = Shapes.small,
+                backgroundColor = snackBarColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        ,
+                    verticalArrangement = Arrangement.spacedBy(
+                        10.dp,
+                        Alignment.CenterVertically
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = snackbarData.message,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+
 @Composable
 @Preview
-fun AikSnackBarPreview() {
+fun SnackBarPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         modifier = Modifier,
         scaffoldState = scaffoldState,
-        snackbarHost = { snackbarHostState: SnackbarHostState ->
-            SnackbarHost(
-                hostState = snackbarHostState
-            ) { snackbarData ->
-                Card(
-                    shape = Shapes.small,
-                    backgroundColor = snackBarColor,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(
-                            10.dp,
-                            Alignment.CenterVertically
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            painter = painterResource(id = AikIcons.Error),
-                            contentDescription = null
-                        )
-                        Text(text = snackbarData.message, style = AikTypography.bodyLarge)
-                    }
-                }
-            }
-        }
+        snackbarHost = CustomSnackBarHost
     ) { paddingValues ->
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(paddingValues)
         ) {
             Button(
                 onClick = {
                     scope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(
-                            message = "Hi",
+                            message = "스낵스낵스낵스낵",
                             duration = SnackbarDuration.Short
                         )
                     }
                 },
-                content = { Icon(imageVector = Icons.Default.Add, contentDescription = "") }
+                content = { Icon(imageVector = Icons.Default.Add, contentDescription = null) }
             )
         }
     }

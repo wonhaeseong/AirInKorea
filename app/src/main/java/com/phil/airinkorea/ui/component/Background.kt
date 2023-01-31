@@ -16,7 +16,7 @@ fun AikBackground(
 ) {
    Text(
        text = "ddd",
-       color = level1_onPrimary,
+       color = level1_core,
        modifier = modifier
            .fillMaxSize()
    )

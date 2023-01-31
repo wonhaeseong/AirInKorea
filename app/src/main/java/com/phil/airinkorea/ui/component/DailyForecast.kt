@@ -5,19 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.theme.AikTypography
-import com.phil.airinkorea.ui.theme.Shapes
-import com.phil.airinkorea.ui.theme.level1_primaryContainer
+import com.phil.airinkorea.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,7 +47,7 @@ fun AikDailyForecast() {
 fun DailyForecastExpandableCard(
     modifier: Modifier = Modifier,
     expandedState: Boolean,
-    backgroundColor: Color = level1_primaryContainer,
+    backgroundColor: Color = AIKTheme.colors.core,
     onClick: () -> Unit
 ) {
     Card(

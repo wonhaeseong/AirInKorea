@@ -84,9 +84,9 @@ val AIKTypography = Typography(
     ),
     button = TextStyle(
         fontFamily = Roboto,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
-        lineHeight = 16.sp,
+        lineHeight = 24.sp,
         letterSpacing = 1.25.sp
     ),
     caption = TextStyle(

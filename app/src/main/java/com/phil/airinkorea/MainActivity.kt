@@ -10,18 +10,22 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.phil.airinkorea.ui.theme.AirinkoreaTheme
+import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.PollutionLevel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AirinkoreaTheme {
+            AIKTheme(
+                PollutionLevel.EXCELLENT
+            ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = Color.White
                 ) {
                     Greeting("Android")
                 }
@@ -38,7 +42,7 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    AirinkoreaTheme {
+    AIKTheme(PollutionLevel.POOR) {
         Greeting("Android")
     }
 }

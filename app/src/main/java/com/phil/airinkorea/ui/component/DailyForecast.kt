@@ -5,7 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.material3.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +22,6 @@ fun AikDailyForecast() {
     var expandedState by remember {
         mutableStateOf(false)
     }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,7 +41,6 @@ fun AikDailyForecast() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyForecastExpandableCard(
     modifier: Modifier = Modifier,
@@ -52,10 +50,10 @@ fun DailyForecastExpandableCard(
 ) {
     Card(
         shape = Shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        backgroundColor = backgroundColor,
         modifier = modifier
-            .fillMaxWidth(),
-        onClick = onClick
+            .fillMaxWidth()
+            .clickable { onClick() }
     ) {
         for (i in 0..2) {
             DailyForecastComponent(
@@ -100,7 +98,7 @@ fun DailyForecastBar(
     ) {
         Text(
             text = "Daily Forecast",
-            style = AikTypography.titleMedium,
+            style = AIKTypography.subtitle1,
             color = Color.White
         )
     }
@@ -125,12 +123,12 @@ fun DailyForecastComponent(
         Column {
             Text(
                 text = daysOfTheWeek,
-                style = AikTypography.bodyMedium
+                style = MaterialTheme.typography.body2
             )
             Text(
                 text = day,
                 color = Color.Gray,
-                style = AikTypography.bodyMedium
+                style = MaterialTheme.typography.body2
             )
         }
         Column(
@@ -141,7 +139,7 @@ fun DailyForecastComponent(
         ) {
             Text(
                 text = value,
-                style = AikTypography.bodyLarge
+                style = MaterialTheme.typography.body2
             )
             Spacer(
                 modifier = Modifier

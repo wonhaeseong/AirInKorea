@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.theme.AikTypography
+import com.phil.airinkorea.ui.theme.AIKTypography
 import com.phil.airinkorea.ui.theme.Shapes
+import com.phil.airinkorea.ui.theme.subtitle3
+
 //TODO: 컴포넌트 padding은 외부에서 Modifier를 이용해 정한다.
 @Composable
 fun AikHourlyForecast(
@@ -51,7 +54,7 @@ fun HourlyForecastBar() {
     ) {
         Text(
             text = "Hourly Forecast",
-            style = AikTypography.titleMedium,
+            style = MaterialTheme.typography.subtitle1,
             color = Color.White
         )
     }
@@ -72,7 +75,7 @@ fun HourlyForecastComponent() {
         ) {
             Text(
                 text = "AM10",
-                style = AikTypography.titleSmall
+                style = MaterialTheme.typography.subtitle3
             )
             Spacer(
                 modifier = Modifier
@@ -80,7 +83,7 @@ fun HourlyForecastComponent() {
             )
             Text(
                 text = "Unhealthy",
-                style = AikTypography.bodyMedium
+                style = MaterialTheme.typography.subtitle3
             )
             Spacer(
                 modifier = Modifier

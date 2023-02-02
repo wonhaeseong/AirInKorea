@@ -16,7 +16,6 @@ import com.phil.airinkorea.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Preview
 @Composable
 fun AikDailyForecast() {
     var expandedState by remember {
@@ -45,7 +44,7 @@ fun AikDailyForecast() {
 fun DailyForecastExpandableCard(
     modifier: Modifier = Modifier,
     expandedState: Boolean,
-    backgroundColor: Color = AIKTheme.colors.core,
+    backgroundColor: Color = AIKTheme.colors.core_container,
     onClick: () -> Unit
 ) {
     Card(
@@ -98,7 +97,7 @@ fun DailyForecastBar(
     ) {
         Text(
             text = "Daily Forecast",
-            style = AIKTypography.subtitle1,
+            style = MaterialTheme.typography.subtitle1,
             color = Color.White
         )
     }

@@ -1,10 +1,9 @@
 package com.phil.airinkorea.ui.component
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.ui.icon.AikIcons
 import com.phil.airinkorea.ui.theme.*
-import java.lang.reflect.Type
 
 enum class DetailType {
     Main,
@@ -63,7 +61,7 @@ fun DetailsBar(
         Text(
             text = "Details",
             color = Color.White,
-            style = AikTypography.titleMedium
+            style = MaterialTheme.typography.subtitle1
         )
         if (expandedState) {
             IconButton(
@@ -93,7 +91,7 @@ fun DetailsBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetailExpandableCard(
     expandedState: Boolean,
@@ -107,7 +105,7 @@ fun DetailExpandableCard(
     ) {
         Column(
             modifier = Modifier
-                .background(level1_primaryContainer)
+                .background(AIKTheme.colors.core_container)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -127,7 +125,7 @@ fun DetailExpandableCard(
 
                 )
                 Divider(
-                    color = dividerColor,
+                    color = divider,
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(1.dp)
@@ -144,7 +142,7 @@ fun DetailExpandableCard(
             }
             AnimatedVisibility(expandedState) {
                 Divider(
-                    color = dividerColor,
+                    color = divider,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
@@ -166,7 +164,7 @@ fun DetailExpandableCard(
                             .weight(1f)
                     )
                     Divider(
-                        color = dividerColor,
+                        color = divider,
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(1.dp)
@@ -181,7 +179,7 @@ fun DetailExpandableCard(
                             .weight(1f)
                     )
                     Divider(
-                        color = dividerColor,
+                        color = divider,
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(1.dp)
@@ -196,7 +194,7 @@ fun DetailExpandableCard(
                             .weight(1f)
                     )
                     Divider(
-                        color = dividerColor,
+                        color = divider,
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(1.dp)
@@ -235,7 +233,7 @@ fun DetailsForm(
         ) {
             Text(
                 text = title,
-                style = AikTypography.titleMedium,
+                style = MaterialTheme.typography.subtitle1
             )
             Spacer(modifier = Modifier.size(10.dp))
             Box(
@@ -245,7 +243,7 @@ fun DetailsForm(
             ) {
                 Text(
                     text = value,
-                    style = AikTypography.headlineMedium,
+                    style = MaterialTheme.typography.h5Normal,
                     textAlign = TextAlign.Center
                 )
             }
@@ -259,7 +257,7 @@ fun DetailsForm(
             Spacer(modifier = Modifier.size(7.dp))
             Text(
                 text = unit,
-                style = AikTypography.bodyMedium
+                style = MaterialTheme.typography.body1
             )
         }
     } else if (type == DetailType.Sub) {
@@ -272,7 +270,7 @@ fun DetailsForm(
         ) {
             Text(
                 text = title,
-                style = AikTypography.bodySmall,
+                style = MaterialTheme.typography.subtitle2,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.size(8.dp))
@@ -283,7 +281,7 @@ fun DetailsForm(
             ) {
                 Text(
                     text = value,
-                    style = AikTypography.bodyLarge,
+                    style = MaterialTheme.typography.body1,
                     textAlign = TextAlign.Center
                 )
             }
@@ -297,7 +295,7 @@ fun DetailsForm(
             Spacer(modifier = Modifier.size(6.dp))
             Text(
                 text = unit,
-                style = AikTypography.bodySmall
+                style = MaterialTheme.typography.body3
             )
         }
     }

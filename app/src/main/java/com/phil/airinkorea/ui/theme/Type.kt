@@ -1,6 +1,7 @@
 package com.phil.airinkorea.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.material3.Text
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -104,3 +105,27 @@ val AIKTypography = Typography(
         letterSpacing = 1.sp
     )
 )
+
+val Typography.h5Normal: TextStyle
+    get() = TextStyle(
+        fontFamily = Roboto,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Normal,
+        lineHeight = 29.sp
+    )
+
+val Typography.body3: TextStyle
+    get() = TextStyle(
+        fontFamily = Roboto,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Normal,
+        lineHeight = 16.sp
+    )
+
+val Typography.subtitle3: TextStyle
+    get() = TextStyle(
+        fontFamily = Roboto,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 16.sp,
+    )

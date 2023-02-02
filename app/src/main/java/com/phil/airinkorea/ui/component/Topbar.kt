@@ -1,32 +1,27 @@
 package com.phil.airinkorea.ui.component
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.phil.airinkorea.model.AirLevel
 import com.phil.airinkorea.ui.icon.AikIcons
-import com.phil.airinkorea.ui.theme.AikTypography
-import com.phil.airinkorea.ui.theme.level1_background
-import com.phil.airinkorea.ui.theme.level1_onPrimary
-import com.phil.airinkorea.ui.theme.level1_starColor
+import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.PollutionLevel
+import com.phil.airinkorea.ui.theme.bookmark
 
-@Preview(showBackground = true, backgroundColor = 0xFF001FC5)
+
 @Composable
 fun AikTopAppBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    location: String
 ) {
     Column {
         Row(
@@ -39,29 +34,31 @@ fun AikTopAppBar(
             Icon(
                 imageVector = AikIcons.Menu,
                 contentDescription = null,
-                tint = level1_onPrimary,
+                tint = AIKTheme.colors.on_core,
                 modifier = Modifier
                     .size(24.dp)
             )
             LocationInfoText(
-                Location = "HamYang-Gun"
+                location = location
             )
             Icon(
                 painter = painterResource(id = AikIcons.Star),
                 contentDescription = null,
-                tint = level1_starColor,
+                tint = bookmark,
                 modifier = Modifier
                     .size(24.dp)
             )
         }
-        AirValueText()
+        AirValueText(
+            airLevel = AirLevel.Level3
+        )
     }
 }
 
 @Composable
 fun LocationInfoText(
-    Location: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    location: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -69,21 +66,21 @@ fun LocationInfoText(
         Icon(
             painter = painterResource(id = AikIcons.Location),
             contentDescription = null,
-            tint = level1_onPrimary
+            tint = AIKTheme.colors.on_core
         )
         Text(
-            text = Location,
-            style = AikTypography.bodyLarge,
-            color = level1_onPrimary,
+            text = location,
+            style = MaterialTheme.typography.subtitle1,
+            color = AIKTheme.colors.on_core,
             modifier = modifier
         )
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF001FC5, widthDp = 200)
 @Composable
 fun AirValueText(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    airLevel: AirLevel
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -92,9 +89,9 @@ fun AirValueText(
             .offset(x = 0.dp, y = 5.dp)
     ) {
         Text(
-            text = "Very Good",
-            style = AikTypography.headlineLarge,
-            color = level1_onPrimary,
+            text = airLevel.value,
+            style = MaterialTheme.typography.h4,
+            color = AIKTheme.colors.on_core
         )
     }
 }

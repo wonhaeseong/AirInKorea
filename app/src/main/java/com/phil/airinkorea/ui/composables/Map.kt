@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.component
+package com.phil.airinkorea.ui.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

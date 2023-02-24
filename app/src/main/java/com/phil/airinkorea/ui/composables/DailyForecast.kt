@@ -9,97 +9,87 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.phil.airinkorea.model.DailyForecastData
+import com.phil.airinkorea.ui.commoncomponents.ExpendableTitleBar
 import com.phil.airinkorea.ui.theme.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
-fun AikDailyForecast() {
+fun DailyForecast(
+    modifier: Modifier = Modifier,
+    dailyForecastDataList: List<DailyForecastData>
+) {
     var expandedState by remember {
         mutableStateOf(false)
     }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
-        DailyForecastBar(
-            modifier = Modifier
-                .padding(start = 10.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-        )
-        Spacer(modifier = Modifier.size(8.dp))
-        DailyForecastExpandableCard(
+        ExpendableTitleBar(
             expandedState = expandedState,
-            modifier = Modifier
-                .padding(start = 10.dp, top = 0.dp, end = 10.dp, bottom = 0.dp)
-        ) {
-            expandedState = !expandedState
-        }
+            titleText = "Daily Forecast",
+            onClick = { expandedState = !expandedState })
+        Spacer(modifier = Modifier.size(8.dp))
+        DailyForecastList(
+            expandedState = expandedState,
+            dailyForecastDataList = dailyForecastDataList,
+            onClick = { expandedState = !expandedState }
+        )
     }
 }
 
+
 @Composable
-fun DailyForecastExpandableCard(
+fun DailyForecastList(
     modifier: Modifier = Modifier,
     expandedState: Boolean,
-    backgroundColor: Color = AIKTheme.colors.core_container,
+    dailyForecastDataList: List<DailyForecastData>,
     onClick: () -> Unit
 ) {
-    Card(
+    val backgroundColorList: List<Color> = listOf(
+        AIKTheme.colors.core_container,
+        Color.White,
+        AIKTheme.colors.core_container,
+        Color.White,
+        AIKTheme.colors.core_container,
+        Color.White,
+        AIKTheme.colors.core_container
+    )
+    Surface(
         shape = Shapes.medium,
-        backgroundColor = backgroundColor,
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        for (i in 0..2) {
-            DailyForecastComponent(
-                backgroundColor = Color.White,
-                daysOfTheWeek = "Sunday",
-                day = SimpleDateFormat(
-                    "dd/MM/yyyy",
-                    Locale.KOREA
-                ).format(Calendar.getInstance().time),
-                value = "Excellent",
-                lineColor = Color.Blue
-            )
-        }
-        AnimatedVisibility(expandedState) {
-            Column() {
-                for (i in 0..3) {
-                    DailyForecastComponent(
-                        backgroundColor = Color.White,
-                        daysOfTheWeek = "Sunday",
-                        day = SimpleDateFormat(
-                            "dd/MM/yyyy",
-                            Locale.KOREA
-                        ).format(Calendar.getInstance().time),
-                        value = "Excellent",
-                        lineColor = Color.Red
-                    )
+        Column {
+            for (i in 0..2) {
+                DailyForecastComponent(
+                    backgroundColor = backgroundColorList[i],
+                    daysOfTheWeek = dailyForecastDataList[i].daysOfTheWeek,
+                    date = dailyForecastDataList[i].date,
+                    airLevel = dailyForecastDataList[i].airLevel,
+                    airLevelColor = dailyForecastDataList[i].airLevelColor
+                )
+            }
+            AnimatedVisibility(expandedState) {
+                Column {
+                    for (i in 3..6) {
+                        DailyForecastComponent(
+                            backgroundColor = backgroundColorList[i],
+                            daysOfTheWeek = dailyForecastDataList[i].daysOfTheWeek,
+                            date = dailyForecastDataList[i].date,
+                            airLevel = dailyForecastDataList[i].airLevel,
+                            airLevelColor = dailyForecastDataList[i].airLevelColor
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun DailyForecastBar(
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = "Daily Forecast",
-            style = MaterialTheme.typography.subtitle1,
-            color = Color.White
-        )
     }
 }
 
@@ -107,48 +97,51 @@ fun DailyForecastBar(
 fun DailyForecastComponent(
     backgroundColor: Color,
     daysOfTheWeek: String,
-    day: String,
-    value: String,
-    lineColor: Color
+    date: String,
+    airLevel: String,
+    airLevelColor: Color
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min)
+            .height(60.dp)
             .background(backgroundColor)
-            .padding(5.dp)
+            .padding(10.dp)
     ) {
-        Column {
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        ) {
             Text(
                 text = daysOfTheWeek,
+                color = AIKTheme.colors.on_core_container,
                 style = MaterialTheme.typography.body2
             )
             Text(
-                text = day,
-                color = Color.Gray,
+                text = date,
+                color = AIKTheme.colors.on_core_container_subtext,
                 style = MaterialTheme.typography.body2
             )
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
                 .fillMaxHeight()
+                .width(IntrinsicSize.Max)
         ) {
             Text(
-                text = value,
-                style = MaterialTheme.typography.body2
-            )
-            Spacer(
-                modifier = Modifier
-                    .size(6.dp)
+                text = airLevel,
+                color = AIKTheme.colors.on_core_container,
+                style = MaterialTheme.typography.body1
             )
             Box(
                 modifier = Modifier
-                    .width(45.dp)
-                    .height(3.dp)
-                    .background(color = lineColor)
+                    .clip(MaterialTheme.shapes.medium)
+                    .width(60.dp)
+                    .height(4.dp)
+                    .background(color = airLevelColor)
             )
         }
     }
@@ -156,23 +149,18 @@ fun DailyForecastComponent(
 
 @Preview
 @Composable
-fun DailyForecastComponentPreview() {
-    DailyForecastComponent(
-        backgroundColor = Color.White,
-        daysOfTheWeek = "Sunday",
-        day = SimpleDateFormat("dd/MM/yyyy", Locale.KOREA).format(Calendar.getInstance().time),
-        value = "Excellent",
-        lineColor = Color.Blue
-    )
-}
-
-@Preview
-@Composable
-fun DailyForecastExpandableCardPreview() {
-    var expandedState by remember {
-        mutableStateOf(false)
-    }
-    DailyForecastExpandableCard(expandedState = expandedState) {
-        expandedState = !expandedState
+fun DailyForecastPreview() {
+    AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
+        DailyForecast(
+            dailyForecastDataList = listOf(
+                DailyForecastData("Sunday", "12/16/2022", "Excellent", level1_core),
+                DailyForecastData("Monday", "12/17/2022", "Good", level2_core),
+                DailyForecastData("Tuesday", "12/18/2022", "Fine", level3_core),
+                DailyForecastData("Wednesday", "12/19/2022", "Moderate", level4_core),
+                DailyForecastData("Thursday", "12/20/2022", "Poor", level5_core),
+                DailyForecastData("Friday", "12/21/2022", "Bad", level6_core),
+                DailyForecastData("Saturday", "12/22/2022", "Unhealthy", level7_core)
+            )
+        )
     }
 }

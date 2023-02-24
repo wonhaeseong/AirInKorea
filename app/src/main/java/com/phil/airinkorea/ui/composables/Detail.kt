@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
@@ -40,7 +41,7 @@ fun Detail(
             expandedState = expandedState,
             titleText = "Details",
             onClick = { expandedState = !expandedState })
-        Spacer(modifier = Modifier.size(5.dp))
+        Spacer(modifier = Modifier.size(8.dp))
         ExpendableDetailsGrid(
             detailData = detailData,
             expandedState = expandedState,
@@ -213,7 +214,9 @@ fun DetailLayout(
                     text = level,
                     style = MaterialTheme.typography.h5,
                     color = AIKTheme.colors.on_core_container,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
             Spacer(modifier = Modifier.size(5.dp))
@@ -237,14 +240,14 @@ fun DetailLayout(
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = modifier
                 .wrapContentHeight()
-                .padding(horizontal = 8.dp, vertical = 13.dp)
+                .padding(horizontal = 5.dp, vertical = 13.dp)
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle2,
                 color = AIKTheme.colors.on_core_container
             )
-            Spacer(modifier = Modifier.size(5.dp))
+            Spacer(modifier = Modifier.size(4.dp))
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -255,10 +258,12 @@ fun DetailLayout(
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
-                    color = AIKTheme.colors.on_core_container
+                    color = AIKTheme.colors.on_core_container,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(4.dp))
             Box(
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.medium)
@@ -278,7 +283,7 @@ fun DetailLayout(
 
 @Preview
 @Composable
-fun DetailInfoPreview() {
+fun DetailPreview() {
     AIKTheme(PollutionLevel.GOOD) {
         Detail(
             detailData = DetailData(
@@ -286,19 +291,19 @@ fun DetailInfoPreview() {
                 pm25Value = 10,
                 pm25Color = level1_core,
                 pm10Level = "Dangerous",
-                pm10Value =10,
+                pm10Value = 10,
                 pm10Color = level2_core,
                 no2Level = "Dangerous",
-                no2Value =10,
+                no2Value = 10,
                 no2Color = level3_core,
                 so2Level = "Dangerous",
-                so2Value =10,
+                so2Value = 10,
                 so2Color = level4_core,
                 coLevel = "Dangerous",
-                coValue =10,
+                coValue = 10,
                 coColor = level5_core,
                 o3Level = "Dangerous",
-                o3Value =10,
+                o3Value = 10,
                 o3Color = level6_core
             )
         )

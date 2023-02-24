@@ -17,7 +17,6 @@ import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
 import kotlin.math.roundToInt
 
-private const val Elevation = 2
 private val iconSize = 24.dp
 @Composable
 fun CollapsingToolbar(
@@ -29,13 +28,12 @@ fun CollapsingToolbar(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = Color.Transparent,
-        elevation = ((-Elevation * progress) + Elevation).dp, //접혀 있을 때 - progress : 0f elevation:2dp 펼쳐 있을 떄- progress: 1f elevation: 0dp
+        color = AIKTheme.colors.core,
+        elevation = 0.dp, //접혀 있을 때 - progress : 0f elevation:2dp 펼쳐 있을 떄- progress: 1f elevation: 0dp ((-Elevation * progress) + Elevation)
         modifier = modifier
     ) {
         Box(
             modifier = Modifier
-                .statusBarsPadding()
                 .padding(horizontal = 10.dp)
                 .fillMaxSize()
         ){
@@ -119,10 +117,10 @@ private fun CollapsingToolbarLayout(
             val date = placeables[2]
             val airLevel = placeables[3]
 
-            menuBtn.place(x = 0, y = 0)
-            location.place(x = (constraints.maxWidth - location.width) / 2, y = (12.dp).toPx().roundToInt())
-            date.place(x = (constraints.maxWidth - date.width) / 2, y = location.height + (20.dp).toPx().roundToInt())
-            airLevel.place(
+            menuBtn.placeRelative(x = 0, y = 0)
+            location.placeRelative(x = (constraints.maxWidth - location.width) / 2, y = (12.dp).toPx().roundToInt())
+            date.placeRelative(x = (constraints.maxWidth - date.width) / 2, y = location.height + (20.dp).toPx().roundToInt())
+            airLevel.placeRelative(
                 x = (constraints.maxWidth - airLevel.width) / 2,
                 y = date.height + location.height + (55.dp).toPx().roundToInt()
             )

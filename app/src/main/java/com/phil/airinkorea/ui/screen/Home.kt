@@ -1,80 +1,47 @@
 package com.phil.airinkorea.ui.screen
 
-import android.content.res.Resources
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.model.DailyForecastData
 import com.phil.airinkorea.model.DetailData
 import com.phil.airinkorea.model.HourlyForecastData
-import com.phil.airinkorea.ui.composables.CollapsingToolbar
-import com.phil.airinkorea.ui.composables.DailyForecast
-import com.phil.airinkorea.ui.composables.Detail
-import com.phil.airinkorea.ui.composables.HourlyForecast
+import com.phil.airinkorea.ui.composables.*
 import com.phil.airinkorea.ui.theme.*
-import com.phil.airinkorea.ui.toolbarmanagement.CollapsingState
-import com.phil.airinkorea.ui.toolbarmanagement.ToolbarState
-
-private val MaxToolbarHeight = 150.dp
-private val MinToolbarHeight = 50.dp
-
-@Composable
-private fun rememberToolbarState(toolbarHeightRange: IntRange): ToolbarState {
-    return rememberSaveable(saver = CollapsingState.Saver) {
-        CollapsingState(toolbarHeightRange)
-    }
-}
 
 @Preview
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
-
-    val toolbarHeightRange = with(LocalDensity.current) {
-        MinToolbarHeight.roundToPx()..MaxToolbarHeight.roundToPx()
-    }
-    val toolbarState = rememberToolbarState(toolbarHeightRange = toolbarHeightRange)
     val scrollState = rememberScrollState()
-    println(
-        "height:${with(LocalDensity.current) { toolbarState.height.toDp() }},scrollValue:${
-            with(
-                LocalDensity.current
-            ) { toolbarState.scrollValue.toDp() }
-        },progress:${toolbarState.progress}"
-    )
-    toolbarState.scrollValue = scrollState.value
     AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
-        Column(
-            modifier = Modifier
-                .background(AIKTheme.colors.core_background)
-                .statusBarsPadding()
+        Box(
+            modifier = modifier.background(AIKTheme.colors.core_background)
         ) {
-            CollapsingToolbar(
-                progress = toolbarState.progress,
-                onMenuButtonClicked = { /*TODO*/ },
-                location = "HJHHH",
-                date = "213123",
-                airLevel = "GOOD",
+            Scaffold(
+                backgroundColor = Color.Transparent,
+                topBar = { AIKTopAppBar(location = "ddd") },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(with(LocalDensity.current) { toolbarState.height.toDp() })
-            )
-            Box(modifier = Modifier.verticalScroll(scrollState)) {
+                    .statusBarsPadding()
+            ) {
                 Column(
                     modifier = Modifier
+                        .padding(it)
                         .fillMaxSize()
-//                    .verticalScroll(scrollState, flingBehavior = customFlingBehavior)
+                        .verticalScroll(scrollState)
                 ) {
+                    DateInfo(date = "Saturday, January 21, 2023 9:10 PM")
+                    Spacer(modifier = Modifier.size(35.dp))
+                    AirValue(airLevel = "Fine")
+                    Spacer(modifier = Modifier.size(10.dp))
                     Detail(
                         detailData = DetailData(
                             pm25Level = "Dangerous",
@@ -141,7 +108,7 @@ fun HomeScreen(
                                 airLevelColor = level8_core
                             )
                         ),
-                        modifier = Modifier.padding(10.dp)
+                        contentPaddingValues = PaddingValues(horizontal = 10.dp)
                     )
                     DailyForecast(
                         dailyForecastDataList = listOf(
@@ -155,6 +122,7 @@ fun HomeScreen(
                         ), modifier = Modifier.padding(10.dp)
                     )
 //                    Map(modifier = Modifier.padding(10.dp))
+
                 }
             }
         }

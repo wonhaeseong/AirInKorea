@@ -21,21 +21,18 @@ import com.phil.airinkorea.ui.theme.*
 @Composable
 fun HourlyForecast(
     hourlyForecastDataList: List<HourlyForecastData>,
+    contentPaddingValues: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 0.dp, top = 10.dp, end = 0.dp, bottom = 10.dp)
     ) {
-        TitleBar(titleText = "Hourly Forecast")
+        TitleBar(titleText = "Hourly Forecast", modifier = Modifier.padding(contentPaddingValues))
         Spacer(modifier = Modifier.size(8.dp))
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(
-                start = 10.dp,
-                end = 10.dp
-            )
+            contentPadding = contentPaddingValues
         ) {
             items(hourlyForecastDataList) { data ->
                 HourlyForecastComponent(data)

@@ -1,8 +1,6 @@
 package com.phil.airinkorea.ui.composables
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +12,22 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import com.phil.airinkorea.ui.commoncomponents.TitleBar
+import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.PollutionLevel
 
+@Composable
+fun Map(
+    modifier: Modifier = Modifier
+){
+    Column(
+        modifier = modifier
+    ) {
+        TitleBar(titleText = "Map")
+        Spacer(modifier = Modifier.size(8.dp))
+        CustomMap()
+    }
+}
 @Preview
 @Composable
 fun CustomMap(
@@ -58,5 +71,13 @@ fun CustomMap(
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun MapPreview(){
+    AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
+        Map()
     }
 }

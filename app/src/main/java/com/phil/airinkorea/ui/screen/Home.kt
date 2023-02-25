@@ -1,30 +1,56 @@
 package com.phil.airinkorea.ui.screen
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.pullRefreshIndicatorTransform
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.zIndex
 import com.phil.airinkorea.model.DailyForecastData
 import com.phil.airinkorea.model.DetailData
 import com.phil.airinkorea.model.HourlyForecastData
 import com.phil.airinkorea.ui.composables.*
 import com.phil.airinkorea.ui.theme.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
+    val refreshScope = rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+
+    fun refresh() = refreshScope.launch {
+        refreshing = true
+        delay(3000)
+        refreshing = false
+    }
+
+    val state = rememberPullRefreshState(refreshing, ::refresh)
     val scrollState = rememberScrollState()
     AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
         Box(
-            modifier = modifier.background(AIKTheme.colors.core_background)
+            modifier = modifier
+                .background(AIKTheme.colors.core_background)
+                .pullRefresh(state)
         ) {
             Scaffold(
                 backgroundColor = Color.Transparent,
@@ -42,6 +68,22 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.size(35.dp))
                     AirValue(airLevel = "Fine")
                     Spacer(modifier = Modifier.size(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Transparent)
+                            .fillMaxWidth()
+                            .height(
+                                if (refreshing) {
+                                    140.dp
+                                } else {
+                                    with(LocalDensity.current) {
+                                        lerp(0.dp, 140.dp, state.progress.coerceIn(0f..1f))
+                                    }
+                                }
+                            )
+                    ) {
+                        CloudIndicator(isPlaying = refreshing)
+                    }
                     Detail(
                         detailData = DetailData(
                             pm25Level = "Dangerous",

@@ -10,7 +10,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.icon.AikIcons
+import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
 
@@ -37,7 +37,7 @@ fun AIKTopAppBar(
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = AikIcons.Menu,
+                    imageVector = AIKIcons.Menu,
                     contentDescription = null,
                     tint = AIKTheme.colors.on_core,
                     modifier = Modifier.size(iconSize)
@@ -50,7 +50,7 @@ fun AIKTopAppBar(
                     .align(Alignment.Center)
             ) {
                 Icon(
-                    painter = painterResource(id = AikIcons.Location),
+                    painter = painterResource(id = AIKIcons.Location),
                     tint = AIKTheme.colors.on_core,
                     contentDescription = null,
                     modifier = Modifier.size(iconSize)

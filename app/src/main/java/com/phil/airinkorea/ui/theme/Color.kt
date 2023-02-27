@@ -19,8 +19,6 @@ val level1_on_core_container = Color(0xFF000000)
 val level1_on_core_container_subtext = Color(0xFF727272)
 val level1_button = Color(0xFF171583)
 val level1_background = Brush.verticalGradient(listOf(level1_core, level1_core_20))
-val level1_toolbar = Brush.verticalGradient(listOf(level1_core, level1_core_85))
-val level1_content = Brush.verticalGradient(listOf(level1_core_85, level1_core_20))
 
 val level2_core = Color(0xFF006494)
 val level2_core_20 = Color(0x33006494)

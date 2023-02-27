@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.icon.AikIcons
+import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
 
@@ -61,7 +61,7 @@ fun ExpendableTitleBar(
                     .size(24.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = AikIcons.ArrowDropUp),
+                    painter = painterResource(id = AIKIcons.ArrowDropUp),
                     contentDescription = null,
                     tint = AIKTheme.colors.on_core
                 )
@@ -73,7 +73,7 @@ fun ExpendableTitleBar(
                     .size(24.dp)
             ) {
                 Icon(
-                    imageVector = AikIcons.ArrowDropDown,
+                    imageVector = AIKIcons.ArrowDropDown,
                     contentDescription = null,
                     tint = AIKTheme.colors.on_core
                 )

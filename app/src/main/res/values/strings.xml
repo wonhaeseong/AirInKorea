@@ -9,4 +9,8 @@
     <string name="micro_per_square_meter"> %1$dµg/m3</string>
     <string name="no2">NO₂</string>
     <string name="ppm">%1$dppm</string>
+
+    <string name="gps_error">Please turn on the GPS to get current location information.</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="turn_on_gps">TURN ON GPS</string>
 </resources>

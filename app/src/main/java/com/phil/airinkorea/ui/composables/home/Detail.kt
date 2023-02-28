@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.composables
+package com.phil.airinkorea.ui.composables.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

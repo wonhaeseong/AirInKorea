@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.composables.drawer
+package com.phil.airinkorea.ui.drawer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -11,7 +11,6 @@ import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
 import com.phil.airinkorea.ui.theme.bookmark
-
 
 @Composable
 fun Bookmark(

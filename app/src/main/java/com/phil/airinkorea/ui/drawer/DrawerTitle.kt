@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.composables.drawer
+package com.phil.airinkorea.ui.drawer
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background

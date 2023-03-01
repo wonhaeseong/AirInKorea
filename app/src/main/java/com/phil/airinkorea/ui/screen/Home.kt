@@ -19,7 +19,7 @@ import com.phil.airinkorea.model.DailyForecastData
 import com.phil.airinkorea.model.DetailData
 import com.phil.airinkorea.model.HourlyForecastData
 import com.phil.airinkorea.ui.composables.*
-import com.phil.airinkorea.ui.composables.home.Detail
+import com.phil.airinkorea.ui.home.Detail
 import com.phil.airinkorea.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

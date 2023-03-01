@@ -18,9 +18,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
-import com.phil.airinkorea.ui.composables.drawer.Bookmark
-import com.phil.airinkorea.ui.composables.drawer.DrawerLocations
-import com.phil.airinkorea.ui.composables.drawer.DrawerTitle
+import com.phil.airinkorea.ui.drawer.Bookmark
+import com.phil.airinkorea.ui.drawer.DrawerLocations
+import com.phil.airinkorea.ui.drawer.DrawerTitle
 import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel

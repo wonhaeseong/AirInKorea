@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.composables.drawer
+package com.phil.airinkorea.ui.drawer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

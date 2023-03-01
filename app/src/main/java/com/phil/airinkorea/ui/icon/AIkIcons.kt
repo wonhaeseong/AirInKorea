@@ -20,4 +20,5 @@ object AIKIcons {
     val Setting = Icons.Filled.Settings
     val Info = R.drawable.ic_info
     val AppIcon = R.drawable.ic_aik_foreground
+    val BackArrow = R.drawable.ic_arrow_back
 }

@@ -1,9 +1,6 @@
 package com.phil.airinkorea.ui.composables.drawer
 
-import android.os.Build
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,8 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +20,6 @@ import com.phil.airinkorea.R
 import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
-import com.phil.airinkorea.ui.theme.bookmark
 
 /**
  * @param icon painterResource에 전달할 resource Id
@@ -68,47 +62,6 @@ fun DrawerTitle(
         )
     }
 }
-
-
-/**
- * @param icon painterResource에 전달할 resource Id
- * @param title 타이틀로 들어갈 String resource Id
- */
-//@Composable
-//fun DrawerTitle(
-//    modifier: Modifier = Modifier,
-//    icon: ImageBitmap,
-//    contentDescription: String? = null,
-//    @StringRes stringId: Int,
-//    clickable: Boolean = false,
-//    onClick: () -> Unit = {}
-//) {
-//    val sdkVersion = Build.VERSION.SDK_INT
-//
-//    Row(
-//        horizontalArrangement = Arrangement.Start,
-//        verticalAlignment = Alignment.CenterVertically,
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .wrapContentHeight()
-//            .padding(start = 15.dp, end = 0.dp, top = 15.dp, bottom = 15.dp)
-//            .clickable(enabled = clickable) {
-//                onClick()
-//            }
-//    ) {
-//        Image(
-//            painter = painterResource(id = ),
-//            contentDescription = contentDescription,
-//            modifier = Modifier.size(24.dp)
-//        )
-//        Spacer(modifier = Modifier.size(10.dp))
-//        Text(
-//            text = stringResource(id = stringId),
-//            style = MaterialTheme.typography.subtitle1,
-//            color = AIKTheme.colors.on_core_container
-//        )
-//    }
-//}
 
 @Preview
 @Composable

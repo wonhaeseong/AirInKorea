@@ -9,6 +9,7 @@ val divider = Color(0x33000000)
 val error = Color(0xFFD02B2B)
 val common_background =  Color(0xFFF9F9F9)
 val dialog = Color(0xFFFFD7EF)
+val scrimColor = Color(0x4D000000)
 
 val level1_core = Color(0xFF001FC5)
 val level1_core_85 = Color(0xD9001FC5)

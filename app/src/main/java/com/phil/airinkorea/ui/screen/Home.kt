@@ -9,6 +9,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,10 +31,10 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
-    val refreshScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
 
-    fun refresh() = refreshScope.launch {
+    fun refresh() = scope.launch {
         refreshing = true
         delay(3000)
         refreshing = false
@@ -41,15 +42,23 @@ fun HomeScreen(
 
     val state = rememberPullRefreshState(refreshing, ::refresh)
     val scrollState = rememberScrollState()
+    val scaffoldState = rememberScaffoldState()
     AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
         Box(
             modifier = modifier
                 .background(AIKTheme.colors.core_background)
-                .pullRefresh(state)
         ) {
             Scaffold(
+                scaffoldState = scaffoldState,
                 backgroundColor = Color.Transparent,
-                topBar = { AIKTopAppBar(location = "ddd") },
+                topBar = {
+                    AIKTopAppBar(
+                        location = "ddd",
+                        onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } })
+                },
+                drawerContent = { Drawer() },
+                drawerGesturesEnabled = true,
+                drawerScrimColor = scrimColor,
                 modifier = Modifier
                     .statusBarsPadding()
             ) {
@@ -57,6 +66,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(it)
                         .fillMaxSize()
+                        .pullRefresh(state)
                         .verticalScroll(scrollState)
                 ) {
                     DateInfo(date = "Saturday, January 21, 2023 9:10 PM")
@@ -159,7 +169,6 @@ fun HomeScreen(
                         ), modifier = Modifier.padding(10.dp)
                     )
 //                    Map(modifier = Modifier.padding(10.dp))
-
                 }
             }
         }

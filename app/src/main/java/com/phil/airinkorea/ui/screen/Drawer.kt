@@ -1,9 +1,7 @@
 package com.phil.airinkorea.ui.screen
 
-import android.os.Build
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,9 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,9 +38,8 @@ fun Drawer(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AIKTheme.colors.core_background)
             .statusBarsPadding()
-            .padding(end = 45.dp)
+            .clickable(false){}
     ) {
         Column(
             modifier = Modifier
@@ -69,7 +64,7 @@ fun Drawer(
                     .wrapContentHeight()
             ) {
                 IconButton(onClick = onSettingButtonClick) {
-                    Icon(imageVector = AIKIcons.Setting, contentDescription = null)
+                    Icon(imageVector = AIKIcons.Setting, tint = AIKTheme.colors.on_core_container,contentDescription = null)
                 }
             }
             //bookmark

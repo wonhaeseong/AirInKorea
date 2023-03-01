@@ -17,7 +17,7 @@ import com.phil.airinkorea.ui.theme.PollutionLevel
 private val iconSize = 24.dp
 
 @Composable
-fun AIKTopAppBar(
+fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     location: String,
     onMenuButtonClicked: () -> Unit = {}
@@ -70,6 +70,6 @@ fun AIKTopAppBar(
 @Composable
 fun TopAppBarPreview() {
     AIKTheme(pollutionLevel = PollutionLevel.FINE) {
-        AIKTopAppBar(location = "dddd", onMenuButtonClicked = {})
+        HomeTopAppBar(location = "dddd", onMenuButtonClicked = {})
     }
 }

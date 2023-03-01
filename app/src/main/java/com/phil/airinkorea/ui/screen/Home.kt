@@ -9,7 +9,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +51,7 @@ fun HomeScreen(
                 scaffoldState = scaffoldState,
                 backgroundColor = Color.Transparent,
                 topBar = {
-                    AIKTopAppBar(
+                    HomeTopAppBar(
                         location = "ddd",
                         onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } })
                 },

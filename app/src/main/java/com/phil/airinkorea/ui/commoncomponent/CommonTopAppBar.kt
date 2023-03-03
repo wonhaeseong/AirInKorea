@@ -32,7 +32,7 @@ fun CommonTopAppBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .height(74.dp)
+            .height(56.dp)
             .background(common_background)
             .bottomBorder(1.dp, divider)
     ) {

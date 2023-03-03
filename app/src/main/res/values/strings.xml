@@ -21,4 +21,7 @@
     <string name="manage_locations">Manage Locations</string>
     <string name="particulate_matter_info">Particulate Matter Info</string>
     <string name="app_info">App Info</string>
+
+    <string name="add_location">Add Location</string>
+    <string name="search_location">Search Location</string>
 </resources>

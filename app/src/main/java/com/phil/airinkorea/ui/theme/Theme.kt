@@ -201,7 +201,7 @@ fun AIKTheme(
 }
 
 fun debugColors(
-    debugColor: Color = Color.Magenta
+    debugColor: Color = Color.Transparent
 ) = Colors(
     primary = debugColor,
     primaryVariant = debugColor,

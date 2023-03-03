@@ -12,9 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.phil.airinkorea.ui.addlocation.AddLocationContent
+import com.phil.airinkorea.ui.addlocation.AddLocationScreen
+import com.phil.airinkorea.ui.addlocation.getLocationList
 import com.phil.airinkorea.ui.screen.HomeScreen
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
@@ -33,7 +40,11 @@ class MainActivity : ComponentActivity() {
                         color = Color.Transparent
                     )
                 }
-                HomeScreen()
+                AddLocationScreen(
+                    onSearchTextChange = { getLocationList(TextFieldValue("")) },
+                    onDialogConfirmButtonClick = { TODO() },
+                    onBackButtonClick = { TODO() }
+                )
             }
         }
     }

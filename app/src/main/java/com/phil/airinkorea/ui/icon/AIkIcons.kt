@@ -22,4 +22,6 @@ object AIKIcons {
     val AppIcon = R.drawable.ic_aik_foreground
     val BackArrow = R.drawable.ic_arrow_back
     val TrashCan = R.drawable.ic_trashcan
+    val Search = R.drawable.ic_search
+    val Cancel = R.drawable.ic_cancel
 }

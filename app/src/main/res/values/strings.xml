@@ -24,4 +24,7 @@
 
     <string name="add_location">Add Location</string>
     <string name="search_location">Search Location</string>
+    <string name="add_location_dialog_text">Do you want to add\n\'%1$s\'?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

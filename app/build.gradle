@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -87,4 +88,10 @@ dependencies {
 
     //lottie
     implementation "com.airbnb.android:lottie-compose:6.0.0"
+
+    //Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    //analytics
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
 }

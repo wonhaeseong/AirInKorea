@@ -1,4 +1,5 @@
-package com.phil.airinkorea.model
+package com.phil.airinkorea.domain.model
+
 
 /**
  * 위치 정보를 갖는 데이터 클래스

@@ -1,6 +1,5 @@
 package com.phil.airinkorea.ui.managelocations
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
-import com.phil.airinkorea.model.Location
+import com.phil.airinkorea.domain.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.*

@@ -1,46 +1,41 @@
 package com.phil.airinkorea.ui.addlocation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.R
-import com.phil.airinkorea.model.Location
+import com.phil.airinkorea.domain.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.modifier.addFocusCleaner
 import com.phil.airinkorea.ui.theme.*
+import com.phil.airinkorea.ui.viewmodel.LocationViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun AddLocationScreen(
+    searchResultState: List<Location>,
     onBackButtonClick: () -> Unit,
-    onSearchTextChange: (TextFieldValue) -> List<Location>,
+    onSearchTextChange:suspend (TextFieldValue) -> Unit,
     onDialogConfirmButtonClick: (Location) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -80,6 +75,7 @@ fun AddLocationScreen(
         }
         AddLocationContent(
             modifier = Modifier.padding(innerPadding),
+            searchResultState = searchResultState,
             onSearchTextChange = onSearchTextChange,
             onAddButtonClick = { location ->
                 dialogLocation = location
@@ -93,7 +89,8 @@ fun AddLocationScreen(
 @Composable
 fun AddLocationContent(
     modifier: Modifier = Modifier,
-    onSearchTextChange: (TextFieldValue) -> List<Location>,
+    searchResultState: List<Location>,
+    onSearchTextChange:suspend (TextFieldValue) -> Unit,
     onAddButtonClick: (Location) -> Unit
 ) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
@@ -104,9 +101,7 @@ fun AddLocationContent(
     val focusRequester = remember {
         FocusRequester()
     }
-    var resultList: List<Location>? by remember {
-        mutableStateOf(null)
-    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -118,7 +113,9 @@ fun AddLocationContent(
             value = text,
             onValueChange = { value ->
                 text = value
-                resultList = onSearchTextChange(value)
+                coroutineScope.launch {
+                    onSearchTextChange(value)
+                }
             },
             textStyle = MaterialTheme.typography.body1,
             label = { Text(text = stringResource(id = R.string.search_location)) },
@@ -165,19 +162,16 @@ fun AddLocationContent(
         Spacer(modifier = Modifier.size(10.dp))
 
         //search result list
-        resultList?.let {
-            SearchResultList(
-                resultList = it,
-                onAddButtonClick = onAddButtonClick,
-            )
-        }
-
+        SearchResultList(
+            searchResultList = searchResultState,
+            onAddButtonClick = onAddButtonClick,
+        )
     }
 }
 
 @Composable
 fun SearchResultList(
-    resultList: List<Location>,
+    searchResultList: List<Location>,
     onAddButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -186,7 +180,7 @@ fun SearchResultList(
         contentPadding = PaddingValues(vertical = 10.dp),
         modifier = modifier
     ) {
-        items(resultList) { location ->
+        items(searchResultList) { location ->
             SearchResultItem(onAddButtonClick = onAddButtonClick, location = location)
             Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         }
@@ -284,8 +278,10 @@ fun AddLocationDialog(
 @Composable
 fun AddLocationContentPreview() {
     AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
+        var result: List<Location> by remember{ mutableStateOf(emptyList()) }
         AddLocationContent(
-            onSearchTextChange = { getLocationList(TextFieldValue("")) },
+            onSearchTextChange = { result = getLocationList(TextFieldValue("")) },
+            searchResultState = result,
             onAddButtonClick = {})
     }
 }

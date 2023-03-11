@@ -1,4 +1,4 @@
-package com.phil.airinkorea.model
+package com.phil.airinkorea.domain.model
 
 data class AirData(
     val pm10Value: String?,

@@ -3,7 +3,8 @@ package com.phil.airinkorea.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.phil.airinkorea.database.model.AddressEntity
+import com.phil.airinkorea.database.model.LocationEntity
+import com.phil.airinkorea.database.model.LocationEntityFts
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -11,6 +12,15 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface AddressDao {
-    @Query("SELECT * FROM address WHERE en_address Like '%'||:search||'%' LIMIT 10")
-    suspend fun getAddresses(search: String): List<AddressEntity>
+    @Query(
+        """
+        SELECT *
+        FROM locations
+        WHERE en_do LIKE '%' || :query || '%'
+        OR en_sigungu LIKE '%' || :query || '%'
+        OR en_eupmyeondong LIKE '%' || :query || '%'
+        """
+    )
+    suspend fun getAddresses(query: String?): List<LocationEntity>
+
 }

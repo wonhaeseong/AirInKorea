@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Brush
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.phil.airinkorea.model.AirLevel
 
 private val level1Color = AIKColors(
     core = level1_core,
@@ -156,31 +157,20 @@ object AIKTheme {
         get() = LocalAIKColors.current
 }
 
-enum class PollutionLevel {
-    EXCELLENT,
-    GOOD,
-    FINE,
-    MODERATE,
-    POOR,
-    BAD,
-    UNHEALTHY,
-    DANGEROUS
-}
-
 @Composable
 fun AIKTheme(
-    pollutionLevel: PollutionLevel,
+    airLevel: AirLevel,
     content: @Composable () -> Unit
 ){
-    val colors = when(pollutionLevel){
-        PollutionLevel.EXCELLENT -> level1Color
-        PollutionLevel.GOOD -> level2Color
-        PollutionLevel.FINE -> level3Color
-        PollutionLevel.MODERATE -> level4Color
-        PollutionLevel.POOR -> level5Color
-        PollutionLevel.BAD -> level6Color
-        PollutionLevel.UNHEALTHY -> level7Color
-        PollutionLevel.DANGEROUS -> level8Color
+    val colors = when(airLevel){
+        AirLevel.Level1 -> level1Color
+        AirLevel.Level2 -> level2Color
+        AirLevel.Level3 -> level3Color
+        AirLevel.Level4 -> level4Color
+        AirLevel.Level5 -> level5Color
+        AirLevel.Level6 -> level6Color
+        AirLevel.Level7 -> level7Color
+        AirLevel.Level8 -> level8Color
     }
 
     val sysUicController = rememberSystemUiController()

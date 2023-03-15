@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
-import com.phil.airinkorea.ui.commoncomponents.TitleBar
+import com.phil.airinkorea.ui.home.TitleBar
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.PollutionLevel
 

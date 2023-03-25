@@ -8,3 +8,9 @@ package com.phil.airinkorea.domain.model
  * @param eupmyeondong 읍면동
  */
 data class Location(val `do`: String, val sigungu: String, val eupmyeondong: String)
+data class LocationAndStation(
+    val `do`: String,
+    val sigungu: String,
+    val eupmyeondong: String,
+    val station: String
+)

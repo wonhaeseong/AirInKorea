@@ -5,9 +5,9 @@ import com.phil.airinkorea.domain.model.Result
 import com.phil.airinkorea.domain.repository.LocationRepository
 import javax.inject.Inject
 
-class GetSearchResultUseCase @Inject constructor(
+class GetBookmarkUseCase @Inject constructor(
     private val locationRepository: LocationRepository
-) {
-    suspend operator fun invoke(query:String?): Result<List<Location>> =
-        locationRepository.getSearchResult(query)
+){
+    suspend operator fun invoke(): Result<Location> =
+        locationRepository.getBookmark()
 }

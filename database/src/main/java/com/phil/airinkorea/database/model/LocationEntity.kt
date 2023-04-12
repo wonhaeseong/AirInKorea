@@ -14,6 +14,3 @@ data class LocationEntity(
     @ColumnInfo(name = "en_eupmyeondong") val enEupmyeondong: String,
     @ColumnInfo(name = "station") val station: String
 )
-
-
-

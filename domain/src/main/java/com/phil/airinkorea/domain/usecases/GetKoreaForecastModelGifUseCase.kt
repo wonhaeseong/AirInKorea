@@ -1,13 +1,13 @@
 package com.phil.airinkorea.domain.usecases
 
-import com.phil.airinkorea.domain.model.AirInfo
+import com.phil.airinkorea.domain.model.KoreaForecastModelGif
 import com.phil.airinkorea.domain.model.Result
 import com.phil.airinkorea.domain.repository.AirDataRepository
 import javax.inject.Inject
 
-class GetAirInfoUseCase @Inject constructor(
+class GetKoreaForecastModelGifUseCase @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) {
-    suspend operator fun invoke(station: String): Result<AirInfo> =
-        airDataRepository.getAirLevel(station)
+    suspend operator fun invoke(): Result<KoreaForecastModelGif> =
+        airDataRepository.getKoreaForecastModelGif()
 }

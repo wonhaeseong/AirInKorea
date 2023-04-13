@@ -34,23 +34,24 @@ enum class AirLevel(val value: String) {
 data class DailyForecast(
     val daysOfTheWeek: String,
     val date: String,
-    val airLevel: String
+    val airLevel: AirLevel
 )
 
 /**
  * 6가지 물질에 대한 오염 수치와 오염 단계
  */
+
 data class DetailAirData(
-    val pm25Level: String,
+    val pm25Level: AirLevel,
     val pm25Value: Int,
-    val pm10Level: String,
+    val pm10Level: AirLevel,
     val pm10Value: Int,
-    val no2Level: String,
+    val no2Level: AirLevel,
     val no2Value: Int,
-    val so2Level: String,
+    val so2Level: AirLevel,
     val so2Value: Int,
-    val coLevel: String,
+    val coLevel: AirLevel,
     val coValue: Int,
-    val o3Level: String,
+    val o3Level: AirLevel,
     val o3Value: Int
 )

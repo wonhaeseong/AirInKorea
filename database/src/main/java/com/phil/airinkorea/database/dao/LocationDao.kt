@@ -3,6 +3,7 @@ package com.phil.airinkorea.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.phil.airinkorea.database.model.LocationEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * [LocationEntity]에 접근하기위한 DAO
@@ -18,6 +19,5 @@ interface LocationDao {
         OR en_eupmyeondong LIKE '%' || :query || '%'
         """
     )
-    suspend fun searchLocation(query: String?): List<LocationEntity>
-
+    fun searchLocation(query: String?): Flow<List<LocationEntity>>
 }

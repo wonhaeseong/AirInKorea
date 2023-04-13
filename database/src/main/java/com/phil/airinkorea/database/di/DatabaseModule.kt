@@ -3,7 +3,10 @@ package com.phil.airinkorea.database.di
 import android.content.Context
 import androidx.room.Room
 import com.phil.airinkorea.database.AIKDatabase
+import com.phil.airinkorea.database.TypeConverter
+import com.phil.airinkorea.database.dao.GPSLocationDao
 import com.phil.airinkorea.database.dao.LocationDao
+import com.phil.airinkorea.database.dao.UserLocationsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,11 +21,18 @@ class DatabaseModule {
     fun provideLocationDao(aIKDatabase: AIKDatabase): LocationDao = aIKDatabase.locationDao()
 
     @Provides
+    fun provideUserLocationsDao(aIKDatabase: AIKDatabase): UserLocationsDao = aIKDatabase.userLocationsDao()
+
+    @Provides
+    fun provideGPSLocationDao(aIKDatabase: AIKDatabase): GPSLocationDao = aIKDatabase.gpsLocationDao()
+
+    @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext appContext: Context): AIKDatabase =
         Room.databaseBuilder(
             appContext, AIKDatabase::class.java,
             "locations.db"
         ).createFromAsset("database/locations.db")
+            .addTypeConverter(TypeConverter())
             .build()
 }

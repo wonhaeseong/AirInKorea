@@ -1,27 +1,51 @@
 package com.phil.airinkorea.data.model
 
-import com.phil.airinkorea.database.model.AirDataEntity
-import com.phil.airinkorea.network.model.NetworkAirData
+import kotlinx.serialization.Serializable
 
-fun NetworkAirData.asEntity() = AirDataEntity(
-    pm10Value = pm10Value,
-    pm25Value = pm25Value,
-    so2Value = so2Value,
-    coValue = coValue,
-    o3Value = o3Value,
-    no2Value = no2Value,
-    pm10Flag = pm10Flag,
-    pm25Flag = pm25Flag,
-    so2Grade = so2Grade,
-    coFlag = coFlag,
-    o3Grade = o3Grade,
-    khaiValue = khaiValue,
-    khaiGrade = khaiGrade,
-    no2Flag = no2Flag,
-    no2Grade = no2Grade,
-    o3Flag = o3Flag,
-    so2Flag = so2Flag,
-    dataTime = dataTime,
-    coGrade = coGrade,
-    pm10Grade = pm10Grade
+data class AirData(
+    val location: String,
+    val date: String,
+    val airLevel: AirLevel,
+    val airData : DetailAirData?,
+    val dailyForecast: List<DailyForecast>?,
+    val information: String?,
+    val koreaForecastMapImgUrl: String?
+)
+
+enum class AirLevel(val value: String) {
+    Level1("Good"),
+    Level2("Moderate"),
+    Level3("Poor"),
+    Level4("Unhealthy"),
+    Level5("Very Unhealthy"),
+    Level6("Hazardous")
+}
+
+@Serializable
+data class DailyForecast(
+    val daysOfTheWeek: String,
+    val date: String,
+    val airLevel: AirLevel
+)
+
+@Serializable
+data class DetailAirData(
+    val pm25Level: AirLevel,
+    val pm25Value: Int,
+    val pm10Level: AirLevel,
+    val pm10Value: Int,
+    val no2Level: AirLevel,
+    val no2Value: Int,
+    val so2Level: AirLevel,
+    val so2Value: Int,
+    val coLevel: AirLevel,
+    val coValue: Int,
+    val o3Level: AirLevel,
+    val o3Value: Int
+)
+
+@Serializable
+data class KoreaForecastModelGif(
+    val pm10GifUrl: String,
+    val pm25GIfUrl: String
 )

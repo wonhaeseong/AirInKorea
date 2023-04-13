@@ -2,15 +2,13 @@ package com.phil.airinkorea.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Fts4
 import androidx.room.PrimaryKey
 
 /**
- * prepopulated db인 locations.db의 entity
- * 영문 시군구 별 station 정보를 가지고 있음
+ * 사용자의 GPS로 부터 얻어온 시군구 정보, 측정소 정보를 가지는 entity
  */
-@Entity(tableName = "locations")
-data class LocationEntity(
+@Entity(tableName = "gps_location")
+data class GPSLocationEntity(
     @PrimaryKey
     @ColumnInfo(name = "row_id") val rowId: Int,
     @ColumnInfo(name = "en_do") val enDo: String,

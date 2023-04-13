@@ -6,11 +6,6 @@ package com.phil.airinkorea.domain.model
  * @param do 도
  * @param sigungu 시군구
  * @param eupmyeondong 읍면동
+ * @param station 측정소명
  */
-data class Location(val `do`: String, val sigungu: String, val eupmyeondong: String)
-data class LocationAndStation(
-    val `do`: String,
-    val sigungu: String,
-    val eupmyeondong: String,
-    val station: String
-)
+data class Location(val `do`: String, val sigungu: String, val eupmyeondong: String, val station: String)

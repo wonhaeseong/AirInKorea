@@ -6,14 +6,15 @@ package com.phil.airinkorea.domain.model
  * @param information 현재 한국의 대기 오염 상태에 대한 원인 및 정보
  * @param koreaForecastMapImgUrl 한반도 대기 오염 예측 모델의 이미지 URL
  */
+
 data class AirData(
-    val location: String,
+    val station: String,
     val date: String,
     val airLevel: AirLevel,
-    val airData : DetailAirData?,
-    val dailyForecast: List<DailyForecast>?,
-    val information: String?,
-    val koreaForecastMapImgUrl: String?
+    val detailAirData : DetailAirData,
+    val dailyForecast: List<DailyForecast>,
+    val information: String,
+    val koreaForecastMapImgUrl: String
 )
 
 /**
@@ -25,33 +26,37 @@ enum class AirLevel(val value: String) {
     Level3("Poor"),
     Level4("Unhealthy"),
     Level5("Very Unhealthy"),
-    Level6("Hazardous")
+    Level6("Hazardous"),
+    LevelError("Error")
 }
 
 /**
  * 일별 오염 단계
  */
 data class DailyForecast(
-    val daysOfTheWeek: String,
     val date: String,
-    val airLevel: AirLevel
+    val airLevel: AirLevel,
 )
 
 /**
  * 6가지 물질에 대한 오염 수치와 오염 단계
  */
-
 data class DetailAirData(
     val pm25Level: AirLevel,
-    val pm25Value: Int,
+    val pm25Value: String,
     val pm10Level: AirLevel,
-    val pm10Value: Int,
+    val pm10Value: String,
     val no2Level: AirLevel,
-    val no2Value: Int,
+    val no2Value: String,
     val so2Level: AirLevel,
-    val so2Value: Int,
+    val so2Value: String,
     val coLevel: AirLevel,
-    val coValue: Int,
+    val coValue: String,
     val o3Level: AirLevel,
-    val o3Value: Int
+    val o3Value: String
+)
+
+data class KoreaForecastModelGif(
+    val pm10GifUrl: String,
+    val pm25GifUrl: String
 )

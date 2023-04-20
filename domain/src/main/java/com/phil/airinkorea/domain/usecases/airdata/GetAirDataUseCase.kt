@@ -1,13 +1,13 @@
-package com.phil.airinkorea.domain.usecases
+package com.phil.airinkorea.domain.usecases.airdata
 
 import com.phil.airinkorea.domain.model.AirData
-import com.phil.airinkorea.domain.model.Result
 import com.phil.airinkorea.domain.repository.AirDataRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetAirDataUseCase @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) {
-    suspend operator fun invoke(station:String): Result<AirData> =
+    operator fun invoke(station:String): Flow<AirData> =
     airDataRepository.getAirData(station)
 }

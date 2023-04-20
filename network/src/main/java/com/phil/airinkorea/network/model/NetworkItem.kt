@@ -1,45 +1,53 @@
 package com.phil.airinkorea.network.model
 
+import com.phil.airinkorea.domain.model.AirLevel
+import com.phil.airinkorea.domain.model.DailyForecast
+import com.phil.airinkorea.domain.model.DetailAirData
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-sealed class NetworkItem
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class NetworkAirData(
+    val forecast: ArrayList<NetworkForecastItem>?,
+    @SerialName("airData") val detailAirData: NetworkDetailAirData?,
+    @SerialName("pm10ImgUrl") val pm10GifUrl: String?,
+    @SerialName("pm25ImgUrl") val pm25GifUrl: String?,
+    @SerialName("thumbnailImageUrl") val koreaForecastMapImgUrl: String?,
+    val information: String?
+)
+
+@Serializable
+data class NetworkForecastItem(
+    @SerialName("day") val date: String,
+    @SerialName("forecastLevel") val airLevel: String
+)
+
+@Serializable
+data class NetworkDetailAirData(
     val pm10Value: String?,
     val pm25Value: String?,
     val so2Value: String?,
     val coValue: String?,
     val o3Value: String?,
     val no2Value: String?,
+    val khaiValue: String?,
+    val pm10Grade: String?,
+    val pm25Grade: String?,
+    val so2Grade: String?,
+    val coGrade: String?,
+    val khaiGrade: String?,
+    val no2Grade: String?,
+    val o3Grade: String?,
     val pm10Flag: String?,
     val pm25Flag: String?,
-    val so2Grade: String?,
-    val coFlag: String?,
-    val o3Grade: String?,
-    val khaiValue: String?,
-    val khaiGrade: String?,
     val no2Flag: String?,
-    val no2Grade: String?,
     val o3Flag: String?,
     val so2Flag: String?,
+    val coFlag: String?,
     val dataTime: String?,
-    val coGrade: String?,
-    val pm10Grade: String?
-):NetworkItem()
-
-
-@Serializable
-data class NetworkLocation(
-    val sggName: String?,
-    val umdName: String?,
-    val tmX: String?,
-    val tmY: String?,
-    val sidoName: String?
-):NetworkItem()
-
-@Serializable
-data class NetworkNearbyStation(
-    val tm: Int?,
-    val addr: String?,
-    val stationName: String?
-):NetworkItem()
+    val sidoName: String?,
+    val airLevel: String = ""
+)

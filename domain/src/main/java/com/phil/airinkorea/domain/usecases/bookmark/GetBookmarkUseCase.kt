@@ -1,13 +1,13 @@
-package com.phil.airinkorea.domain.usecases
+package com.phil.airinkorea.domain.usecases.bookmark
 
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.model.Result
+import com.phil.airinkorea.domain.model.UserLocation
 import com.phil.airinkorea.domain.repository.LocationRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetBookmarkUseCase @Inject constructor(
     private val locationRepository: LocationRepository
 ){
-    suspend operator fun invoke(): Result<Location> =
+    operator fun invoke(): Flow<UserLocation> =
         locationRepository.getBookmark()
 }

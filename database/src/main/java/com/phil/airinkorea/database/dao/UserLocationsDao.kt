@@ -1,41 +1,38 @@
 package com.phil.airinkorea.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.database.model.UserLocationsEntity
+import androidx.room.Update
+import com.phil.airinkorea.database.model.UserLocationEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserLocationsDao {
     @Query(
         """
-        SELECT en_do,en_sigungu,en_eupmyeondong,station
+        SELECT *
         FROM user_locations
         """
     )
-    fun getAllUserLocation(): Flow<List<Location>>
+    fun getUserLocationList(): Flow<List<UserLocationEntity>>
 
-    @Insert(entity = UserLocationsEntity::class)
-    suspend fun insertUserLocation(newData: UserLocationsEntity): Boolean
+    @Insert(entity = UserLocationEntity::class)
+    suspend fun insertUserLocation(newData: UserLocationEntity)
 
-    @Query(
-        """
-        UPDATE user_locations SET bookmark = CASE
-        WHEN station = :oldBookmarkStation THEN 0 
-        WHEN station = :newBookmarkStation THEN 1 
-        ELSE bookmark END
-        """
-    )
-    fun updateBookmark(oldBookmarkStation: String, newBookmarkStation: String): Boolean
+    @Delete
+    suspend fun deleteUserLocationData(userLocation:UserLocationEntity)
 
     @Query(
         """
-        DELETE FROM user_locations
-        WHERE en_do = :enDo AND en_sigungu = :enSigungu AND en_eupmyeondong = :enEupmyeondong
+        SELECT *
+        FROM user_locations
+        WHERE bookmark = 1    
         """
     )
-    suspend fun deleteUserLocationData(enDo: String, enSigungu: String, enEupmyeondong: String): Boolean
+    fun getBookmark(): Flow<UserLocationEntity>
 
+    @Update
+    fun updateUserLocation(userLocationEntity: UserLocationEntity)
 }

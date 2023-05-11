@@ -1,4 +1,4 @@
-package com.phil.airinkorea.domain.usecases
+package com.phil.airinkorea.domain.usecases.user
 
 import com.phil.airinkorea.domain.model.UserLocation
 import com.phil.airinkorea.domain.repository.LocationRepository

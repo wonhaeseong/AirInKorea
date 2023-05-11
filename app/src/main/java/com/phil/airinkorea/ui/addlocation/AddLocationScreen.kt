@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 fun AddLocationScreen(
     addLocationUiState: AddLocationUiState,
     onBackButtonClick: () -> Unit,
-    onSearchTextChange: suspend (TextFieldValue) -> Unit,
+    onSearchTextChange: (TextFieldValue) -> Unit,
     onDialogConfirmButtonClick: (Location) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -90,7 +90,7 @@ fun AddLocationScreen(
 fun AddLocationContent(
     modifier: Modifier = Modifier,
     addLocationUiState: AddLocationUiState,
-    onSearchTextChange: suspend (TextFieldValue) -> Unit,
+    onSearchTextChange: (TextFieldValue) -> Unit,
     onAddButtonClick: (Location) -> Unit
 ) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
@@ -113,9 +113,7 @@ fun AddLocationContent(
             value = text,
             onValueChange = { value ->
                 text = value
-                coroutineScope.launch {
-                    onSearchTextChange(value)
-                }
+                onSearchTextChange(value)
             },
             textStyle = MaterialTheme.typography.body1,
             label = { Text(text = stringResource(id = R.string.search_location)) },
@@ -219,7 +217,9 @@ fun SearchResultItem(
             )
         }
 
-        IconButton(onClick = { onAddButtonClick(location) }) {
+        IconButton(onClick = {
+            onAddButtonClick(location)
+        }) {
             Icon(painter = painterResource(id = R.drawable.ic_add), contentDescription = null)
         }
     }
@@ -232,8 +232,8 @@ fun AddLocationDialog(
     location: Location
 ) {
     AlertDialog(
-        backgroundColor = dialog,
-        shape = MaterialTheme.shapes.large,
+        backgroundColor = common_background,
+        shape = MaterialTheme.shapes.medium,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
@@ -253,7 +253,10 @@ fun AddLocationDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirmButtonClick(location) }) {
+            TextButton(onClick = {
+                onConfirmButtonClick(location)
+                onDismissRequest()
+            }) {
                 Text(
                     text = stringResource(id = R.string.yes),
                     style = MaterialTheme.typography.subtitle1,

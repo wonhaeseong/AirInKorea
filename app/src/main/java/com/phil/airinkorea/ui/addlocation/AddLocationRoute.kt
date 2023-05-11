@@ -14,11 +14,11 @@ fun AddLocationRoute(
     addLocationViewModel: AddLocationViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit
 ) {
-    val searchResultState: List<Location> by addLocationViewModel.searchResult.collectAsStateWithLifecycle()
+    val addLocationUiState: AddLocationUiState by addLocationViewModel.searchResult.collectAsStateWithLifecycle()
     AddLocationScreen(
-        addLocationUiState = AddLocationUiState(),
+        addLocationUiState = addLocationUiState,
         onBackButtonClick = onBackButtonClick,
-        onSearchTextChange = {},
-        onDialogConfirmButtonClick = {}
+        onSearchTextChange = { addLocationViewModel.getSearchResult(it.text) },
+        onDialogConfirmButtonClick = {addLocationViewModel.addUserLocation(it)}
     )
 }

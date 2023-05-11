@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.domain.model.Location
+import com.phil.airinkorea.domain.model.UserLocation
 import com.phil.airinkorea.domain.usecases.search.GetSearchResultUseCase
+import com.phil.airinkorea.domain.usecases.user.AddUserLocationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,17 +19,34 @@ data class AddLocationUiState(
 
 @HiltViewModel
 class AddLocationViewModel @Inject constructor(
-    private val getSearchResultUseCase: GetSearchResultUseCase
+    private val getSearchResultUseCase: GetSearchResultUseCase,
+    private val addUserLocationUseCase: AddUserLocationUseCase
 ) : ViewModel() {
-    private val _searchResult = MutableStateFlow<List<Location>>(emptyList())
-    val searchResult: StateFlow<List<Location>> = _searchResult.asStateFlow()
-    suspend fun getSearchResult(query: String?) {
-        viewModelScope.launch {
-            _searchResult.update {
-                TODO()
-//                getSearchResultUseCase(query)
+    private val _searchResult = MutableStateFlow(AddLocationUiState())
+    val searchResult: StateFlow<AddLocationUiState> = _searchResult
+    fun getSearchResult(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getSearchResultUseCase(query).collect { newResult ->
+                _searchResult.update {
+                    it.copy(
+                        searchResult = newResult
+                    )
+                }
             }
-            Log.d("searchResult",searchResult.value.toString())
+            Log.d("searchResult", searchResult.value.toString())
+        }
+    }
+
+    fun addUserLocation(location: Location){
+        viewModelScope.launch(Dispatchers.IO) {
+            val userLocation = UserLocation(
+                `do` = location.`do`,
+                sigungu = location.sigungu,
+                eupmyeondong = location.eupmyeondong,
+                station = location.station,
+                bookmark = false
+            )
+            addUserLocationUseCase(userLocation)
         }
     }
 }

@@ -9,17 +9,16 @@ import javax.inject.Inject
  *  @param bookmarkedLocation 사용자가 북마크한 위치
  *  @param userLocationList 사용자가 저장한 위치들의 목록
  */
-sealed class DrawerUiState {
-    data class Success(
-        val gps: Location? = null,
-        val bookmark: Location? = null,
-        val userLocationList: List<Location> = emptyList(),
-    ) : DrawerUiState()
-    object Failure: DrawerUiState()
-    object Loading: DrawerUiState()
-}
+data class DrawerUiState(
+    var gps: Location? = null,
+    var bookmark: Location? = null,
+    var userLocationList: List<Location> = emptyList(),
+    var isLoading: Boolean = true
+)
 
 @HiltViewModel
-class DrawerViewModel @Inject constructor() : ViewModel() {
+class DrawerViewModel @Inject constructor(
+
+) : ViewModel() {
 
 }

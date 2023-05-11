@@ -1,22 +1,16 @@
 package com.phil.airinkorea.network.model
 
-import com.phil.airinkorea.domain.model.AirLevel
-import com.phil.airinkorea.domain.model.DailyForecast
-import com.phil.airinkorea.domain.model.DetailAirData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Serializable
 data class NetworkAirData(
-    val forecast: ArrayList<NetworkForecastItem>?,
-    @SerialName("airData") val detailAirData: NetworkDetailAirData?,
-    @SerialName("pm10ImgUrl") val pm10GifUrl: String?,
-    @SerialName("pm25ImgUrl") val pm25GifUrl: String?,
-    @SerialName("thumbnailImageUrl") val koreaForecastMapImgUrl: String?,
-    val information: String?
+    val forecast: ArrayList<NetworkForecastItem>,
+    @SerialName("airData") val detailAirData: NetworkDetailAirData,
+    @SerialName("pm10ImgUrl") val pm10GifUrl: String,
+    @SerialName("pm25ImgUrl") val pm25GifUrl: String,
+    @SerialName("thumbnailImageUrl") val koreaForecastMapImgUrl: String,
+    val information: String
 )
 
 @Serializable
@@ -49,5 +43,5 @@ data class NetworkDetailAirData(
     val coFlag: String?,
     val dataTime: String?,
     val sidoName: String?,
-    val airLevel: String = ""
+    val airLevel: String
 )

@@ -1,19 +1,21 @@
 package com.phil.airinkorea.ui.managelocations
 
 import androidx.compose.runtime.Composable
-import com.phil.airinkorea.ui.viewmodel.LocationViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
+import com.phil.airinkorea.ui.viewmodel.ManageLocationViewModel
 
 @Composable
 fun ManageLocationRoute(
-    locationViewModel: LocationViewModel,
     onBackButtonClick: () -> Unit,
+    onAddLocationButtonClick: () -> Unit,
+    manageLocationViewModel: ManageLocationViewModel = hiltViewModel()
 ) {
     ManageLocationScreen(
-        TODO(),//ViewModel에서 Location List 가져오기
-        TODO(),
-        TODO(),
-        TODO(),
-        TODO(),
-        TODO()
+        onAddLocationButtonClick = onAddLocationButtonClick,
+        onBackButtonClick = onBackButtonClick,
+        onBookmarkButtonClick ={},
+        onLocationDeleteButtonClick ={},
+        manageLocationUiState = ManageLocationUiState()
     )
 }

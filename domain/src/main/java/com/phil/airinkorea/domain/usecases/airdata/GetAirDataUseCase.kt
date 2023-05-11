@@ -8,6 +8,7 @@ import javax.inject.Inject
 class GetAirDataUseCase @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) {
-    operator fun invoke(station:String): Flow<AirData> =
-    airDataRepository.getAirData(station)
+    operator fun invoke(station:String): Flow<AirData> {
+        return airDataRepository.getAirData(station)
+    }
 }

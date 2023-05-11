@@ -1,30 +1,41 @@
 <resources>
-    <string name="app_name">airinkorea</string>
+    <string name="app_name">AirInKorea</string>
     <string name="pm_2.5">PM 2.5</string>
     <string name="pm_10">PM 10</string>
     <string name="yellow_dust">Yellow Dust</string>
     <string name="so2">SO₂</string>
     <string name="CO">CO</string>
     <string name="o3">O₃</string>
-    <string name="micro_per_square_meter"> %1$dµg/m3</string>
+    <string name="micro_per_square_meter"> %1$sµg/m3</string>
     <string name="no2">NO₂</string>
-    <string name="ppm">%1$dppm</string>
+    <string name="ppm">%1$sppm</string>
+
+    <string name="details">Details</string>
+    <string name="information">Information</string>
+    <string name="dailyForecast">Daily Forecast</string>
+    <string name="koreaForecastMap">Korea Forecast Map</string>
 
     <string name="gps_error">Please turn on the GPS to get current location information.</string>
+    <string name="data_error">Please refresh the screen by pulling the screen down after a while. Or check your network connection.</string>
     <string name="dismiss">DISMISS</string>
     <string name="turn_on_gps">TURN ON GPS</string>
 
     <string name="bookmark">Bookmark</string>
+    <string name="gps">GPS</string>
+    <string name="my_locations">My locations</string>
     <string name="locations">Locations</string>
+    <string name="unable_gps">Unable to retrieve GPS information</string>
     <string name="bookmark_is_not_set">Bookmark is not set</string>
     <string name="please_add_a_location">Please add a location.</string>
     <string name="manage_locations">Manage Locations</string>
     <string name="particulate_matter_info">Particulate Matter Info</string>
     <string name="app_info">App Info</string>
-
-    <string name="add_location">Add Location</string>
-    <string name="search_location">Search Location</string>
+    <string name="korea_forecast_model_error">Image could not be loaded</string>
+    <string name="add_location">Add a Location</string>
+    <string name="search_location">Search Locations</string>
     <string name="add_location_dialog_text">Do you want to add\n\'%1$s\'?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="daily_forecast_day_layout">%1$s/%2$s/%3$s</string>
 </resources>

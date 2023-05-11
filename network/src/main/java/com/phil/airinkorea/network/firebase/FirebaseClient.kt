@@ -37,7 +37,7 @@ class FirebaseClient {
         }
     }
 
-    private fun convertJsonToNetworkAirData(result: String): NetworkAirData? {
+    private fun convertJsonToNetworkAirData(result: String): NetworkAirData {
         val json = Json {
             prettyPrint = true
             ignoreUnknownKeys = true

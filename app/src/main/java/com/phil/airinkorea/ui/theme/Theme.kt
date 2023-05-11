@@ -4,10 +4,9 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Brush
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.phil.airinkorea.model.AirLevel
+import com.phil.airinkorea.domain.model.AirLevel
 
 private val level1Color = AIKColors(
     core = level1_core,
@@ -69,25 +68,16 @@ private val level6Color = AIKColors(
     core_background = level6_background
 )
 
-private val level7Color = AIKColors(
-    core = level7_core,
-    on_core = level7_on_core,
-    core_container = level7_core_container,
-    on_core_container = level7_on_core_container,
-    on_core_container_subtext = level7_on_core_container_subtext,
-    core_button = level7_button,
-    core_background = level7_background
+private val levelErrorColor = AIKColors(
+    core = level6_core,
+    on_core = level6_on_core,
+    core_container = level6_core_container,
+    on_core_container = level6_on_core_container,
+    on_core_container_subtext = level6_on_core_container_subtext,
+    core_button = level6_button,
+    core_background = level6_background
 )
 
-private val level8Color = AIKColors(
-    core = level8_core,
-    on_core = level8_on_core,
-    core_container = level8_core_container,
-    on_core_container = level8_on_core_container,
-    on_core_container_subtext = level8_on_core_container_subtext,
-    core_button = level8_button,
-    core_background = level8_background
-)
 
 @Stable
 class AIKColors(
@@ -169,8 +159,7 @@ fun AIKTheme(
         AirLevel.Level4 -> level4Color
         AirLevel.Level5 -> level5Color
         AirLevel.Level6 -> level6Color
-        AirLevel.Level7 -> level7Color
-        AirLevel.Level8 -> level8Color
+        AirLevel.LevelError -> levelErrorColor
     }
 
     val sysUicController = rememberSystemUiController()

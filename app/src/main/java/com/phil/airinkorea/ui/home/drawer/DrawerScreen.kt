@@ -33,7 +33,7 @@ import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 
 @Composable
-fun Drawer(
+fun DrawerScreen(
     modifier: Modifier = Modifier,
     drawerUiState: DrawerUiState,
     onManageLocationClick: () -> Unit,
@@ -78,14 +78,14 @@ fun Drawer(
                 }
             }
             //GPS
-            GPS(drawerUiState = drawerUiState)
+            GPS(location = drawerUiState.gps)
             Divider(
                 color = divider, modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp)
             )
             //bookmark
-            Bookmark(drawerUiState = drawerUiState)
+            Bookmark(location = drawerUiState.bookmark)
             Divider(
                 color = divider, modifier = Modifier
                     .fillMaxWidth()
@@ -93,7 +93,7 @@ fun Drawer(
             )
 
             //My locations
-            MyLocations(drawerUiState = drawerUiState)
+            MyLocations(locationList = drawerUiState.userLocationList)
 
             //manage locations Button
             TextButton(
@@ -141,23 +141,17 @@ fun Drawer(
 @Composable
 fun GPS(
     modifier: Modifier = Modifier,
-    drawerUiState: DrawerUiState
+    location: Location?
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
             icon = painterResource(id = AIKIcons.Location),
             stringId = R.string.gps
         )
-        when (drawerUiState) {
-            DrawerUiState.Loading, DrawerUiState.Failure -> {
-                DrawerItem(text = "")
-            }
-            is DrawerUiState.Success ->
-                if (drawerUiState.gps == null) {
-                    DrawerItem(text = stringResource(id = R.string.unable_gps), itemEnable = false)
-                } else {
-                    DrawerItem(text = drawerUiState.gps.eupmyeondong)
-                }
+        if (location == null) {
+            DrawerItem(text = stringResource(id = R.string.unable_gps), itemEnable = false)
+        } else {
+            DrawerItem(text = location.eupmyeondong)
         }
     }
 }
@@ -165,7 +159,7 @@ fun GPS(
 @Composable
 fun Bookmark(
     modifier: Modifier = Modifier,
-    drawerUiState: DrawerUiState
+    location: Location?
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
@@ -173,27 +167,22 @@ fun Bookmark(
             tint = bookmark,
             stringId = R.string.bookmark
         )
-        when (drawerUiState) {
-            DrawerUiState.Loading, DrawerUiState.Failure -> {
-                DrawerItem(text = "")
-            }
-            is DrawerUiState.Success ->
-                if (drawerUiState.bookmark == null) {
-                    DrawerItem(
-                        text = stringResource(id = R.string.bookmark_is_not_set),
-                        itemEnable = false
-                    )
-                } else {
-                    DrawerItem(text = drawerUiState.bookmark.eupmyeondong)
-                }
+        if (location == null) {
+            DrawerItem(
+                text = stringResource(id = R.string.bookmark_is_not_set),
+                itemEnable = false
+            )
+        } else {
+            DrawerItem(text = location.eupmyeondong)
         }
+
     }
 }
 
 @Composable
 fun MyLocations(
     modifier: Modifier = Modifier,
-    drawerUiState: DrawerUiState
+    locationList: List<Location>
 ) {
     Column(
         modifier = modifier
@@ -205,42 +194,25 @@ fun MyLocations(
             stringId = R.string.my_locations,
             tint = heart
         )
-
-        when (drawerUiState) {
-            DrawerUiState.Loading, DrawerUiState.Failure -> {
-                Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        DrawerItem(
-                            text = "",
-                            itemEnable = false
-                        )
-                    }
+        if (locationList.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                DrawerItem(
+                    text = stringResource(id = R.string.please_add_a_location),
+                    itemEnable = false
+                )
             }
-            is DrawerUiState.Success -> {
-                if (drawerUiState.userLocationList.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        DrawerItem(
-                            text = stringResource(id = R.string.please_add_a_location),
-                            itemEnable = false
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                    ) {
-                        items(drawerUiState.userLocationList) { location ->
-                            DrawerItem(text = location.eupmyeondong)
-                        }
-                    }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+            ) {
+                items(locationList) { location ->
+                    DrawerItem(text = location.eupmyeondong)
                 }
             }
         }
@@ -319,11 +291,11 @@ fun DrawerItem(
     }
 }
 
-@Preview(name = "Success")
+@Preview
 @Composable
 fun DrawerPreviewSuccess() {
     val drawerUiState =
-        DrawerUiState.Success(
+        DrawerUiState(
             gps = Location(
                 `do` = "Gangwon-do",
                 sigungu = "Gangneung-si",
@@ -372,7 +344,7 @@ fun DrawerPreviewSuccess() {
             )
         )
     AIKTheme(AirLevel.Level1) {
-        Drawer(
+        DrawerScreen(
             drawerUiState = drawerUiState,
             onManageLocationClick = {},
             onAppInfoClick = {},
@@ -381,45 +353,18 @@ fun DrawerPreviewSuccess() {
     }
 }
 
-@Preview(name = "Success_empty_data")
+@Preview
 @Composable
-fun DrawerPreviewSuccessButEmpty() {
+fun DrawerPreviewEmptyData() {
     val drawerUiState =
-        DrawerUiState.Success(
+        DrawerUiState(
             gps = null,
             bookmark = null,
             userLocationList = emptyList()
         )
     AIKTheme(AirLevel.Level1) {
-        Drawer(
+        DrawerScreen(
             drawerUiState = drawerUiState,
-            onManageLocationClick = {},
-            onAppInfoClick = {},
-            onParticulateMatterInfoClick = {}
-        )
-    }
-}
-
-@Preview(name = "Failure")
-@Composable
-fun DrawerPreviewFailure() {
-    AIKTheme(AirLevel.Level1) {
-        Drawer(
-            drawerUiState = DrawerUiState.Failure,
-            onManageLocationClick = {},
-            onAppInfoClick = {},
-            onParticulateMatterInfoClick = {}
-        )
-    }
-}
-
-
-@Preview(name = "Loading")
-@Composable
-fun DrawerPreviewLoading() {
-    AIKTheme(AirLevel.Level1) {
-        Drawer(
-            drawerUiState = DrawerUiState.Loading,
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {}

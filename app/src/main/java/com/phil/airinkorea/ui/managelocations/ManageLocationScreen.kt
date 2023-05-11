@@ -14,10 +14,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
+import com.phil.airinkorea.domain.model.AirLevel
 import com.phil.airinkorea.domain.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
-import com.phil.airinkorea.ui.icon.AIKIcons
+import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.*
+import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 
 @Composable
 fun ManageLocationScreen(
@@ -25,24 +27,23 @@ fun ManageLocationScreen(
     onBookmarkButtonClick: (Boolean) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
-    bookmarkedLocation: Location,
-    locations: List<Location>
+    manageLocationUiState: ManageLocationUiState
 ) {
     Scaffold(
         topBar = {
             CommonTopAppBar(
                 onBackButtonClick = onBackButtonClick,
-                title = stringResource(id = R.string.manage_locations)
+                title = stringResource(id = R.string.manage_locations),
+                modifier = Modifier.statusBarsPadding()
             )
         },
         backgroundColor = common_background
     ) { innerPadding ->
         ManageLocationContent(
-            bookmarkedLocation = bookmarkedLocation,
             onBookmarkButtonClick = onBookmarkButtonClick,
             onLocationDeleteButtonClick = onLocationDeleteButtonClick,
             onAddLocationButtonClick = onAddLocationButtonClick,
-            locations = locations,
+            manageLocationUiState = manageLocationUiState,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -50,8 +51,7 @@ fun ManageLocationScreen(
 
 @Composable
 fun ManageLocationContent(
-    bookmarkedLocation: Location,
-    locations: List<Location>,
+    manageLocationUiState: ManageLocationUiState,
     onBookmarkButtonClick: (Boolean) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
@@ -66,7 +66,7 @@ fun ManageLocationContent(
         //Add Location Button
         Button(
             shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(AIKTheme.colors.core_button),
+            colors = ButtonDefaults.buttonColors(level1_button),
             onClick = onAddLocationButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,20 +75,20 @@ fun ManageLocationContent(
             Text(
                 text = stringResource(id = R.string.add_location),
                 style = MaterialTheme.typography.button,
-                color = AIKTheme.colors.core_container
+                color = level1_core_container
             )
         }
         Spacer(modifier = Modifier.size(10.dp))
         //bookmark
         ManageLocationsBookmark(
-            bookmarkedLocation = bookmarkedLocation,
+            bookmarkedLocation = manageLocationUiState.bookmark,
             onBookmarkButtonClick = onBookmarkButtonClick,
             onLocationDeleteButtonClick = onLocationDeleteButtonClick,
         )
         Divider(modifier = Modifier.fillMaxWidth(), color = divider, thickness = 1.dp)
         //Location List
         ManageLocationsLocationList(
-            locations = locations,
+            locationData = manageLocationUiState.userLocationList,
             onBookmarkButtonClick = onBookmarkButtonClick,
             onLocationDeleteButtonClick = onLocationDeleteButtonClick
         )
@@ -98,7 +98,7 @@ fun ManageLocationContent(
 
 @Composable
 fun ManageLocationsBookmark(
-    bookmarkedLocation: Location,
+    bookmarkedLocation: Location?,
     onBookmarkButtonClick: (Boolean) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
@@ -108,36 +108,67 @@ fun ManageLocationsBookmark(
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
-        Text(text = stringResource(id = R.string.bookmark), style = MaterialTheme.typography.subtitle1)
-        Spacer(modifier = Modifier.size(10.dp))
-        ManageLocationsItem(
-            isBookmarked = true,
-            location = bookmarkedLocation,
-            onBookmarkButtonClick = onBookmarkButtonClick,
-            onLocationDeleteButtonClick = onLocationDeleteButtonClick,
+        Text(
+            text = stringResource(id = R.string.bookmark),
+            style = MaterialTheme.typography.subtitle1
         )
+        if (bookmarkedLocation == null) {
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = stringResource(id = R.string.bookmark_is_not_set),
+                style = MaterialTheme.typography.body1
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+        } else {
+            Spacer(modifier = Modifier.size(10.dp))
+            ManageLocationsItem(
+                isBookmarked = true,
+                location = bookmarkedLocation,
+                onBookmarkButtonClick = onBookmarkButtonClick,
+                onLocationDeleteButtonClick = onLocationDeleteButtonClick,
+            )
+        }
     }
 }
 
 @Composable
 fun ManageLocationsLocationList(
-    locations: List<Location>,
+    locationData: List<Location>,
     onBookmarkButtonClick: (Boolean) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp),
+    Column(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp)
     ) {
-        items(locations) { location ->
-            ManageLocationsItem(
-                isBookmarked = false,
-                location = location,
-                onBookmarkButtonClick = onBookmarkButtonClick,
-                onLocationDeleteButtonClick = onLocationDeleteButtonClick
+        Text(
+            text = stringResource(id = R.string.my_locations),
+            style = MaterialTheme.typography.subtitle1
+        )
+        if (locationData.isNotEmpty()) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp),
+                modifier = modifier
+            ) {
+                items(locationData) { location ->
+                    ManageLocationsItem(
+                        isBookmarked = false,
+                        location = location,
+                        onBookmarkButtonClick = onBookmarkButtonClick,
+                        onLocationDeleteButtonClick = onLocationDeleteButtonClick
+                    )
+                }
+            }
+        } else {
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = stringResource(id = R.string.please_add_a_location),
+                style = MaterialTheme.typography.body1
             )
+            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }
@@ -157,7 +188,7 @@ fun ManageLocationsItem(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = AIKTheme.colors.core,
+                color = level1_core,
                 shape = MaterialTheme.shapes.medium
             )
     ) {
@@ -167,7 +198,7 @@ fun ManageLocationsItem(
                 contentDescription = null,
                 tint = if (isBookmarked) {
                     bookmark
-                }else{
+                } else {
                     unselected_bookmark
                 }
             )
@@ -200,45 +231,70 @@ fun ManageLocationsItem(
 
 @Preview
 @Composable
-fun ManageLocationScreenPreview() {
-    AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
-        ManageLocationScreen(
-            onBackButtonClick = {},
-            onBookmarkButtonClick = {},
-            onLocationDeleteButtonClick = {},
-            onAddLocationButtonClick = {},
-            bookmarkedLocation = Location(
+fun ManageLocationScreenPreviewSuccess() {
+    ManageLocationScreen(
+        onBackButtonClick = {},
+        onBookmarkButtonClick = {},
+        onLocationDeleteButtonClick = {},
+        onAddLocationButtonClick = {},
+        manageLocationUiState = ManageLocationUiState(
+            bookmark = Location(
                 `do` = "Gyeongsangnam-do",
                 sigungu = "Hamyang-gun",
-                eupmyeondong = "Anui-myeon"
+                eupmyeondong = "Anui-myeon",
+                station = "Dd"
             ),
-            locations = listOf(
+            userLocationList =
+            listOf(
                 Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon"
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
                 Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon"
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
                 Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon"
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
                 Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon"
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
                 Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon"
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
+                )
             )
         )
-    }
+    )
+}
+
+@Preview
+@Composable
+fun ManageLocationScreenPreviewEmpty() {
+    ManageLocationScreen(
+        onBackButtonClick = {},
+        onBookmarkButtonClick = {},
+        onLocationDeleteButtonClick = {},
+        onAddLocationButtonClick = {},
+        manageLocationUiState = ManageLocationUiState()
+    )
 }

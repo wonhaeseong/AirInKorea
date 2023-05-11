@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.icon
+package com.phil.airinkorea.ui.theme.icon
 
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -24,4 +24,5 @@ object AIKIcons {
     val TrashCan = R.drawable.ic_trashcan
     val Search = R.drawable.ic_search
     val Cancel = R.drawable.ic_cancel
+    val Heart = R.drawable.ic_heart
 }

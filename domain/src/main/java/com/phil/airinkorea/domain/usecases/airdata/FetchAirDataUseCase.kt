@@ -6,7 +6,7 @@ import javax.inject.Inject
 class FetchAirDataUseCase @Inject constructor(
     private val airDataRepository: AirDataRepository
 ){
-    suspend operator fun invoke(station: String) {
+    suspend operator fun invoke(station:String) {
         airDataRepository.fetchAirData(station)
     }
 }

@@ -5,20 +5,20 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.ui.viewmodel.LocationViewModel
+import com.phil.airinkorea.ui.viewmodel.AddLocationUiState
+import com.phil.airinkorea.ui.viewmodel.AddLocationViewModel
+import com.phil.airinkorea.ui.viewmodel.HomeViewModel
 
 @Composable
 fun AddLocationRoute(
-    locationViewModel: LocationViewModel = hiltViewModel(),
+    addLocationViewModel: AddLocationViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit
 ) {
-    val searchResultState: List<Location> by locationViewModel.searchResult.collectAsStateWithLifecycle()
+    val searchResultState: List<Location> by addLocationViewModel.searchResult.collectAsStateWithLifecycle()
     AddLocationScreen(
-        searchResultState = searchResultState,
+        addLocationUiState = AddLocationUiState(),
         onBackButtonClick = onBackButtonClick,
-        onSearchTextChange = {
-            locationViewModel.getSearchResult(it.text)
-        },
-        onDialogConfirmButtonClick = { TODO() }
+        onSearchTextChange = {},
+        onDialogConfirmButtonClick = {}
     )
 }

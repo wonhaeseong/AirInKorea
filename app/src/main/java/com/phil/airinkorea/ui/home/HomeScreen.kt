@@ -1,13 +1,8 @@
 package com.phil.airinkorea.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -16,26 +11,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.airbnb.lottie.compose.*
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.phil.airinkorea.R
-import com.phil.airinkorea.model.AirLevel
-import com.phil.airinkorea.ui.home.drawer.DrawerUiState
-import com.phil.airinkorea.ui.icon.AIKIcons
-import com.phil.airinkorea.ui.screen.Drawer
+import com.phil.airinkorea.domain.model.*
+import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
-import com.phil.airinkorea.ui.viewmodel.DailyForecastData
-import com.phil.airinkorea.ui.viewmodel.DetailData
+import com.phil.airinkorea.ui.theme.icon.AIKIcons
+import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 import com.phil.airinkorea.ui.viewmodel.HomeUiState
-import com.phil.airinkorea.ui.viewmodel.HourlyForecastData
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 private val IconSize = 24.dp
 private val GPSErrorIconSize = 42.5.dp
@@ -46,7 +44,6 @@ private val ContentElevation = 2.dp
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    refreshing: Boolean,
     onRefresh: () -> Unit,
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
@@ -54,94 +51,138 @@ fun HomeScreen(
     homeUiState: HomeUiState,
     drawerUiState: DrawerUiState
 ) {
-    val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh)
+    val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-
-    AIKTheme(airLevel = AirLevel.Level1) {
-        Box(
-            modifier = modifier
-                .background(AIKTheme.colors.core_background)
-        ) {
-            Scaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = Color.Transparent,
-                topBar = {
-                    HomeTopAppBar(
-                        location = homeUiState.location,
-                        onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
-                    )
-                },
-                drawerContent = {
-                    Drawer(
-                        bookmarkedLocation = drawerUiState.bookmarkedLocation,
-                        locations = drawerUiState.userLocationList,
-                        onManageLocationClick = onManageLocationClick,
-                        onParticulateMatterInfoClick = onParticulateMatterInfoClick,
-                        onAppInfoClick = onAppInfoClick
-                    )
-                },
-                drawerGesturesEnabled = true,
-                drawerScrimColor = scrimColor,
-                modifier = Modifier
-                    .statusBarsPadding()
+    if (!homeUiState.isInitLoaded) {
+        HomeInitialLoadingScreen()
+    } else {
+        AIKTheme(airLevel = homeUiState.airLevel) {
+            Box(
+                modifier = modifier
+                    .background(AIKTheme.colors.core_background)
             ) {
-                Column(
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    backgroundColor = Color.Transparent,
+                    topBar = {
+                        HomeTopAppBar(
+                            location = homeUiState.location,
+                            onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
+                        )
+                    },
+                    drawerContent = {
+                        DrawerScreen(
+                            drawerUiState = drawerUiState,
+                            onManageLocationClick = onManageLocationClick,
+                            onParticulateMatterInfoClick = onParticulateMatterInfoClick,
+                            onAppInfoClick = onAppInfoClick
+                        )
+                    },
+                    drawerGesturesEnabled = true,
+                    drawerScrimColor = scrimColor,
                     modifier = Modifier
-                        .padding(it)
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState)
-                        .verticalScroll(scrollState)
+                        .statusBarsPadding()
                 ) {
-                    DateInfo(date = homeUiState.dataTime)
-                    Spacer(modifier = Modifier.size(35.dp))
-                    AirValue(airLevel = homeUiState.airLevel)
-                    Spacer(modifier = Modifier.size(10.dp))
-                    //당겨서 새로고침
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .background(Color.Transparent)
-                            .fillMaxWidth()
-                            .height(
-                                if (refreshing) {
-                                    140.dp
-                                } else {
-                                    with(LocalDensity.current) {
-                                        lerp(
-                                            0.dp,
-                                            140.dp,
-                                            pullRefreshState.progress.coerceIn(0f..1f)
-                                        )
-                                    }
-                                }
-                            )
+                            .padding(it)
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                            .verticalScroll(scrollState)
                     ) {
-                        CloudIndicator(isPlaying = refreshing)
+                        DateInfo(date = homeUiState.dataTime)
+                        Spacer(modifier = Modifier.size(35.dp))
+                        AirValue(airLevel = homeUiState.airLevel)
+                        Spacer(modifier = Modifier.size(10.dp))
+                        //당겨서 새로고침
+                        Box(
+                            modifier = Modifier
+                                .background(Color.Transparent)
+                                .fillMaxWidth()
+                                .height(
+                                    if (homeUiState.isRefreshing) {
+                                        140.dp
+                                    } else {
+                                        with(LocalDensity.current) {
+                                            lerp(
+                                                0.dp,
+                                                140.dp,
+                                                pullRefreshState.progress.coerceIn(0f..1f)
+                                            )
+                                        }
+                                    }
+                                )
+                        ) {
+                            CloudIndicator(isPlaying = homeUiState.isRefreshing)
+                        }
+                        if (homeUiState.airLevel == AirLevel.LevelError) {
+                            ErrorBanner(
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        Detail(
+                            detailData = homeUiState.detailAirData,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        Information(
+                            information = homeUiState.information,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        DailyForecast(
+                            dailyForecastDataList = homeUiState.dailyForecast,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        KoreaForecastMap(
+                            gifUrl = homeUiState.forecastModelUrl,
+                            modifier = Modifier.padding(10.dp)
+                        )
                     }
-                    Detail(
-                        detailData = homeUiState.detailData,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                    HourlyForecast(
-                        hourlyForecastDataList = homeUiState.hourlyForecastData,
-                        contentPaddingValues = PaddingValues(horizontal = 10.dp)
-                    )
-                    DailyForecast(
-                        dailyForecastDataList = homeUiState.dailyForecastData,
-                        modifier = Modifier.padding(10.dp)
-                    )
-//                    Map(modifier = Modifier.padding(10.dp))
                 }
             }
         }
     }
 }
+@Preview
+@Composable
+fun HomeInitialLoadingScreen(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = level1_core_container)
+    ) {
+        LoadingIndicator(modifier = Modifier.size(100.dp))
+    }
+}
+
+@Composable
+fun LoadingIndicator(
+    modifier: Modifier = Modifier,
+    isPlaying: Boolean = true
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        isPlaying = isPlaying,
+        iterations = LottieConstants.IterateForever,
+        reverseOnRepeat = true,
+        restartOnPlay = false
+    )
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier.fillMaxSize()
+    )
+}
 
 @Composable
 fun HomeTopAppBar(
     modifier: Modifier = Modifier,
-    location: String,
+    location: Location?,
     onMenuButtonClicked: () -> Unit = {}
 ) {
     TopAppBar(
@@ -178,7 +219,7 @@ fun HomeTopAppBar(
                     modifier = Modifier.size(IconSize)
                 )
                 Text(
-                    text = location,
+                    text = location?.eupmyeondong ?: "-",
                     style = MaterialTheme.typography.subtitle1,
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
@@ -190,7 +231,7 @@ fun HomeTopAppBar(
 
 @Composable
 fun DateInfo(
-    date: String,
+    date: String?,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -199,10 +240,11 @@ fun DateInfo(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentSize()
+            .padding(5.dp)
     ) {
         Text(
-            text = date,
-            style = MaterialTheme.typography.body2,
+            text = date ?: "",
+            style = MaterialTheme.typography.subtitle2,
             color = AIKTheme.colors.on_core,
             textAlign = TextAlign.Center,
             maxLines = 1,
@@ -214,7 +256,7 @@ fun DateInfo(
 @Composable
 fun AirValue(
     modifier: Modifier = Modifier,
-    airLevel: String
+    airLevel: AirLevel
 ) {
     Surface(
         color = Color.Transparent,
@@ -224,7 +266,7 @@ fun AirValue(
             .wrapContentSize()
     ) {
         Text(
-            text = airLevel,
+            text = airLevel.value,
             style = MaterialTheme.typography.h4,
             color = AIKTheme.colors.on_core,
         )
@@ -253,7 +295,7 @@ fun CloudIndicator(
 }
 
 @Composable
-fun GPSBanner(
+fun ErrorBanner(
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -272,41 +314,17 @@ fun GPSBanner(
                     .wrapContentHeight()
             ) {
                 Icon(
-                    painter = painterResource(id = AIKIcons.GPSError),
+                    painter = painterResource(id = AIKIcons.Error),
                     tint = error,
                     contentDescription = null,
                     modifier = Modifier.size(GPSErrorIconSize)
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
-                    text = stringResource(id = R.string.gps_error),
+                    text = stringResource(id = R.string.data_error),
                     color = AIKTheme.colors.on_core_container,
                     style = MaterialTheme.typography.body1,
                 )
-            }
-            Spacer(modifier = Modifier.size(10.dp))
-            Row(
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                TextButton(onClick = { /*TODO*/ }, modifier = Modifier.wrapContentSize()) {
-                    Text(
-                        text = stringResource(id = R.string.dismiss),
-                        color = AIKTheme.colors.core,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-                Spacer(modifier = Modifier.size(10.dp))
-                TextButton(onClick = { /*TODO*/ }, modifier = Modifier.wrapContentSize()) {
-                    Text(
-                        text = stringResource(id = R.string.turn_on_gps),
-                        color = AIKTheme.colors.core,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
             }
         }
     }
@@ -319,7 +337,7 @@ enum class DetailType {
 
 @Composable
 fun Detail(
-    detailData: DetailData,
+    detailData: DetailAirData,
     modifier: Modifier = Modifier
 ) {
     var expandedState by remember {
@@ -331,7 +349,7 @@ fun Detail(
     ) {
         ExpendableTitleBar(
             expandedState = expandedState,
-            titleText = "Details",
+            titleText = stringResource(id = R.string.details),
             onClick = { expandedState = !expandedState })
         Spacer(modifier = Modifier.size(GapBetweenTitleAndContent))
         ExpendableDetailsGrid(
@@ -344,7 +362,7 @@ fun Detail(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ExpendableDetailsGrid(
-    detailData: DetailData,
+    detailData: DetailAirData,
     expandedState: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -373,9 +391,9 @@ fun ExpendableDetailsGrid(
                     level = detailData.pm10Level,
                     value = stringResource(
                         id = R.string.micro_per_square_meter,
-                        detailData.pm10Value
+                        detailData.pm10Value ?: "?"
                     ),
-                    sourceColor = detailData.pm10Color,
+                    sourceColor = detailData.pm10Level.mapToColor(),
                     type = DetailType.Main,
                     modifier = Modifier
                         .weight(1f)
@@ -392,9 +410,9 @@ fun ExpendableDetailsGrid(
                     level = detailData.pm25Level,
                     value = stringResource(
                         id = R.string.micro_per_square_meter,
-                        detailData.pm25Value
+                        detailData.pm25Value ?: "?"
                     ),
-                    sourceColor = detailData.pm25Color,
+                    sourceColor = detailData.pm25Level.mapToColor(),
                     type = DetailType.Main,
                     modifier = Modifier
                         .weight(1f)
@@ -417,8 +435,11 @@ fun ExpendableDetailsGrid(
                     DetailLayout(
                         title = stringResource(id = R.string.no2),
                         level = detailData.no2Level,
-                        value = stringResource(id = R.string.ppm, detailData.no2Value),
-                        sourceColor = detailData.no2Color,
+                        value = stringResource(
+                            id = R.string.ppm,
+                            detailData.no2Value ?: "?"
+                        ),
+                        sourceColor = detailData.no2Level.mapToColor(),
                         type = DetailType.Sub,
                         modifier = Modifier
                             .weight(1f)
@@ -432,8 +453,11 @@ fun ExpendableDetailsGrid(
                     DetailLayout(
                         title = stringResource(id = R.string.so2),
                         level = detailData.so2Level,
-                        value = stringResource(id = R.string.ppm, detailData.so2Value),
-                        sourceColor = detailData.so2Color,
+                        value = stringResource(
+                            id = R.string.ppm,
+                            detailData.so2Value ?: "?"
+                        ),
+                        sourceColor = detailData.so2Level.mapToColor(),
                         type = DetailType.Sub,
                         modifier = Modifier
                             .weight(1f)
@@ -447,8 +471,10 @@ fun ExpendableDetailsGrid(
                     DetailLayout(
                         title = stringResource(id = R.string.CO),
                         level = detailData.coLevel,
-                        value = stringResource(id = R.string.ppm, detailData.coValue),
-                        sourceColor = detailData.coColor,
+                        value = stringResource(
+                            id = R.string.ppm, detailData.coValue ?: "?"
+                        ),
+                        sourceColor = detailData.coLevel.mapToColor(),
                         type = DetailType.Sub,
                         modifier = Modifier
                             .weight(1f)
@@ -462,8 +488,11 @@ fun ExpendableDetailsGrid(
                     DetailLayout(
                         title = stringResource(id = R.string.o3),
                         level = detailData.o3Level,
-                        value = stringResource(id = R.string.ppm, detailData.o3Value),
-                        sourceColor = detailData.o3Color,
+                        value = stringResource(
+                            id = R.string.ppm,
+                            detailData.o3Value ?: "?"
+                        ),
+                        sourceColor = detailData.o3Level.mapToColor(),
                         type = DetailType.Sub,
                         modifier = Modifier
                             .weight(1f)
@@ -477,7 +506,7 @@ fun ExpendableDetailsGrid(
 @Composable
 fun DetailLayout(
     title: String,
-    level: String,
+    level: AirLevel,
     value: String,
     sourceColor: Color,
     type: DetailType,
@@ -503,7 +532,7 @@ fun DetailLayout(
                     .height(80.dp)
             ) {
                 Text(
-                    text = level,
+                    text = level.value,
                     style = MaterialTheme.typography.h5,
                     color = AIKTheme.colors.on_core_container,
                     textAlign = TextAlign.Center,
@@ -546,7 +575,7 @@ fun DetailLayout(
                     .height(50.dp)
             ) {
                 Text(
-                    text = level,
+                    text = level.value,
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -574,99 +603,17 @@ fun DetailLayout(
 }
 
 @Composable
-fun HourlyForecast(
-    modifier: Modifier = Modifier,
-    hourlyForecastDataList: List<HourlyForecastData>,
-    contentPaddingValues: PaddingValues = PaddingValues(0.dp)
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        TitleBar(titleText = "Hourly Forecast", modifier = Modifier.padding(contentPaddingValues))
-        Spacer(modifier = Modifier.size(GapBetweenTitleAndContent))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = contentPaddingValues
-        ) {
-            items(hourlyForecastDataList) { data ->
-                HourlyForecastComponent(data)
-            }
-        }
-    }
-}
-
-@Composable
-fun HourlyForecastComponent(
-    hourlyForecastData: HourlyForecastData,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        shape = Shapes.medium,
-        color = AIKTheme.colors.core_container,
-        elevation = ContentElevation,
-        modifier = modifier
-            .size(85.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(8.dp)
-        ) {
-            Text(
-                text = hourlyForecastData.time,
-                style = MaterialTheme.typography.subtitle3,
-                color = AIKTheme.colors.on_core_container
-            )
-            Spacer(
-                modifier = Modifier
-                    .size(8.dp)
-            )
-            Text(
-                text = hourlyForecastData.airLevel,
-                style = MaterialTheme.typography.subtitle2,
-                fontWeight = FontWeight.SemiBold,
-                color = AIKTheme.colors.on_core_container
-            )
-            Spacer(
-                modifier = Modifier
-                    .size(11.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .width(40.dp)
-                    .height(4.dp)
-                    .background(hourlyForecastData.airLevelColor)
-
-            )
-        }
-    }
-}
-
-@Composable
 fun DailyForecast(
     modifier: Modifier = Modifier,
-    dailyForecastDataList: List<DailyForecastData>
+    dailyForecastDataList: List<DailyForecast>
 ) {
-    var expandedState by remember {
-        mutableStateOf(false)
-    }
-
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        ExpendableTitleBar(
-            expandedState = expandedState,
-            titleText = "Daily Forecast",
-            onClick = { expandedState = !expandedState })
+        TitleBar(titleText = stringResource(id = R.string.dailyForecast))
         Spacer(modifier = Modifier.size(GapBetweenTitleAndContent))
-        DailyForecastList(
-            expandedState = expandedState,
-            dailyForecastDataList = dailyForecastDataList,
-            onClick = { expandedState = !expandedState }
-        )
+        DailyForecastList(dailyForecastDataList = dailyForecastDataList)
     }
 }
 
@@ -674,9 +621,7 @@ fun DailyForecast(
 @Composable
 fun DailyForecastList(
     modifier: Modifier = Modifier,
-    expandedState: Boolean,
-    dailyForecastDataList: List<DailyForecastData>,
-    onClick: () -> Unit
+    dailyForecastDataList: List<DailyForecast>,
 ) {
     val backgroundColorList: List<Color> = listOf(
         AIKTheme.colors.core_container,
@@ -687,35 +632,27 @@ fun DailyForecastList(
         Color.White,
         AIKTheme.colors.core_container
     )
+
     Surface(
         shape = Shapes.medium,
         elevation = ContentElevation,
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
     ) {
         Column {
-            for (i in 0..2) {
+            for (i in dailyForecastDataList.indices) {
+                val date =
+                    dailyForecastDataList[i].date?.let {
+                        val originalFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        LocalDate.parse(it, originalFormat)
+                    }
                 DailyForecastComponent(
                     backgroundColor = backgroundColorList[i],
-                    daysOfTheWeek = dailyForecastDataList[i].daysOfTheWeek,
-                    date = dailyForecastDataList[i].date,
-                    airLevel = dailyForecastDataList[i].airLevel,
-                    airLevelColor = dailyForecastDataList[i].airLevelColor
+                    daysOfTheWeek = date?.dayOfWeek?.name ?: "?",
+                    date = date?.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")) ?: "?",
+                    airLevel = dailyForecastDataList[i].airLevel.value,
+                    airLevelColor = dailyForecastDataList[i].airLevel.mapToColor()
                 )
-            }
-            AnimatedVisibility(expandedState) {
-                Column {
-                    for (i in 3..6) {
-                        DailyForecastComponent(
-                            backgroundColor = backgroundColorList[i],
-                            daysOfTheWeek = dailyForecastDataList[i].daysOfTheWeek,
-                            date = dailyForecastDataList[i].date,
-                            airLevel = dailyForecastDataList[i].airLevel,
-                            airLevelColor = dailyForecastDataList[i].airLevelColor
-                        )
-                    }
-                }
             }
         }
     }
@@ -770,6 +707,32 @@ fun DailyForecastComponent(
                     .width(60.dp)
                     .height(4.dp)
                     .background(color = airLevelColor)
+            )
+        }
+    }
+}
+
+@Composable
+fun Information(
+    information: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        TitleBar(titleText = stringResource(id = R.string.information))
+        Spacer(modifier = Modifier.size(GapBetweenTitleAndContent))
+        Surface(
+            shape = Shapes.medium,
+            elevation = ContentElevation,
+            color = AIKTheme.colors.core_container,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Text(
+                text = information ?: ".",
+                style = MaterialTheme.typography.subtitle2,
+                color = AIKTheme.colors.on_core_container,
+                modifier = Modifier.padding(10.dp)
             )
         }
     }
@@ -842,90 +805,209 @@ fun ExpendableTitleBar(
     }
 }
 
-//@Preview
-//@Composable
-//fun HomeScreenPreview() {
-//    HomeScreen(
-//        refreshing =,
-//        onRefresh = { /*TODO*/ },
-//        onManageLocationClick = { /*TODO*/ },
-//        onParticulateMatterInfoClick = { /*TODO*/ },
-//        onAppInfoClick = { /*TODO*/ },
-//        homeUiState =,
-//        drawerUiState =
-//    )
-//}
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun KoreaForecastMap(
+    modifier: Modifier = Modifier,
+    gifUrl: KoreaForecastModelGif
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        TitleBar(titleText = stringResource(id = R.string.koreaForecastMap))
+        Spacer(modifier = Modifier.size(GapBetweenTitleAndContent))
+        Surface(
+            shape = Shapes.medium,
+            modifier = Modifier.wrapContentSize(),
+            color = AIKTheme.colors.core_container
+        ) {
 
-//DetailData(
-//pm25Level = "Dangerous",
-//pm25Value = 10,
-//pm25Color = level1_core,
-//pm10Level = "Dangerous",
-//pm10Value = 10,
-//pm10Color = level2_core,
-//no2Level = "Dangerous",
-//no2Value = 10,
-//no2Color = level3_core,
-//so2Level = "Dangerous",
-//so2Value = 10,
-//so2Color = level4_core,
-//coLevel = "Dangerous",
-//coValue = 10,
-//coColor = level5_core,
-//o3Level = "Dangerous",
-//o3Value = 10,
-//o3Color = level6_core
-//)
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (gifUrl.pm10GifUrl != null) {
+                    GlideImage(
+                        model = gifUrl.pm10GifUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                } else {
+                    Text(text = stringResource(id = R.string.korea_forecast_model_error))
+                }
+                if (gifUrl.pm25GifUrl != null) {
+                    GlideImage(
+                        model = gifUrl.pm25GifUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                } else {
+                    Text(text = stringResource(id = R.string.korea_forecast_model_error))
+                }
+            }
+        }
+    }
+}
 
-//listOf(
-//HourlyForecastData(
-//time = "10AM",
-//airLevel = "Excellent",
-//airLevelColor = level1_core
-//),
-//HourlyForecastData(
-//time = "11AM",
-//airLevel = "Good",
-//airLevelColor = level2_core
-//),
-//HourlyForecastData(
-//time = "12PM",
-//airLevel = "Fine",
-//airLevelColor = level3_core
-//),
-//HourlyForecastData(
-//time = "1PM",
-//airLevel = "Moderate",
-//airLevelColor = level4_core
-//),
-//HourlyForecastData(
-//time = "2PM",
-//airLevel = "Poor",
-//airLevelColor = level5_core
-//),
-//HourlyForecastData(
-//time = "3PM",
-//airLevel = "Bad",
-//airLevelColor = level6_core
-//),
-//HourlyForecastData(
-//time = "4PM",
-//airLevel = "Unhealthy",
-//airLevelColor = level7_core
-//),
-//HourlyForecastData(
-//time = "5PM",
-//airLevel = "Dangerous",
-//airLevelColor = level8_core
-//)
-//)
+@Preview
+@Composable
+fun HomeScreenPreviewSuccess() {
+    val homeUiState =
+        HomeUiState(
+            isInitLoaded = true,
+            location = Location(
+                `do` = "Gangwon-do",
+                sigungu = "Gangneung-si",
+                eupmyeondong = "Gangdong-myeon",
+                station = "옥천동"
+            ),
+            dataTime = "Saturday 12/25/2022 9:10 PM ",
+            airLevel = AirLevel.Level1,
+            detailAirData =
+            DetailAirData(
+                pm25Level = AirLevel.Level3,
+                pm25Value = "25",
+                pm10Level = AirLevel.Level4,
+                pm10Value = "69",
+                no2Level = AirLevel.Level2,
+                no2Value = "0.011",
+                so2Level = AirLevel.Level2,
+                so2Value = "0.003",
+                coLevel = AirLevel.Level1,
+                coValue = "0.5",
+                o3Level = AirLevel.Level1,
+                o3Value = "0.049"
+            ),
+            dailyForecast = listOf(
+                DailyForecast(
+                    date = "2023-04-28",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-04-29",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-04-30",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-05-01",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-05-02",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-05-03",
+                    airLevel = AirLevel.Level1
+                ),
+                DailyForecast(
+                    date = "2023-05-04",
+                    airLevel = AirLevel.Level1
+                )
+            ),
+            information =
+            "The air quality will be generally 'average' due to the smooth air diffusion and precipitation, but the concentration is expected to be somewhat high in most western areas due to the inflow of foreign fine dust at night.",
+            forecastModelUrl = KoreaForecastModelGif(
+                pm10GifUrl = "https://www.airkorea.or.kr/file/proxyImage?fileName=2023/04/27/AQFv1_09h.20230427.KNU_09_01.PM10.2days.ani.gif",
+                pm25GifUrl = "https://www.airkorea.or.kr/file/proxyImage?fileName=2023/04/27/AQFv1_09h.20230427.KNU_09_01.PM2P5.2days.ani.gif"
+            )
+        )
 
-//listOf(
-//DailyForecastData("Sunday", "12/16/2022", "Excellent", level1_core),
-//DailyForecastData("Monday", "12/17/2022", "Good", level2_core),
-//DailyForecastData("Tuesday", "12/18/2022", "Fine", level3_core),
-//DailyForecastData("Wednesday", "12/19/2022", "Moderate", level4_core),
-//DailyForecastData("Thursday", "12/20/2022", "Poor", level5_core),
-//DailyForecastData("Friday", "12/21/2022", "Bad", level6_core),
-//DailyForecastData("Saturday", "12/22/2022", "Unhealthy", level7_core)
-//)
+    AIKTheme(airLevel = AirLevel.Level1) {
+        HomeScreen(
+            onRefresh = {},
+            onManageLocationClick = {},
+            onParticulateMatterInfoClick = {},
+            onAppInfoClick = {},
+            homeUiState = homeUiState,
+            drawerUiState = DrawerUiState(),
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun HomeScreenPreviewEmptyData() {
+    val homeUiState =
+        HomeUiState(
+            isInitLoaded = true,
+            location = null,
+            dataTime = null,
+            airLevel = AirLevel.LevelError,
+            detailAirData =
+            DetailAirData(
+                pm25Level = AirLevel.LevelError,
+                pm25Value = null,
+                pm10Level = AirLevel.LevelError,
+                pm10Value = null,
+                no2Level = AirLevel.LevelError,
+                no2Value = null,
+                so2Level = AirLevel.LevelError,
+                so2Value = null,
+                coLevel = AirLevel.LevelError,
+                coValue = null,
+                o3Level = AirLevel.LevelError,
+                o3Value = null
+            ),
+            dailyForecast = listOf(
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                ),
+                DailyForecast(
+                    date = null,
+                    airLevel = AirLevel.LevelError
+                )
+            ),
+            information = null,
+            forecastModelUrl = KoreaForecastModelGif(
+                pm10GifUrl = null,
+                pm25GifUrl = null
+            )
+        )
+
+    AIKTheme(airLevel = AirLevel.Level1) {
+        HomeScreen(
+            onRefresh = {},
+            onManageLocationClick = {},
+            onParticulateMatterInfoClick = {},
+            onAppInfoClick = {},
+            homeUiState = homeUiState,
+            drawerUiState = DrawerUiState()
+        )
+    }
+}
+
+private fun AirLevel.mapToColor(): Color =
+    when (this) {
+        AirLevel.Level1 -> level1_core
+        AirLevel.Level2 -> level2_core
+        AirLevel.Level3 -> level3_core
+        AirLevel.Level4 -> level4_core
+        AirLevel.Level5 -> level5_core
+        AirLevel.Level6 -> level6_core
+        AirLevel.LevelError -> Color.Transparent
+    }

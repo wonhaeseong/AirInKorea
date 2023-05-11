@@ -14,12 +14,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.icon.AIKIcons
+import com.phil.airinkorea.domain.model.AirLevel
+import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.modifier.bottomBorder
 import com.phil.airinkorea.ui.theme.AIKTheme
-import com.phil.airinkorea.ui.theme.PollutionLevel
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
+import com.phil.airinkorea.ui.theme.level1_on_core_container
 
 @Composable
 fun CommonTopAppBar(
@@ -46,14 +47,14 @@ fun CommonTopAppBar(
             Icon(
                 painter = painterResource(id = AIKIcons.BackArrow),
                 contentDescription = null,
-                tint = AIKTheme.colors.on_core_container,
+                tint = level1_on_core_container,
                 modifier = Modifier.padding(10.dp)
             )
         }
         Text(
             text = title,
             style = MaterialTheme.typography.h5,
-            color = AIKTheme.colors.on_core_container
+            color = level1_on_core_container
         )
     }
 }
@@ -61,7 +62,5 @@ fun CommonTopAppBar(
 @Preview
 @Composable
 fun CommonTopAppBarPreview() {
-    AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
-        CommonTopAppBar(onBackButtonClick = {}, title = "Manage Locations")
-    }
+    CommonTopAppBar(onBackButtonClick = {}, title = "Manage Locations")
 }

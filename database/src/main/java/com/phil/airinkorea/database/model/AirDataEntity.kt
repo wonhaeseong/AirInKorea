@@ -8,6 +8,7 @@ import com.phil.airinkorea.domain.model.AirData
 import com.phil.airinkorea.domain.model.AirLevel
 import com.phil.airinkorea.domain.model.DailyForecast
 import com.phil.airinkorea.domain.model.DetailAirData
+import com.phil.airinkorea.domain.model.KoreaForecastModelGif
 import kotlinx.serialization.Serializable
 
 
@@ -18,12 +19,12 @@ import kotlinx.serialization.Serializable
 data class AirDataEntity(
     @PrimaryKey
     @ColumnInfo(name = "station") val station: String,
-    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "date") val date: String?,
     @ColumnInfo(name = "air_level") val airLevel: AirLevel,
     @Embedded val detailAirDataEntity: DetailAirDataEntity,
-    @ColumnInfo(name = "daily_forecast") val dailyForecastListEntity: ArrayList<DailyForecastEntity>? = null,
-    @ColumnInfo(name = "information") val information: String,
-    @ColumnInfo(name = "korea_forecast_map_img_url") val koreaForecastMapImgUrl: String,
+    @ColumnInfo(name = "daily_forecast") val dailyForecastListEntity: ArrayList<DailyForecastEntity>,
+    @ColumnInfo(name = "information") val information: String?,
+    @ColumnInfo(name = "korea_forecast_map_img_url") val koreaForecastMapImgUrl: String?,
     @Embedded val koreaModelGif: KoreaForecastModelGifEntity
 )
 
@@ -33,9 +34,9 @@ fun AirDataEntity.mapToExternalModel(): AirData =
         date = date,
         airLevel = airLevel,
         detailAirData = detailAirDataEntity.mapToExternalModel(),
-        dailyForecast = dailyForecastListEntity?.map { it.mapToExternalModel() } ?: listOf(),
+        dailyForecast = dailyForecastListEntity.map { it.mapToExternalModel()},
         information = information,
-        koreaForecastMapImgUrl = koreaForecastMapImgUrl
+        koreaForecastModelGif = koreaModelGif.mapToExternalModel()
     )
 
 @Serializable
@@ -53,17 +54,17 @@ fun DailyForecastEntity.mapToExternalModel(): DailyForecast =
 @Entity
 data class DetailAirDataEntity(
     val pm25Level: AirLevel,
-    val pm25Value: String,
+    val pm25Value: String?,
     val pm10Level: AirLevel,
-    val pm10Value: String,
+    val pm10Value: String?,
     val no2Level: AirLevel,
-    val no2Value: String,
+    val no2Value: String?,
     val so2Level: AirLevel,
-    val so2Value: String,
+    val so2Value: String?,
     val coLevel: AirLevel,
-    val coValue: String,
+    val coValue: String?,
     val o3Level: AirLevel,
-    val o3Value: String
+    val o3Value: String?
 )
 
 fun DetailAirDataEntity.mapToExternalModel(): DetailAirData =
@@ -84,6 +85,12 @@ fun DetailAirDataEntity.mapToExternalModel(): DetailAirData =
 
 @Entity
 data class KoreaForecastModelGifEntity(
-    val pm10GifUrl: String,
-    val pm25GifUrl: String
+    val pm10GifUrl: String?,
+    val pm25GifUrl: String?
 )
+
+fun KoreaForecastModelGifEntity.mapToExternalModel(): KoreaForecastModelGif =
+    KoreaForecastModelGif(
+        pm10GifUrl = pm10GifUrl,
+        pm25GifUrl = pm25GifUrl
+    )

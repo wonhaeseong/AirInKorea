@@ -25,17 +25,17 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.R
 import com.phil.airinkorea.domain.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
-import com.phil.airinkorea.ui.icon.AIKIcons
 import com.phil.airinkorea.ui.modifier.addFocusCleaner
 import com.phil.airinkorea.ui.theme.*
-import com.phil.airinkorea.ui.viewmodel.LocationViewModel
+import com.phil.airinkorea.ui.theme.icon.AIKIcons
+import com.phil.airinkorea.ui.viewmodel.AddLocationUiState
 import kotlinx.coroutines.launch
 
 @Composable
 fun AddLocationScreen(
-    searchResultState: List<Location>,
+    addLocationUiState: AddLocationUiState,
     onBackButtonClick: () -> Unit,
-    onSearchTextChange:suspend (TextFieldValue) -> Unit,
+    onSearchTextChange: suspend (TextFieldValue) -> Unit,
     onDialogConfirmButtonClick: (Location) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -75,7 +75,7 @@ fun AddLocationScreen(
         }
         AddLocationContent(
             modifier = Modifier.padding(innerPadding),
-            searchResultState = searchResultState,
+            addLocationUiState = addLocationUiState,
             onSearchTextChange = onSearchTextChange,
             onAddButtonClick = { location ->
                 dialogLocation = location
@@ -89,8 +89,8 @@ fun AddLocationScreen(
 @Composable
 fun AddLocationContent(
     modifier: Modifier = Modifier,
-    searchResultState: List<Location>,
-    onSearchTextChange:suspend (TextFieldValue) -> Unit,
+    addLocationUiState: AddLocationUiState,
+    onSearchTextChange: suspend (TextFieldValue) -> Unit,
     onAddButtonClick: (Location) -> Unit
 ) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
@@ -140,10 +140,10 @@ fun AddLocationContent(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 backgroundColor = common_background,
                 cursorColor = Color.Black,
-                focusedBorderColor = AIKTheme.colors.core,
-                focusedLabelColor = AIKTheme.colors.core,
-                unfocusedBorderColor = AIKTheme.colors.on_core_container_subtext,
-                unfocusedLabelColor = AIKTheme.colors.on_core_container_subtext
+                focusedBorderColor = level1_core,
+                focusedLabelColor = level1_core,
+                unfocusedBorderColor = level1_on_core_container_subtext,
+                unfocusedLabelColor = level1_on_core_container_subtext
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -163,7 +163,7 @@ fun AddLocationContent(
 
         //search result list
         SearchResultList(
-            searchResultList = searchResultState,
+            searchResultList = addLocationUiState.searchResult,
             onAddButtonClick = onAddButtonClick,
         )
     }
@@ -239,7 +239,7 @@ fun AddLocationDialog(
             Text(
                 text = stringResource(id = R.string.add_location),
                 style = MaterialTheme.typography.h5,
-                color = AIKTheme.colors.on_core_container
+                color = level1_on_core_container
             )
         },
         text = {
@@ -249,7 +249,7 @@ fun AddLocationDialog(
                     location.eupmyeondong
                 ),
                 style = MaterialTheme.typography.body1,
-                color = AIKTheme.colors.on_core_container
+                color = level1_on_core_container
             )
         },
         confirmButton = {
@@ -257,7 +257,7 @@ fun AddLocationDialog(
                 Text(
                     text = stringResource(id = R.string.yes),
                     style = MaterialTheme.typography.subtitle1,
-                    color = AIKTheme.colors.on_core_container
+                    color = level1_on_core_container
                 )
             }
         },
@@ -266,7 +266,7 @@ fun AddLocationDialog(
                 Text(
                     text = stringResource(id = R.string.no),
                     style = MaterialTheme.typography.subtitle1,
-                    color = AIKTheme.colors.on_core_container
+                    color = level1_on_core_container
                 )
             }
         }
@@ -277,84 +277,55 @@ fun AddLocationDialog(
 @Preview
 @Composable
 fun AddLocationContentPreview() {
-    AIKTheme(pollutionLevel = PollutionLevel.EXCELLENT) {
-        var result: List<Location> by remember{ mutableStateOf(emptyList()) }
-        AddLocationContent(
-            onSearchTextChange = { result = getLocationList(TextFieldValue("")) },
-            searchResultState = result,
-            onAddButtonClick = {})
-    }
+    AddLocationScreen(
+        onSearchTextChange = {},
+        onBackButtonClick = {},
+        onDialogConfirmButtonClick = {},
+        addLocationUiState = AddLocationUiState(
+            searchResult = listOf(
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                ),
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "namsang"
+                )
+            )
+        )
+    )
 }
-
-fun getLocationList(text: TextFieldValue) = listOf(
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-    Location(
-        `do` = "Gyeongsangnam-do",
-        sigungu = "Hamyang-gun",
-        eupmyeondong = "Anui-myeon"
-    ),
-)

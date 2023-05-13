@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AirDataRepositoryImpl @Inject constructor(
-    private val airDataDao: AirDataDao
+    private val airDataDao: AirDataDao,
+    private val firebaseClient: FirebaseClient
 ) : AirDataRepository {
-    private val firebaseClient = FirebaseClient()
 
     override fun getAirData(station: String): Flow<AirData> =
 

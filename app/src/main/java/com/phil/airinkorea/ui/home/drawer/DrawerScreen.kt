@@ -30,12 +30,12 @@ import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.DrawerUiState
+import com.phil.airinkorea.ui.viewmodel.HomeUiState
 
 @Composable
 fun DrawerScreen(
     modifier: Modifier = Modifier,
-    drawerUiState: DrawerUiState,
+    homeUiState: HomeUiState,
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit
@@ -78,14 +78,14 @@ fun DrawerScreen(
                 }
             }
             //GPS
-            GPS(location = drawerUiState.gps)
+            GPS(location = homeUiState.gps)
             Divider(
                 color = divider, modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp)
             )
             //bookmark
-            Bookmark(location = drawerUiState.bookmark)
+            Bookmark(location = homeUiState.bookmark)
             Divider(
                 color = divider, modifier = Modifier
                     .fillMaxWidth()
@@ -93,7 +93,7 @@ fun DrawerScreen(
             )
 
             //My locations
-            MyLocations(locationList = drawerUiState.userLocationList)
+            MyLocations(locationList = homeUiState.userLocationList)
 
             //manage locations Button
             TextButton(
@@ -294,58 +294,9 @@ fun DrawerItem(
 @Preview
 @Composable
 fun DrawerPreviewSuccess() {
-    val drawerUiState =
-        DrawerUiState(
-            gps = Location(
-                `do` = "Gangwon-do",
-                sigungu = "Gangneung-si",
-                eupmyeondong = "Gangdong-myeon",
-                station = "옥천동"
-            ),
-            bookmark = Location(
-                `do` = "Gangwon-do",
-                sigungu = "Gangneung-si",
-                eupmyeondong = "Gangdong-myeon",
-                station = "옥천동"
-            ),
-            userLocationList =
-            listOf(
-                Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ), Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ), Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ), Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ), Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ), Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                )
-            )
-        )
     AIKTheme(AirLevel.Level1) {
         DrawerScreen(
-            drawerUiState = drawerUiState,
+            homeUiState = HomeUiState(),
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {}
@@ -356,15 +307,9 @@ fun DrawerPreviewSuccess() {
 @Preview
 @Composable
 fun DrawerPreviewEmptyData() {
-    val drawerUiState =
-        DrawerUiState(
-            gps = null,
-            bookmark = null,
-            userLocationList = emptyList()
-        )
     AIKTheme(AirLevel.Level1) {
         DrawerScreen(
-            drawerUiState = drawerUiState,
+            homeUiState = HomeUiState(),
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {}

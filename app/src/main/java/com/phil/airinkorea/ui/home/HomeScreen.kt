@@ -29,7 +29,6 @@ import com.phil.airinkorea.domain.model.*
 import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 import com.phil.airinkorea.ui.viewmodel.HomeUiState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -48,8 +47,7 @@ fun HomeScreen(
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    homeUiState: HomeUiState,
-    drawerUiState: DrawerUiState
+    homeUiState: HomeUiState
 ) {
     val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
     val scrollState = rememberScrollState()
@@ -68,13 +66,14 @@ fun HomeScreen(
                     backgroundColor = Color.Transparent,
                     topBar = {
                         HomeTopAppBar(
+                            isGPS = homeUiState.isGPS,
                             location = homeUiState.location,
                             onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
                         )
                     },
                     drawerContent = {
                         DrawerScreen(
-                            drawerUiState = drawerUiState,
+                            homeUiState = homeUiState,
                             onManageLocationClick = onManageLocationClick,
                             onParticulateMatterInfoClick = onParticulateMatterInfoClick,
                             onAppInfoClick = onAppInfoClick
@@ -144,6 +143,7 @@ fun HomeScreen(
         }
     }
 }
+
 @Preview
 @Composable
 fun HomeInitialLoadingScreen(
@@ -182,6 +182,7 @@ fun LoadingIndicator(
 @Composable
 fun HomeTopAppBar(
     modifier: Modifier = Modifier,
+    isGPS: Boolean,
     location: Location?,
     onMenuButtonClicked: () -> Unit = {}
 ) {
@@ -212,12 +213,14 @@ fun HomeTopAppBar(
                     .wrapContentSize()
                     .align(Alignment.Center)
             ) {
-                Icon(
-                    painter = painterResource(id = AIKIcons.Location),
-                    tint = AIKTheme.colors.on_core,
-                    contentDescription = null,
-                    modifier = Modifier.size(IconSize)
-                )
+                if (isGPS) {
+                    Icon(
+                        painter = painterResource(id = AIKIcons.Location),
+                        tint = AIKTheme.colors.on_core,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSize)
+                    )
+                }
                 Text(
                     text = location?.eupmyeondong ?: "-",
                     style = MaterialTheme.typography.subtitle1,
@@ -914,81 +917,20 @@ fun HomeScreenPreviewSuccess() {
                 pm25GifUrl = "https://www.airkorea.or.kr/file/proxyImage?fileName=2023/04/27/AQFv1_09h.20230427.KNU_09_01.PM2P5.2days.ani.gif"
             )
         )
-
-    AIKTheme(airLevel = AirLevel.Level1) {
-        HomeScreen(
-            onRefresh = {},
-            onManageLocationClick = {},
-            onParticulateMatterInfoClick = {},
-            onAppInfoClick = {},
-            homeUiState = homeUiState,
-            drawerUiState = DrawerUiState(),
-        )
-    }
+    HomeScreen(
+        onRefresh = {},
+        onManageLocationClick = {},
+        onParticulateMatterInfoClick = {},
+        onAppInfoClick = {},
+        homeUiState = homeUiState,
+    )
 }
 
 
 @Preview
 @Composable
 fun HomeScreenPreviewEmptyData() {
-    val homeUiState =
-        HomeUiState(
-            isInitLoaded = true,
-            location = null,
-            dataTime = null,
-            airLevel = AirLevel.LevelError,
-            detailAirData =
-            DetailAirData(
-                pm25Level = AirLevel.LevelError,
-                pm25Value = null,
-                pm10Level = AirLevel.LevelError,
-                pm10Value = null,
-                no2Level = AirLevel.LevelError,
-                no2Value = null,
-                so2Level = AirLevel.LevelError,
-                so2Value = null,
-                coLevel = AirLevel.LevelError,
-                coValue = null,
-                o3Level = AirLevel.LevelError,
-                o3Value = null
-            ),
-            dailyForecast = listOf(
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                ),
-                DailyForecast(
-                    date = null,
-                    airLevel = AirLevel.LevelError
-                )
-            ),
-            information = null,
-            forecastModelUrl = KoreaForecastModelGif(
-                pm10GifUrl = null,
-                pm25GifUrl = null
-            )
-        )
-
+    val homeUiState = HomeUiState()
     AIKTheme(airLevel = AirLevel.Level1) {
         HomeScreen(
             onRefresh = {},
@@ -996,7 +938,6 @@ fun HomeScreenPreviewEmptyData() {
             onParticulateMatterInfoClick = {},
             onAppInfoClick = {},
             homeUiState = homeUiState,
-            drawerUiState = DrawerUiState()
         )
     }
 }

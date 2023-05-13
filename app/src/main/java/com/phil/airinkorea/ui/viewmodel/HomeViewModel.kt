@@ -8,12 +8,16 @@ import com.phil.airinkorea.domain.model.DailyForecast
 import com.phil.airinkorea.domain.model.DetailAirData
 import com.phil.airinkorea.domain.model.KoreaForecastModelGif
 import com.phil.airinkorea.domain.model.Location
+import com.phil.airinkorea.domain.model.Mode
 import com.phil.airinkorea.domain.usecases.airdata.FetchAirDataUseCase
 import com.phil.airinkorea.domain.usecases.airdata.GetAirDataUseCase
+import com.phil.airinkorea.domain.usecases.user.FetchDefaultModeUseCase
+import com.phil.airinkorea.domain.usecases.user.GetDefaultModeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -72,14 +76,20 @@ data class HomeUiState(
         pm25GifUrl = null
     ),
     var isInitLoaded: Boolean = false,
-    var isRefreshing: Boolean = false
+    var isRefreshing: Boolean = false,
+    var isGPS: Boolean = false,
+    var gps: Location? = null,
+    var bookmark: Location? = null,
+    var userLocationList: List<Location> = emptyList()
 )
 
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    getDefaultModeUseCase: GetDefaultModeUseCase,
     getAirDataUseCase: GetAirDataUseCase,
-    val fetchAirDataUseCase: FetchAirDataUseCase
+    private val fetchDefaultModeUseCase: FetchDefaultModeUseCase,
+    private val fetchAirDataUseCase: FetchAirDataUseCase
 ) : ViewModel() {
     private val _airData = MutableStateFlow(HomeUiState())
     val airData: StateFlow<HomeUiState> = _airData
@@ -88,28 +98,38 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             fetchAirDataUseCase(location.station)
-            getAirDataUseCase(station = location.station).collect { airData ->
-                Log.d("airdata", airData.toString())
-                _airData.value =
-                    HomeUiState(
-                        location = location,
-                        dataTime = airData.date,
-                        airLevel = airData.airLevel,
-                        detailAirData = airData.detailAirData,
-                        dailyForecast = airData.dailyForecast,
-                        information = airData.information,
-                        forecastModelUrl = airData.koreaForecastModelGif,
-                        isInitLoaded = true
-                    )
+            getDefaultModeUseCase().combine(
+                getAirDataUseCase(station = location.station)
+            ) { isGPSMode, airData ->
+                HomeUiState(
+                    location = location,
+                    dataTime = airData.date,
+                    airLevel = airData.airLevel,
+                    detailAirData = airData.detailAirData,
+                    dailyForecast = airData.dailyForecast,
+                    information = airData.information,
+                    forecastModelUrl = airData.koreaForecastModelGif,
+                    isInitLoaded = true,
+                    isGPS = isGPSMode == Mode.GPS
+                )
+            }.collect {
+                _airData.value = it
+                Log.d("TAG HomeViewModel", it.toString())
             }
         }
     }
 
     fun fetchAirData() {
         viewModelScope.launch(Dispatchers.IO) {
-            _airData.update { it.copy(isRefreshing = true)}
+            _airData.update { it.copy(isRefreshing = true) }
             fetchAirDataUseCase(location.station)
-            _airData.update { it.copy(isRefreshing = false)}
+            _airData.update { it.copy(isRefreshing = false) }
+        }
+    }
+
+    fun fetchDefaultMode(mode: Mode) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDefaultModeUseCase(mode = mode)
         }
     }
 }

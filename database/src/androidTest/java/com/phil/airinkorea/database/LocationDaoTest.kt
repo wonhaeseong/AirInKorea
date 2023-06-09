@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.phil.airinkorea.database.dao.LocationDao
-import com.phil.airinkorea.database.model.LocationEntity
+import com.phil.airinkorea.data.database.AIKDatabase
+import com.phil.airinkorea.data.database.dao.LocationDao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test

@@ -1,19 +1,17 @@
 package com.phil.airinkorea.data.repository
 
-import com.phil.airinkorea.datastore.AIKDataStore
-import com.phil.airinkorea.domain.model.Mode
-import com.phil.airinkorea.domain.repository.AppStatusRepository
+import com.phil.airinkorea.data.datastore.AIKDataStore
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AppStatusRepositoryImpl @Inject constructor(
     private val aikDataStore: AIKDataStore,
 ) : AppStatusRepository {
-    override fun getDefaultMode(): Flow<Mode> =
-        aikDataStore.getDefaultMode()
+    override fun getDefaultPage(): Flow<Int> =
+        aikDataStore.getDefaultPage()
 
 
-    override suspend fun fetchDefaultMode(mode: Mode) {
-        aikDataStore.fetchDefaultMode(mode = mode)
+    override suspend fun fetchDefaultPage(page: Int) {
+        aikDataStore.fetchDefaultPage(pageNum = page)
     }
 }

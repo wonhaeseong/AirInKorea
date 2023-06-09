@@ -14,8 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
-import com.phil.airinkorea.domain.model.AirLevel
-import com.phil.airinkorea.domain.model.Location
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.theme.*
@@ -24,7 +23,7 @@ import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 @Composable
 fun ManageLocationScreen(
     onBackButtonClick: () -> Unit,
-    onBookmarkButtonClick: (Boolean) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
     manageLocationUiState: ManageLocationUiState
@@ -52,54 +51,58 @@ fun ManageLocationScreen(
 @Composable
 fun ManageLocationContent(
     manageLocationUiState: ManageLocationUiState,
-    onBookmarkButtonClick: (Boolean) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 15.dp)
-    ) {
-        Spacer(modifier = Modifier.size(10.dp))
-        //Add Location Button
-        Button(
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(level1_button),
-            onClick = onAddLocationButtonClick,
-            modifier = Modifier
-                .fillMaxWidth()
+    when (manageLocationUiState) {
+        ManageLocationUiState.Loading -> Unit
+        is ManageLocationUiState.Success -> {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 15.dp)
+            ) {
+                Spacer(modifier = Modifier.size(10.dp))
+                //Add Location Button
+                Button(
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(level1_button),
+                    onClick = onAddLocationButtonClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
 
-        ) {
-            Text(
-                text = stringResource(id = R.string.add_location),
-                style = MaterialTheme.typography.button,
-                color = level1_core_container
-            )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.add_location),
+                        style = MaterialTheme.typography.button,
+                        color = level1_core_container
+                    )
+                }
+                Spacer(modifier = Modifier.size(10.dp))
+                //bookmark
+                ManageLocationsBookmark(
+                    bookmarkedLocation = manageLocationUiState.bookmark,
+                    onBookmarkButtonClick = onBookmarkButtonClick,
+                    onLocationDeleteButtonClick = onLocationDeleteButtonClick,
+                )
+                Divider(modifier = Modifier.fillMaxWidth(), color = divider, thickness = 1.dp)
+                //Location List
+                ManageLocationsLocationList(
+                    locationData = manageLocationUiState.userLocationList,
+                    onBookmarkButtonClick = onBookmarkButtonClick,
+                    onLocationDeleteButtonClick = onLocationDeleteButtonClick
+                )
+            }
         }
-        Spacer(modifier = Modifier.size(10.dp))
-        //bookmark
-        ManageLocationsBookmark(
-            bookmarkedLocation = manageLocationUiState.bookmark,
-            onBookmarkButtonClick = onBookmarkButtonClick,
-            onLocationDeleteButtonClick = onLocationDeleteButtonClick,
-        )
-        Divider(modifier = Modifier.fillMaxWidth(), color = divider, thickness = 1.dp)
-        //Location List
-        ManageLocationsLocationList(
-            locationData = manageLocationUiState.userLocationList,
-            onBookmarkButtonClick = onBookmarkButtonClick,
-            onLocationDeleteButtonClick = onLocationDeleteButtonClick
-        )
     }
-
 }
 
 @Composable
 fun ManageLocationsBookmark(
     bookmarkedLocation: Location?,
-    onBookmarkButtonClick: (Boolean) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -134,7 +137,7 @@ fun ManageLocationsBookmark(
 @Composable
 fun ManageLocationsLocationList(
     locationData: List<Location>,
-    onBookmarkButtonClick: (Boolean) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -177,7 +180,7 @@ fun ManageLocationsLocationList(
 fun ManageLocationsItem(
     isBookmarked: Boolean,
     location: Location,
-    onBookmarkButtonClick: (Boolean) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -192,7 +195,7 @@ fun ManageLocationsItem(
                 shape = MaterialTheme.shapes.medium
             )
     ) {
-        IconButton(onClick = { onBookmarkButtonClick(isBookmarked) }) {
+        IconButton(onClick = { onBookmarkButtonClick(location) }) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_star),
                 contentDescription = null,
@@ -203,7 +206,10 @@ fun ManageLocationsItem(
                 }
             )
         }
-        Column(modifier = Modifier.padding(vertical = 10.dp)) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.padding(vertical = 10.dp)
+        ) {
             Text(
                 text = location.eupmyeondong,
                 maxLines = 1,
@@ -237,7 +243,7 @@ fun ManageLocationScreenPreviewSuccess() {
         onBookmarkButtonClick = {},
         onLocationDeleteButtonClick = {},
         onAddLocationButtonClick = {},
-        manageLocationUiState = ManageLocationUiState(
+        manageLocationUiState = ManageLocationUiState.Success(
             bookmark = Location(
                 `do` = "Gyeongsangnam-do",
                 sigungu = "Hamyang-gun",
@@ -295,6 +301,6 @@ fun ManageLocationScreenPreviewEmpty() {
         onBookmarkButtonClick = {},
         onLocationDeleteButtonClick = {},
         onAddLocationButtonClick = {},
-        manageLocationUiState = ManageLocationUiState()
+        manageLocationUiState = ManageLocationUiState.Success()
     )
 }

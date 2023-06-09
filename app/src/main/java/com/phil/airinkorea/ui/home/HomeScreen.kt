@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -21,14 +22,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.zIndex
+import androidx.core.view.WindowInsetsCompat
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.compose.*
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.phil.airinkorea.R
-import com.phil.airinkorea.domain.model.*
+import com.phil.airinkorea.data.model.AirLevel
+import com.phil.airinkorea.data.model.DailyForecast
+import com.phil.airinkorea.data.model.DetailAirData
+import com.phil.airinkorea.data.model.KoreaForecastModelGif
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
+import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 import com.phil.airinkorea.ui.viewmodel.HomeUiState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -47,96 +57,112 @@ fun HomeScreen(
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    homeUiState: HomeUiState
+    onDrawerLocationClick: (Int) -> Unit,
+    homeUiState: HomeUiState,
+    drawerUiState: DrawerUiState
 ) {
-    val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    if (!homeUiState.isInitLoaded) {
-        HomeInitialLoadingScreen()
-    } else {
-        AIKTheme(airLevel = homeUiState.airLevel) {
-            Box(
-                modifier = modifier
-                    .background(AIKTheme.colors.core_background)
-            ) {
-                Scaffold(
-                    scaffoldState = scaffoldState,
-                    backgroundColor = Color.Transparent,
-                    topBar = {
-                        HomeTopAppBar(
-                            isGPS = homeUiState.isGPS,
-                            location = homeUiState.location,
-                            onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
-                        )
-                    },
-                    drawerContent = {
-                        DrawerScreen(
-                            homeUiState = homeUiState,
-                            onManageLocationClick = onManageLocationClick,
-                            onParticulateMatterInfoClick = onParticulateMatterInfoClick,
-                            onAppInfoClick = onAppInfoClick
-                        )
-                    },
-                    drawerGesturesEnabled = true,
-                    drawerScrimColor = scrimColor,
-                    modifier = Modifier
-                        .statusBarsPadding()
+    when (homeUiState) {
+        HomeUiState.Initializing -> {
+            HomeInitialLoadingScreen()
+        }
+
+        is HomeUiState.Success -> {
+            val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
+
+            AIKTheme(airLevel = homeUiState.airLevel) {
+                Box(
+                    modifier = modifier
+                        .background(AIKTheme.colors.core_background)
                 ) {
-                    Column(
+                    if (homeUiState.isPageLoading) {
+                        PageLoadingScreen(
+                            modifier = Modifier.zIndex(2.0f),
+                        )
+                    }
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        backgroundColor = Color.Transparent,
+                        topBar = {
+                            HomeTopAppBar(
+                                isGPS = homeUiState.page == 0,
+                                location = homeUiState.location,
+                                onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
+                            )
+                        },
+                        drawerContent = {
+                            DrawerScreen(
+                                drawerUiState = drawerUiState,
+                                onManageLocationClick = onManageLocationClick,
+                                onParticulateMatterInfoClick = onParticulateMatterInfoClick,
+                                onAppInfoClick = onAppInfoClick,
+                                onDrawerLocationClick = {
+                                    scope.launch { scaffoldState.drawerState.close() }
+                                    onDrawerLocationClick(it)
+                                }
+                            )
+                        },
+                        drawerGesturesEnabled = true,
+                        drawerScrimColor = scrim_color,
                         modifier = Modifier
-                            .padding(it)
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState)
-                            .verticalScroll(scrollState)
+                            .statusBarsPadding()
                     ) {
-                        DateInfo(date = homeUiState.dataTime)
-                        Spacer(modifier = Modifier.size(35.dp))
-                        AirValue(airLevel = homeUiState.airLevel)
-                        Spacer(modifier = Modifier.size(10.dp))
-                        //당겨서 새로고침
-                        Box(
+                        Column(
                             modifier = Modifier
-                                .background(Color.Transparent)
-                                .fillMaxWidth()
-                                .height(
-                                    if (homeUiState.isRefreshing) {
-                                        140.dp
-                                    } else {
-                                        with(LocalDensity.current) {
-                                            lerp(
-                                                0.dp,
-                                                140.dp,
-                                                pullRefreshState.progress.coerceIn(0f..1f)
-                                            )
-                                        }
-                                    }
-                                )
+                                .padding(it)
+                                .fillMaxSize()
+                                .pullRefresh(pullRefreshState)
+                                .verticalScroll(scrollState)
                         ) {
-                            CloudIndicator(isPlaying = homeUiState.isRefreshing)
-                        }
-                        if (homeUiState.airLevel == AirLevel.LevelError) {
-                            ErrorBanner(
+                            DateInfo(date = homeUiState.dataTime)
+                            Spacer(modifier = Modifier.size(35.dp))
+                            AirValue(airLevel = homeUiState.airLevel)
+                            Spacer(modifier = Modifier.size(10.dp))
+                            //당겨서 새로고침
+                            Box(
+                                modifier = Modifier
+                                    .background(Color.Transparent)
+                                    .fillMaxWidth()
+                                    .height(
+                                        if (homeUiState.isRefreshing) {
+                                            140.dp
+                                        } else {
+                                            with(LocalDensity.current) {
+                                                lerp(
+                                                    0.dp,
+                                                    140.dp,
+                                                    pullRefreshState.progress.coerceIn(0f..1f)
+                                                )
+                                            }
+                                        }
+                                    )
+                            ) {
+                                CloudIndicator(isPlaying = homeUiState.isRefreshing)
+                            }
+                            if (homeUiState.airLevel == AirLevel.LevelError) {
+                                ErrorBanner(
+                                    modifier = Modifier.padding(10.dp)
+                                )
+                            }
+                            Detail(
+                                detailData = homeUiState.detailAirData,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                            Information(
+                                information = homeUiState.information,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                            DailyForecast(
+                                dailyForecastDataList = homeUiState.dailyForecast,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                            KoreaForecastMap(
+                                gifUrl = homeUiState.forecastModelUrl,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
-                        Detail(
-                            detailData = homeUiState.detailAirData,
-                            modifier = Modifier.padding(10.dp)
-                        )
-                        Information(
-                            information = homeUiState.information,
-                            modifier = Modifier.padding(10.dp)
-                        )
-                        DailyForecast(
-                            dailyForecastDataList = homeUiState.dailyForecast,
-                            modifier = Modifier.padding(10.dp)
-                        )
-                        KoreaForecastMap(
-                            gifUrl = homeUiState.forecastModelUrl,
-                            modifier = Modifier.padding(10.dp)
-                        )
                     }
                 }
             }
@@ -155,7 +181,42 @@ fun HomeInitialLoadingScreen(
             .fillMaxSize()
             .background(color = level1_core_container)
     ) {
-        LoadingIndicator(modifier = Modifier.size(100.dp))
+        LoadingIndicator(modifier = Modifier.size(200.dp))
+    }
+}
+
+@Composable
+fun PageLoadingScreen(
+    modifier: Modifier = Modifier,
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.cloud))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        isPlaying = true,
+        clipSpec = LottieClipSpec.Frame(0, 42),
+        iterations = LottieConstants.IterateForever,
+        reverseOnRepeat = true,
+        restartOnPlay = false
+    )
+    val dynamicProperties = rememberLottieDynamicProperties(
+        rememberLottieDynamicProperty(
+            property = LottieProperty.COLOR_FILTER,
+            value = SimpleColorFilter(common_background.toArgb()),
+            keyPath = arrayOf("**")
+        )
+    )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = transparent_white)
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            dynamicProperties = dynamicProperties,
+            modifier = modifier.size(200.dp)
+        )
     }
 }
 
@@ -164,18 +225,20 @@ fun LoadingIndicator(
     modifier: Modifier = Modifier,
     isPlaying: Boolean = true
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loadingblue))
     val progress by animateLottieCompositionAsState(
         composition,
         isPlaying = isPlaying,
         iterations = LottieConstants.IterateForever,
         reverseOnRepeat = true,
-        restartOnPlay = false
+        restartOnPlay = false,
+        speed = 1.5f
     )
     LottieAnimation(
         composition = composition,
         progress = { progress },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        contentScale = ContentScale.Fit
     )
 }
 
@@ -855,8 +918,7 @@ fun KoreaForecastMap(
 @Composable
 fun HomeScreenPreviewSuccess() {
     val homeUiState =
-        HomeUiState(
-            isInitLoaded = true,
+        HomeUiState.Success(
             location = Location(
                 `do` = "Gangwon-do",
                 sigungu = "Gangneung-si",
@@ -912,17 +974,16 @@ fun HomeScreenPreviewSuccess() {
             ),
             information =
             "The air quality will be generally 'average' due to the smooth air diffusion and precipitation, but the concentration is expected to be somewhat high in most western areas due to the inflow of foreign fine dust at night.",
-            forecastModelUrl = KoreaForecastModelGif(
-                pm10GifUrl = "https://www.airkorea.or.kr/file/proxyImage?fileName=2023/04/27/AQFv1_09h.20230427.KNU_09_01.PM10.2days.ani.gif",
-                pm25GifUrl = "https://www.airkorea.or.kr/file/proxyImage?fileName=2023/04/27/AQFv1_09h.20230427.KNU_09_01.PM2P5.2days.ani.gif"
-            )
+            forecastModelUrl = KoreaForecastModelGif(null, null)
         )
     HomeScreen(
         onRefresh = {},
         onManageLocationClick = {},
         onParticulateMatterInfoClick = {},
         onAppInfoClick = {},
+        onDrawerLocationClick = {},
         homeUiState = homeUiState,
+        drawerUiState = DrawerUiState.Loading
     )
 }
 
@@ -930,14 +991,16 @@ fun HomeScreenPreviewSuccess() {
 @Preview
 @Composable
 fun HomeScreenPreviewEmptyData() {
-    val homeUiState = HomeUiState()
+    val homeUiState = HomeUiState.Success()
     AIKTheme(airLevel = AirLevel.Level1) {
         HomeScreen(
             onRefresh = {},
             onManageLocationClick = {},
             onParticulateMatterInfoClick = {},
             onAppInfoClick = {},
+            onDrawerLocationClick = {},
             homeUiState = homeUiState,
+            drawerUiState = DrawerUiState.Loading
         )
     }
 }

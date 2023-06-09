@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.R
-import com.phil.airinkorea.domain.model.Location
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.modifier.addFocusCleaner
 import com.phil.airinkorea.ui.theme.*

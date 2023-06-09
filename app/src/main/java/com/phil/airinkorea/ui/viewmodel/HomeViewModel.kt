@@ -3,272 +3,256 @@ package com.phil.airinkorea.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.common.api.ResolvableApiException
-import com.phil.airinkorea.domain.model.AirLevel
-import com.phil.airinkorea.domain.model.DailyForecast
-import com.phil.airinkorea.domain.model.DetailAirData
-import com.phil.airinkorea.domain.model.KoreaForecastModelGif
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.repository.LocationRepository
-import com.phil.airinkorea.domain.usecases.airdata.GetAirDataUseCase
-import com.phil.airinkorea.domain.usecases.bookmark.GetBookmarkUseCase
-import com.phil.airinkorea.domain.usecases.gps.GetGPSLocationUseCase
-import com.phil.airinkorea.domain.usecases.user.FetchDefaultPageUseCase
-import com.phil.airinkorea.domain.usecases.user.GetDefaultPageUseCase
-import com.phil.airinkorea.domain.usecases.user.GetUserLocationListUseCase
+import com.phil.airinkorea.data.model.AirData
+import com.phil.airinkorea.data.model.AirLevel
+import com.phil.airinkorea.data.model.DailyForecast
+import com.phil.airinkorea.data.model.DetailAirData
+import com.phil.airinkorea.data.model.KoreaForecastModelGif
+import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.repository.AirDataRepository
+import com.phil.airinkorea.data.repository.AppStatusRepository
+import com.phil.airinkorea.data.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.concurrent.CountDownLatch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-data class HomeUiState(
-    val location: Location? = null,
-    val dataTime: String? = null,
-    val airLevel: AirLevel = AirLevel.LevelError,
-    val detailAirData: DetailAirData = DetailAirData(
-        pm25Level = AirLevel.LevelError,
-        pm25Value = null,
-        pm10Level = AirLevel.LevelError,
-        pm10Value = null,
-        no2Level = AirLevel.LevelError,
-        no2Value = null,
-        so2Level = AirLevel.LevelError,
-        so2Value = null,
-        coLevel = AirLevel.LevelError,
-        coValue = null,
-        o3Level = AirLevel.LevelError,
-        o3Value = null
-    ),
-    val information: String? = null,
-    val dailyForecast: List<DailyForecast> = listOf(
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
+sealed interface HomeUiState {
+    object Initializing : HomeUiState //앱 초기 로딩 화면
+    data class Success(
+        val location: Location? = null,
+        val dataTime: String? = null,
+        val airLevel: AirLevel = AirLevel.LevelError,
+        val detailAirData: DetailAirData = DetailAirData(
+            pm25Level = AirLevel.LevelError,
+            pm25Value = null,
+            pm10Level = AirLevel.LevelError,
+            pm10Value = null,
+            no2Level = AirLevel.LevelError,
+            no2Value = null,
+            so2Level = AirLevel.LevelError,
+            so2Value = null,
+            coLevel = AirLevel.LevelError,
+            coValue = null,
+            o3Level = AirLevel.LevelError,
+            o3Value = null
         ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
+        val information: String? = null,
+        val dailyForecast: List<DailyForecast> = listOf(
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            ),
+            DailyForecast(
+                date = null,
+                airLevel = AirLevel.LevelError
+            )
         ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
+        val forecastModelUrl: KoreaForecastModelGif = KoreaForecastModelGif(
+            pm10GifUrl = null,
+            pm25GifUrl = null
         ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
-        ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
-        ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
-        ),
-        DailyForecast(
-            date = null,
-            airLevel = AirLevel.LevelError
-        )
-    ),
-    val forecastModelUrl: KoreaForecastModelGif = KoreaForecastModelGif(
-        pm10GifUrl = null,
-        pm25GifUrl = null
-    ),
-    var isInitLoaded: Boolean = false,
-    var isRefreshing: Boolean = false,
-    var page: Int = 0
-)
+        var page: Int = 0,
+        var isRefreshing: Boolean = false,  //당겨서 새로고침 상태
+        var isPageLoading: Boolean = false  //Page 변경시 초기 로딩 상태
+    ) : HomeUiState
+}
 
-data class DrawerUiState(
-    val gps: Location? = null,
-    val bookmark: Location? = null,
-    val userLocationList: List<Location> = emptyList(),
-    val page: Int = 0
-)
+sealed interface DrawerUiState {
+    object Loading : DrawerUiState
+    data class Success(
+        val gps: Location? = null,
+        val bookmark: Location? = null,
+        val userLocationList: List<Location> = emptyList(),
+        val page: Int = 0
+    ) : DrawerUiState
+}
 
-//냉정하게 사용자가 실행하는 것만 usecase로 남기고 나머지는 repository로 넘기기
+sealed interface ActivityEvent {
+    object GetGPSLocation : ActivityEvent
+}
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getAirDataUseCase: GetAirDataUseCase,//일반
-    getDefaultPageUseCase: GetDefaultPageUseCase,//일반
-    getBookmarkUseCase: GetBookmarkUseCase,//flow
-    private val fetchDefaultPageUseCase: FetchDefaultPageUseCase,
-    getGPSLocationUseCase: GetGPSLocationUseCase,
-    getUserLocationListUseCase: GetUserLocationListUseCase,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val appStatusRepository: AppStatusRepository,
+    private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
-    private val _homeUiState =
-        MutableStateFlow(HomeUiState())
-    val homeUiState: StateFlow<HomeUiState> = _homeUiState
+    val homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Initializing)
+    private val locationStateFlow: MutableStateFlow<Location?> = MutableStateFlow(null)
 
-    val drawerUiState = combine(
-        getGPSLocationUseCase(),
-        getBookmarkUseCase(),
-        getUserLocationListUseCase()
-    ) { gps, bookmark, userLocationList ->
-        DrawerUiState(
-            gps = gps,
-            bookmark = bookmark,
-            userLocationList = userLocationList
-        )
-    }.onEach { drawerUiState ->
-        when (val pageNum = _homeUiState.value.page) {
+    private val _activityEvent = MutableSharedFlow<ActivityEvent>()
+    val activityEvent: SharedFlow<ActivityEvent> = _activityEvent.asSharedFlow()
+
+    //page가 변경되면 현재 location이 변경되고 그에 맞는
+    private val pageStateFlow: StateFlow<Int> = appStatusRepository.getDefaultPage().onEach {
+        when (it) {
             0 -> {
-                Log.d("TAG1", "GPS입니다.")
-                _homeUiState.update {
-                    it.copy(
-                        location = drawerUiState.gps,
-                    )
-                }
-                getAirData()
-            }
-
-            1 -> {
-                Log.d("TAG1", "bookmark입니다.")
-                _homeUiState.update {
-                    it.copy(
-                        location = drawerUiState.bookmark,
-                    )
-                }
-                getAirData()
-
+                getGPSLocation()
             }
 
             else -> {
-                Log.d("TAG1", "normal입니다.")
-                _homeUiState.update {
-                    it.copy(
-                        location = drawerUiState.userLocationList[pageNum - 2],
-                    )
-                }
-                getAirData()
-            }
-        }
-    }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DrawerUiState())
-
-
-        getDefaultPageUseCase()
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            page.collect { pageNum ->
-                when (pageNum) {
-                    0 -> {
-                        Log.d("TAG PAGE", "GPS입니다.")
-                        _homeUiState.update {
-                            it.copy(
-                                location = drawerUiState.value.gps,
-                                page = pageNum
-                            )
-                        }
-                        getAirData()
+                val location =
+                    if (it == 1) {
+                        locationRepository.getBookmark().first()
+                    } else {
+                        locationRepository.getUserLocationList().first()[it - 2]
                     }
-
-                    1 -> {
-                        Log.d("TAG PAGE", "bookmark입니다.")
-                        _homeUiState.update {
-                            it.copy(
-                                location = drawerUiState.value.bookmark,
-                                page = pageNum
-                            )
-                        }
-                        getAirData()
-                    }
-
-                    else -> {
-                        Log.d("TAG PAGE", "normal입니다.")
-                        _homeUiState.update {
-                            it.copy(
-                                location = drawerUiState.value.userLocationList[pageNum - 2],
-                                page = pageNum
-                            )
-                        }
-                        getAirData()
-                    }
-                }
-            }
-        }
-    }
-
-    fun fetchAirData(
-//        requestLocationPermissionCallback: () -> Unit,
-        requestTurnOnGPS: (ResolvableApiException) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TAG fetchAirData", "실행")
-            _homeUiState.update { it.copy(isRefreshing = true) }
-            if (page.value == 0) {
-                updateGPS(
-//                    requestLocationPermissionCallback = requestLocationPermissionCallback,
-                    requestTurnOnGPS = requestTurnOnGPS,
-                )
-            } else {
-                getAirData()
-            }
-        }
-    }
-
-    private fun updateGPS(
-//        requestLocationPermissionCallback: () -> Unit,
-        requestTurnOnGPS: (ResolvableApiException) -> Unit,
-    ) {
-//        requestLocationPermissionCallback()
-        when (val exception = locationRepository.checkGPSOn()) {
-            null -> {
-                Log.d("TAG10", "dd")
-                locationRepository.fetchGPSLocation { getAirData() }
-            }
-
-            else -> {
-                requestTurnOnGPS(exception)
-                Log.d("TAG10", "aa")
-            }
-        }
-    }
-
-    fun fetchPageAndLocation(page: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TAG5", page.toString())
-            fetchDefaultPageUseCase(page)
-        }
-    }
-
-    fun getAirData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TAG airdata", _homeUiState.value.toString())
-            val location = _homeUiState.value.location
-            if (location != null) {
-                val airData = getAirDataUseCase(location.station)
-                _homeUiState.update { uiState ->
-                    uiState.copy(
+                val airData = getAirData(location.station)
+                emitHomeUiState(
+                    HomeUiState.Success(
+                        location = location,
                         dataTime = airData.date,
                         airLevel = airData.airLevel,
                         detailAirData = airData.detailAirData,
-                        dailyForecast = airData.dailyForecast,
                         information = airData.information,
+                        dailyForecast = airData.dailyForecast,
                         forecastModelUrl = airData.koreaForecastModelGif,
-                        isRefreshing = false,
-                        isInitLoaded = true
+                        page = it,
+                        isPageLoading = false
                     )
-                }
-            } else {
-                _homeUiState.update {
-                    HomeUiState().copy(
-                        isRefreshing = false
-                    )
-                }
-
+                )
+                locationStateFlow.emit(location)
             }
         }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = 0
+    )
+
+    val drawerUiState: StateFlow<DrawerUiState> = combine(
+        locationRepository.getGPSLocation(),
+        locationRepository.getBookmark(),
+        locationRepository.getUserLocationList(),
+        appStatusRepository.getDefaultPage()
+    ) { gpsLocation, bookmark, userLocationList, page ->
+        DrawerUiState.Success(
+            gps = gpsLocation,
+            bookmark = bookmark,
+            userLocationList = userLocationList,
+            page = page
+        )
+    }.onStart {
+        DrawerUiState.Loading
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = DrawerUiState.Loading
+    )
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("TAG", "init")
+            emitHomeUiState(HomeUiState.Initializing)
+            pageStateFlow.collect {
+                Log.d("TAG", it.toString())
+            }
+        }
+    }
+
+    fun onRefreshHomeScreen() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentHomeUiState = homeUiState.value
+            if (currentHomeUiState is HomeUiState.Success) {
+                homeUiState.update {
+                    currentHomeUiState.copy(isRefreshing = true)
+                }
+                val page = pageStateFlow.value
+                if (page == 0) {
+                    getGPSLocation()
+                } else {
+                    val location = locationStateFlow.value
+                    val airData = getAirData(location?.station)
+                    emitHomeUiState(
+                        HomeUiState.Success(
+                            location = location,
+                            dataTime = airData.date,
+                            airLevel = airData.airLevel,
+                            detailAirData = airData.detailAirData,
+                            information = airData.information,
+                            dailyForecast = airData.dailyForecast,
+                            forecastModelUrl = airData.koreaForecastModelGif,
+                            page = page,
+                            isRefreshing = false,
+                            isPageLoading = false
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun onDrawerLocationClick(page: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentHomeUiState = homeUiState.value
+            if (currentHomeUiState is HomeUiState.Success) {
+                homeUiState.update {
+                    currentHomeUiState.copy(isPageLoading = true)
+                }
+            }
+            appStatusRepository.fetchDefaultPage(page)
+        }
+    }
+
+    private suspend fun getGPSLocation() {
+        _activityEvent.emit(ActivityEvent.GetGPSLocation)
+    }
+
+    suspend fun getAirData(station: String?): AirData {
+        withContext(Dispatchers.Default) {
+            if (station != null) {
+                airDataRepository.fetchAirData(station)
+            }
+        }
+        Log.d("TAG", station.toString())
+        return airDataRepository.getAirData(station).first()
+            .also { Log.d("TAG", it.toString()) }
+
+    }
+
+    suspend fun getMatchLocationByEupmyeondong(eupmyeondong: String): Location =
+        locationRepository.getMatchLocationByEupmyeondong(eupmyeondong)
+
+    suspend fun emitHomeUiState(newHomeUiState: HomeUiState) {
+        homeUiState.emit(newHomeUiState)
+    }
+
+    suspend fun fetchGPSLocation(location: Location?) {
+        locationRepository.fetchGPSLocation(location)
     }
 }

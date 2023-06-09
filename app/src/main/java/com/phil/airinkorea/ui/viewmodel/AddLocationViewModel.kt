@@ -3,10 +3,8 @@ package com.phil.airinkorea.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.model.UserLocation
-import com.phil.airinkorea.domain.usecases.search.GetSearchResultUseCase
-import com.phil.airinkorea.domain.usecases.user.AddUserLocationUseCase
+import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -19,14 +17,13 @@ data class AddLocationUiState(
 
 @HiltViewModel
 class AddLocationViewModel @Inject constructor(
-    private val getSearchResultUseCase: GetSearchResultUseCase,
-    private val addUserLocationUseCase: AddUserLocationUseCase
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
     private val _searchResult = MutableStateFlow(AddLocationUiState())
     val searchResult: StateFlow<AddLocationUiState> = _searchResult
     fun getSearchResult(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            getSearchResultUseCase(query).collect { newResult ->
+            locationRepository.getSearchResult(query).collect { newResult ->
                 _searchResult.update {
                     it.copy(
                         searchResult = newResult
@@ -39,14 +36,7 @@ class AddLocationViewModel @Inject constructor(
 
     fun addUserLocation(location: Location){
         viewModelScope.launch(Dispatchers.IO) {
-            val userLocation = UserLocation(
-                `do` = location.`do`,
-                sigungu = location.sigungu,
-                eupmyeondong = location.eupmyeondong,
-                station = location.station,
-                bookmark = false
-            )
-            addUserLocationUseCase(userLocation)
+            locationRepository.addUserLocation(location)
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.phil.airinkorea.ui.managelocations
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 import com.phil.airinkorea.ui.viewmodel.ManageLocationViewModel
 
@@ -11,11 +13,12 @@ fun ManageLocationRoute(
     onAddLocationButtonClick: () -> Unit,
     manageLocationViewModel: ManageLocationViewModel = hiltViewModel()
 ) {
+    val manageLocationUiState: ManageLocationUiState by manageLocationViewModel.manageLocationUiState.collectAsStateWithLifecycle()
     ManageLocationScreen(
         onAddLocationButtonClick = onAddLocationButtonClick,
         onBackButtonClick = onBackButtonClick,
-        onBookmarkButtonClick ={},
-        onLocationDeleteButtonClick ={},
-        manageLocationUiState = ManageLocationUiState()
+        onBookmarkButtonClick = { manageLocationViewModel.updateBookmark(it) },
+        onLocationDeleteButtonClick = { manageLocationViewModel.deleteLocation(it) },
+        manageLocationUiState = manageLocationUiState
     )
 }

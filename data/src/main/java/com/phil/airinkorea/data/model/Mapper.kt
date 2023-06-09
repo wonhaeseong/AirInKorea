@@ -1,12 +1,14 @@
 package com.phil.airinkorea.data.model
 
-import com.phil.airinkorea.database.model.*
-import com.phil.airinkorea.domain.model.AirLevel
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.model.UserLocation
-import com.phil.airinkorea.network.model.NetworkAirData
-import com.phil.airinkorea.network.model.NetworkDetailAirData
-import com.phil.airinkorea.network.model.NetworkForecastItem
+import com.phil.airinkorea.data.database.model.AirDataEntity
+import com.phil.airinkorea.data.database.model.DailyForecastEntity
+import com.phil.airinkorea.data.database.model.DetailAirDataEntity
+import com.phil.airinkorea.data.database.model.GPSLocationEntity
+import com.phil.airinkorea.data.database.model.KoreaForecastModelGifEntity
+import com.phil.airinkorea.data.database.model.UserLocationEntity
+import com.phil.airinkorea.data.network.model.NetworkAirData
+import com.phil.airinkorea.data.network.model.NetworkDetailAirData
+import com.phil.airinkorea.data.network.model.NetworkForecastItem
 
 fun NetworkAirData.mapToAirDataEntity(station: String): AirDataEntity =
     AirDataEntity(
@@ -61,14 +63,14 @@ private fun String?.mapToAirLevel(): AirLevel =
     }
 
 
-fun UserLocation.mapToUserLocationEntity() =
-        UserLocationEntity(
-            enDo = `do`,
-            enSigungu = sigungu,
-            enEupmyeondong = eupmyeondong,
-            station = station,
-            bookmark = if(bookmark) 1 else 0
-        )
+fun Location.mapToUserLocationEntity(bookmark: Boolean) =
+    UserLocationEntity(
+        enDo = `do`,
+        enSigungu = sigungu,
+        enEupmyeondong = eupmyeondong,
+        station = station,
+        bookmark = if (bookmark) 1 else 0
+    )
 
 fun Location.mapToGPSLocationEntity() =
     GPSLocationEntity(

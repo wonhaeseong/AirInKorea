@@ -3,6 +3,8 @@ package com.phil.airinkorea.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,10 +12,13 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.ui.addlocation.AddLocationRoute
 import com.phil.airinkorea.ui.home.HomeRoute
 import com.phil.airinkorea.ui.managelocations.ManageLocationRoute
+import com.phil.airinkorea.ui.viewmodel.HomeViewModel
+
 
 @Composable
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    homeViewModel: HomeViewModel
 ) {
     val systemUiController = rememberSystemUiController()
     NavHost(navController = navController, startDestination = "Home") {
@@ -27,7 +32,8 @@ fun NavGraph(
             HomeRoute(
                 onManageLocationClick = { navController.navigate("ManageLocation") },
                 onParticulateMatterInfoClick = { navController.navigate("ParticulateMatterInfo") },
-                onAppInfoClick = { navController.navigate("AppInfo") }
+                onAppInfoClick = { navController.navigate("AppInfo") },
+                homeViewModel = homeViewModel
             )
         }
         composable("ManageLocation") {
@@ -39,7 +45,7 @@ fun NavGraph(
             }
             ManageLocationRoute(
                 onBackButtonClick = { navController.popBackStack() },
-                onAddLocationButtonClick = {navController.navigate("AddLocation")}
+                onAddLocationButtonClick = { navController.navigate("AddLocation") }
             )
         }
         composable("AddLocation") {

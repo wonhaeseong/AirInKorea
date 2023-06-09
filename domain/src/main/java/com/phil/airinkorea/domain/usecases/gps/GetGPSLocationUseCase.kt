@@ -1,13 +1,12 @@
 package com.phil.airinkorea.domain.usecases.gps
 
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.repository.LocationRepository
-import kotlinx.coroutines.flow.Flow
+import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.repository.LocationRepository
 import javax.inject.Inject
 
 class GetGPSLocationUseCase @Inject constructor(
-    private val locationRepository: LocationRepository
+    private val locationRepository: com.phil.airinkorea.data.repository.LocationRepository
 ){
-    operator fun invoke() : Flow<Location> =
+    suspend operator fun invoke() : com.phil.airinkorea.data.model.Location? =
         locationRepository.getGPSLocation()
 }

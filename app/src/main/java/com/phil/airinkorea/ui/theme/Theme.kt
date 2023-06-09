@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.phil.airinkorea.domain.model.AirLevel
+import com.phil.airinkorea.data.model.AirLevel
 
 private val level1Color = AIKColors(
     core = level1_core,

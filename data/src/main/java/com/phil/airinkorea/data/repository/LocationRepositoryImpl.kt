@@ -1,16 +1,17 @@
 package com.phil.airinkorea.data.repository
 
-import com.phil.airinkorea.data.model.mapToGPSLocationEntity
+import android.util.Log
+import com.phil.airinkorea.data.database.dao.GPSLocationDao
+import com.phil.airinkorea.data.database.dao.LocationDao
+import com.phil.airinkorea.data.database.dao.UserLocationsDao
+import com.phil.airinkorea.data.database.model.GPSLocationEntity
+import com.phil.airinkorea.data.database.model.mapToExternalModel
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.mapToUserLocationEntity
-import com.phil.airinkorea.database.dao.GPSLocationDao
-import com.phil.airinkorea.database.dao.LocationDao
-import com.phil.airinkorea.database.dao.UserLocationsDao
-import com.phil.airinkorea.database.model.mapToExternalModel
-import com.phil.airinkorea.domain.model.Location
-import com.phil.airinkorea.domain.model.UserLocation
-import com.phil.airinkorea.domain.repository.LocationRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LocationRepositoryImpl @Inject constructor(
@@ -23,52 +24,81 @@ class LocationRepositoryImpl @Inject constructor(
             locationList.map { it.mapToExternalModel() }
         }
 
-    override fun getUserLocationList(): Flow<List<UserLocation>> =
-        userLocationsDao.getUserLocationList().map { userLocationList ->
-            userLocationList.map { it.mapToExternalModel() }
+    override fun getUserLocationList(): Flow<List<Location>> =
+        userLocationsDao.getUserLocationList()
+            .map { locationList ->
+                locationList.map { it.mapToExternalModel() }
+            }
+
+    override suspend fun deleteUserLocation(userLocation: Location) {
+        userLocationsDao.deleteUserLocationData(userLocation.mapToUserLocationEntity(false))
+
+    }
+
+    override suspend fun addUserLocation(userLocation: Location) {
+        userLocationsDao.insertUserLocation(userLocation.mapToUserLocationEntity(false))
+    }
+
+    override fun getBookmark(): Flow<Location> =
+        userLocationsDao.getBookmark().map {
+            it?.mapToExternalModel() ?: Location(
+                `do` = "Seoul",
+                sigungu = "Yongsan-gu",
+                eupmyeondong = "Namyeong-dong",
+                station = "한강대로"
+            )
         }
 
-    override suspend fun deleteUserLocation(userLocation: UserLocation) {
-        userLocationsDao.deleteUserLocationData(userLocation.mapToUserLocationEntity())
-    }
-
-    override suspend fun addUserLocation(userLocation: UserLocation) {
-        userLocationsDao.insertUserLocation(userLocation.mapToUserLocationEntity())
-    }
-
-    override fun getBookmark(): Flow<UserLocation> =
-        userLocationsDao.getBookmark().map { it.mapToExternalModel() }
-
-    override suspend fun updateBookmark(newBookmark: UserLocation, oldBookmark: UserLocation) {
-        newBookmark.bookmark = true
-        oldBookmark.bookmark = false
+    override suspend fun updateBookmark(newBookmark: Location, oldBookmark: Location) {
         userLocationsDao.updateUserLocation(
-            oldBookmark.mapToUserLocationEntity()
+            oldBookmark.mapToUserLocationEntity(false)
         )
         userLocationsDao.updateUserLocation(
-            newBookmark.mapToUserLocationEntity()
+            newBookmark.mapToUserLocationEntity(true)
         )
     }
 
-    override suspend fun removeBookmark(bookmark: UserLocation) {
-        bookmark.bookmark = false
-        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity())
+    override suspend fun removeBookmark(bookmark: Location) {
+        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity(false))
     }
 
-    override suspend fun addBookmark(bookmark: UserLocation) {
-        bookmark.bookmark = true
-        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity())
+    override suspend fun addBookmark(bookmark: Location) {
+        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity(true))
     }
 
 
-    override fun getGPSLocation(): Flow<Location> =
-        gpsLocationDao.getGPSLocation().map { it.mapToExternalModel() }
+    override fun getGPSLocation(): Flow<Location?> =
+        gpsLocationDao.getGPSLocation().map { it?.mapToExternalModel() }
 
-
-    override suspend fun fetchGPSLocation(oldLocation: Location,newLocation: Location ) {
-        gpsLocationDao.deleteAndInsertGPSLocation(
-            oldData = oldLocation.mapToGPSLocationEntity(),
-            newData = newLocation.mapToGPSLocationEntity()
-        )
+    override suspend fun fetchGPSLocation(location: Location?) {
+        if (location == null){
+            gpsLocationDao.deleteGPSLocation()
+        }else{
+            Log.d("TAG fetchGPS", location.toString())
+            val isLocationExists = withContext(Dispatchers.IO) {
+                gpsLocationDao.isExists()
+            }
+            if (isLocationExists) {
+                gpsLocationDao.updateGPSLocation(
+                    enDo = location.`do`,
+                    enSigungu = location.sigungu,
+                    enEupmyeondong = location.eupmyeondong,
+                    station = location.station
+                )
+            } else {
+                gpsLocationDao.insertGPSLocation(
+                    GPSLocationEntity(
+                        enDo = location.`do`,
+                        enSigungu = location.sigungu,
+                        enEupmyeondong = location.eupmyeondong,
+                        station = location.station
+                    )
+                )
+            }
+        }
     }
+
+    override suspend fun getMatchLocationByEupmyeondong(eupmyeondong: String): Location =
+        locationDao.getMatchLocationByEupmyeondong(eupmyeondong).mapToExternalModel()
+
 }

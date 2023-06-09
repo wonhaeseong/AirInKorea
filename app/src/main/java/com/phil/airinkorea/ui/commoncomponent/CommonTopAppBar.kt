@@ -14,10 +14,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.domain.model.AirLevel
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.modifier.bottomBorder
-import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.level1_on_core_container

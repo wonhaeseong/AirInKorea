@@ -25,4 +25,5 @@ object AIKIcons {
     val Search = R.drawable.ic_search
     val Cancel = R.drawable.ic_cancel
     val Heart = R.drawable.ic_heart
+    val Circle = R.drawable.ic_circle
 }

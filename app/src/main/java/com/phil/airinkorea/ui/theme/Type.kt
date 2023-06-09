@@ -57,7 +57,7 @@ val AIKTypography = Typography(
     ),
     subtitle1 = TextStyle(
         fontFamily = Roboto,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -29,6 +30,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,10 +46,14 @@ import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.AIKTypography
+import com.phil.airinkorea.ui.theme.Shapes
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
+import com.phil.airinkorea.ui.theme.subtitle3
+import com.phil.airinkorea.ui.theme.transparent_white
 import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 
 @Composable
@@ -59,7 +65,7 @@ fun DrawerScreen(
     onAppInfoClick: () -> Unit,
     onDrawerLocationClick: (Int) -> Unit
 ) {
-    when(drawerUiState){
+    when (drawerUiState) {
         DrawerUiState.Loading -> Unit
         is DrawerUiState.Success -> {
             val scrollState = rememberScrollState()
@@ -102,7 +108,8 @@ fun DrawerScreen(
                     //GPS
                     GPS(
                         location = drawerUiState.gps,
-                        onClick = { onDrawerLocationClick(0) }
+                        onClick = { onDrawerLocationClick(0) },
+                        page = drawerUiState.page
                     )
                     Divider(
                         color = divider, modifier = Modifier
@@ -112,7 +119,8 @@ fun DrawerScreen(
                     //bookmark
                     Bookmark(
                         location = drawerUiState.bookmark,
-                        onClick = { onDrawerLocationClick(1) }
+                        onClick = { onDrawerLocationClick(1) },
+                        page = drawerUiState.page
                     )
                     Divider(
                         color = divider, modifier = Modifier
@@ -123,7 +131,8 @@ fun DrawerScreen(
                     //My locations
                     MyLocations(
                         locationList = drawerUiState.userLocationList,
-                        onClick = { index -> onDrawerLocationClick(index) }
+                        onClick = { index -> onDrawerLocationClick(index) },
+                        page = drawerUiState.page
                     )
 
                     //manage locations Button
@@ -155,7 +164,7 @@ fun DrawerScreen(
                         clickable = true,
                         onClick = onParticulateMatterInfoClick
                     )
-
+                    Spacer(modifier = Modifier.size(10.dp))
                     //App Info 앱 정보
                     DrawerTitle(
                         icon = painterResource(id = AIKIcons.AppIcon),
@@ -175,7 +184,8 @@ fun DrawerScreen(
 fun GPS(
     modifier: Modifier = Modifier,
     location: Location?,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    page: Int
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
@@ -185,9 +195,14 @@ fun GPS(
         if (location == null) {
             DrawerItem(
                 text = stringResource(id = R.string.unable_gps),
-                onClick = { onClick(0) })
+                onClick = { onClick(0) },
+                isSelected = page == 0
+            )
         } else {
-            DrawerItem(text = location.eupmyeondong, onClick = { onClick(0) })
+            DrawerItem(
+                text = location.eupmyeondong, onClick = { onClick(0) },
+                isSelected = page == 0
+            )
         }
     }
 }
@@ -196,7 +211,8 @@ fun GPS(
 fun Bookmark(
     modifier: Modifier = Modifier,
     location: Location?,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    page: Int
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
@@ -207,10 +223,14 @@ fun Bookmark(
         if (location == null) {
             DrawerItem(
                 text = stringResource(id = R.string.bookmark_is_not_set),
-                itemEnable = false
+                itemEnable = false,
+                isSelected = page == 1
             )
         } else {
-            DrawerItem(text = location.eupmyeondong, onClick = { onClick(1) })
+            DrawerItem(
+                text = location.eupmyeondong, onClick = { onClick(1) },
+                isSelected = page == 1
+            )
         }
     }
 }
@@ -219,7 +239,8 @@ fun Bookmark(
 fun MyLocations(
     modifier: Modifier = Modifier,
     locationList: List<Location>,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    page: Int
 ) {
     Column(
         modifier = modifier
@@ -251,7 +272,9 @@ fun MyLocations(
                 itemsIndexed(locationList) { index, location ->
                     DrawerItem(
                         text = location.eupmyeondong,
-                        onClick = { onClick(index + 2) })
+                        onClick = { onClick(index + 2) },
+                        isSelected = page == index + 2
+                    )
                 }
             }
         }
@@ -281,7 +304,7 @@ fun DrawerTitle(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(start = 15.dp, end = 0.dp, top = 15.dp, bottom = 15.dp)
+            .padding(start = 15.dp, end = 0.dp, top = 8.dp, bottom = 3.dp)
             .clickable(enabled = clickable) {
                 onClick()
             }
@@ -308,25 +331,42 @@ fun DrawerItem(
     modifier: Modifier = Modifier,
     text: String,
     itemEnable: Boolean = true,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    isSelected: Boolean = false
 ) {
-    TextButton(
-        onClick = onClick,
-        enabled = itemEnable,
-        contentPadding = PaddingValues(start = 35.dp, top = 10.dp, bottom = 10.dp),
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .padding(PaddingValues(start = 15.dp, top = 10.dp, bottom = 12.dp))
+            .clickable(enabled = itemEnable) { onClick() }
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.subtitle1,
-            color = AIKTheme.colors.on_core_container,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        )
+        if (isSelected) {
+            Box(modifier = Modifier.background(Color.Gray, Shapes.medium)) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.h6,
+                    color = AIKTheme.colors.core_container,
+                    textAlign = TextAlign.Start,
+                    modifier = modifier.padding(horizontal = 10.dp)
+                )
+            }
+//            Icon(
+//                painter = painterResource(id = AIKIcons.Circle),
+//                contentDescription = null,
+//                tint = AIKTheme.colors.core,
+//                modifier = Modifier.padding(end = 5.dp)
+//            )
+        } else {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.subtitle1,
+                color = AIKTheme.colors.on_core_container,
+                textAlign = TextAlign.Start
+            )
+        }
     }
 }
 
@@ -370,7 +410,8 @@ fun DrawerPreviewSuccess() {
                         eupmyeondong = "Gangdong-myeon",
                         station = "옥천동"
                     )
-                )
+                ),
+                page = 0
             ),
             onManageLocationClick = {},
             onAppInfoClick = {},

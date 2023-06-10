@@ -72,11 +72,11 @@ fun ManageLocationContent(
                     onClick = onAddLocationButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
-
+                        .padding(vertical = 10.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.add_location),
-                        style = MaterialTheme.typography.button,
+                        style = AIKTypography.button,
                         color = level1_core_container
                     )
                 }
@@ -113,7 +113,7 @@ fun ManageLocationsBookmark(
     ) {
         Text(
             text = stringResource(id = R.string.bookmark),
-            style = MaterialTheme.typography.subtitle1
+            style = AIKTypography.subtitle1
         )
         if (bookmarkedLocation == null) {
             Spacer(modifier = Modifier.size(10.dp))
@@ -148,7 +148,7 @@ fun ManageLocationsLocationList(
     ) {
         Text(
             text = stringResource(id = R.string.my_locations),
-            style = MaterialTheme.typography.subtitle1
+            style = AIKTypography.subtitle1
         )
         if (locationData.isNotEmpty()) {
             LazyColumn(
@@ -184,9 +184,10 @@ fun ManageLocationsItem(
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .fillMaxWidth()
             .border(
@@ -194,43 +195,57 @@ fun ManageLocationsItem(
                 color = level1_core,
                 shape = MaterialTheme.shapes.medium
             )
+            .padding(horizontal = 10.dp)
     ) {
-        IconButton(onClick = { onBookmarkButtonClick(location) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_star),
-                contentDescription = null,
-                tint = if (isBookmarked) {
-                    bookmark
-                } else {
-                    unselected_bookmark
-                }
-            )
-        }
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.padding(vertical = 10.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = modifier
+                .weight(1f)
         ) {
-            Text(
-                text = location.eupmyeondong,
-                maxLines = 1,
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = location.sigungu,
-                maxLines = 1,
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = location.`do`,
-                maxLines = 1,
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Center
-            )
+            IconButton(
+                onClick = { onBookmarkButtonClick(location) },
+                enabled = !isBookmarked
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_star),
+                    contentDescription = null,
+                    tint = if (isBookmarked) {
+                        bookmark
+                    } else {
+                        unselected_bookmark
+                    }
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 10.dp, start = 50.dp)
+            ) {
+                Text(
+                    text = location.eupmyeondong,
+                    maxLines = 1,
+                    style = AIKTypography.subtitle2,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = location.sigungu,
+                    maxLines = 1,
+                    style = AIKTypography.subtitle2,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = location.`do`,
+                    maxLines = 1,
+                    style = AIKTypography.subtitle2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-        IconButton(onClick = { onLocationDeleteButtonClick(location) }) {
-            Icon(painter = painterResource(id = AIKIcons.TrashCan), contentDescription = null)
+        if (!isBookmarked) {
+            IconButton(onClick = { onLocationDeleteButtonClick(location) }) {
+                Icon(painter = painterResource(id = AIKIcons.TrashCan), contentDescription = null)
+            }
         }
     }
 }
@@ -253,7 +268,7 @@ fun ManageLocationScreenPreviewSuccess() {
             userLocationList =
             listOf(
                 Location(
-                    `do` = "Gyeongsangnam-do",
+                    `do` = "abc",
                     sigungu = "Hamyang-gun",
                     eupmyeondong = "Anui-myeon",
                     station = "Dd"

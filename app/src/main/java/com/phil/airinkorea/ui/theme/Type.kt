@@ -11,9 +11,9 @@ import com.phil.airinkorea.R
 
 
 private val Roboto = FontFamily(
-    Font(R.font.roboto_light,FontWeight.Light),
-    Font(R.font.roboto_regular,FontWeight.Normal),
-    Font(R.font.roboto_bold,FontWeight.Bold)
+    Font(R.font.roboto_light, FontWeight.Light),
+    Font(R.font.roboto_regular, FontWeight.Normal),
+    Font(R.font.roboto_bold, FontWeight.Bold)
 )
 
 val AIKTypography = Typography(
@@ -57,17 +57,17 @@ val AIKTypography = Typography(
     ),
     subtitle1 = TextStyle(
         fontFamily = Roboto,
-        fontSize = 18.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     ),
     subtitle2 = TextStyle(
         fontFamily = Roboto,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Normal,
         lineHeight = 24.sp,
-        letterSpacing = 0.1.sp
+        letterSpacing = 0.15.sp
     ),
     body1 = TextStyle(
         fontFamily = Roboto,
@@ -116,16 +116,18 @@ val Typography.h5Normal: TextStyle
 
 val Typography.body3: TextStyle
     get() = TextStyle(
-        fontFamily = Roboto,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Normal,
-        lineHeight = 16.sp
-    )
+            fontFamily = Roboto,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            lineHeight = 24.sp,
+            letterSpacing = 0.15.sp
+        )
+
 
 val Typography.subtitle3: TextStyle
     get() = TextStyle(
         fontFamily = Roboto,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
-        lineHeight = 16.sp,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        lineHeight = 20.sp,
     )

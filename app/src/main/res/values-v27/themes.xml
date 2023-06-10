@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Airinkorea" parent="Theme.AppCompat.Light.NoActionBar">
+<!--        <item name="android:windowLayoutInDisplayCutoutMode">-->
+<!--            never &lt;!&ndash; default, shortEdges, or never &ndash;&gt;-->
+<!--        </item>-->
+    </style>
+</resources>

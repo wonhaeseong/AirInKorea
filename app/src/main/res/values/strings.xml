@@ -19,10 +19,10 @@
     <string name="data_error">Please refresh the screen by pulling the screen down after a while. Or check your network connection.</string>
     <string name="dismiss">DISMISS</string>
     <string name="turn_on_gps">TURN ON GPS</string>
-
+    <string name="no_information_data">Unable to retrieve information from the server.</string>
     <string name="bookmark">Bookmark</string>
     <string name="gps">GPS</string>
-    <string name="my_locations">My locations</string>
+    <string name="my_locations">My Locations</string>
     <string name="locations">Locations</string>
     <string name="unable_gps">Unable to retrieve GPS information</string>
     <string name="bookmark_is_not_set">Bookmark is not set</string>

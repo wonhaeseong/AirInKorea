@@ -12,14 +12,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_aik_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Airinkorea"
+        android:theme="@style/Airinkorea"
         android:name=".AIKApplication"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
-            android:theme="@style/Theme.Airinkorea">
+            android:theme="@style/Airinkorea">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -26,11 +25,9 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,8 +49,6 @@ import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.theme.subtitle3
-import com.phil.airinkorea.ui.theme.transparent_white
 import com.phil.airinkorea.ui.viewmodel.DrawerUiState
 
 @Composable
@@ -146,7 +141,7 @@ fun DrawerScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.manage_locations),
-                            style = MaterialTheme.typography.button,
+                            style = AIKTypography.button,
                             overflow = TextOverflow.Ellipsis,
                             color = AIKTheme.colors.core_container
                         )
@@ -320,7 +315,7 @@ fun DrawerTitle(
         Spacer(modifier = Modifier.size(10.dp))
         Text(
             text = stringResource(id = stringId),
-            style = MaterialTheme.typography.subtitle1,
+            style = AIKTypography.subtitle1,
             color = AIKTheme.colors.on_core_container
         )
     }
@@ -343,26 +338,29 @@ fun DrawerItem(
             .padding(PaddingValues(start = 15.dp, top = 10.dp, bottom = 12.dp))
             .clickable(enabled = itemEnable) { onClick() }
     ) {
+        if (itemEnable) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_circle),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(5.dp)
+            )
+        }
+        Spacer(modifier = Modifier.size(10.dp))
         if (isSelected) {
             Box(modifier = Modifier.background(Color.Gray, Shapes.medium)) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.h6,
+                    style = AIKTypography.subtitle1,
                     color = AIKTheme.colors.core_container,
                     textAlign = TextAlign.Start,
-                    modifier = modifier.padding(horizontal = 10.dp)
+                    modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                 )
             }
-//            Icon(
-//                painter = painterResource(id = AIKIcons.Circle),
-//                contentDescription = null,
-//                tint = AIKTheme.colors.core,
-//                modifier = Modifier.padding(end = 5.dp)
-//            )
         } else {
             Text(
                 text = text,
-                style = MaterialTheme.typography.subtitle1,
+                style = AIKTypography.subtitle1,
                 color = AIKTheme.colors.on_core_container,
                 textAlign = TextAlign.Start
             )

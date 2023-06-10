@@ -200,19 +200,19 @@ fun SearchResultItem(
             Text(
                 text = location.eupmyeondong,
                 maxLines = 1,
-                style = MaterialTheme.typography.body1,
+                style = AIKTypography.subtitle2,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = location.sigungu,
                 maxLines = 1,
-                style = MaterialTheme.typography.body1,
+                style = AIKTypography.subtitle2,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = location.`do`,
                 maxLines = 1,
-                style = MaterialTheme.typography.body1,
+                style = AIKTypography.subtitle2,
                 textAlign = TextAlign.Center
             )
         }

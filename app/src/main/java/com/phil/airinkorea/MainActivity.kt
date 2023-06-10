@@ -8,19 +8,15 @@ import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
-import androidx.core.view.DisplayCutoutCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
@@ -33,7 +29,6 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.phil.airinkorea.ui.NavGraph
-import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.viewmodel.ActivityEvent
 import com.phil.airinkorea.ui.viewmodel.HomeUiState
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
@@ -84,9 +79,9 @@ class MainActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        window.statusBarColor = common_background.toArgb()
-        WindowCompat.getInsetsController(window,window.decorView).isAppearanceLightStatusBars = true
+        window.statusBarColor = Color.Transparent.toArgb()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()

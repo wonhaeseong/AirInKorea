@@ -23,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.zIndex
-import androidx.core.view.WindowInsetsCompat
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.compose.*
@@ -286,7 +285,7 @@ fun HomeTopAppBar(
                 }
                 Text(
                     text = location?.eupmyeondong ?: "-",
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.subtitle2,
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
                 )
@@ -631,7 +630,7 @@ fun DetailLayout(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.subtitle1,
                 color = AIKTheme.colors.on_core_container
             )
             Spacer(modifier = Modifier.size(4.dp))
@@ -661,7 +660,7 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(6.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.subtitle1,
                 color = AIKTheme.colors.on_core_container
             )
         }
@@ -795,10 +794,10 @@ fun Information(
                 .wrapContentHeight()
         ) {
             Text(
-                text = information ?: ".",
+                text = information ?: stringResource(id = R.string.no_information_data),
                 style = MaterialTheme.typography.subtitle2,
                 color = AIKTheme.colors.on_core_container,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             )
         }
     }

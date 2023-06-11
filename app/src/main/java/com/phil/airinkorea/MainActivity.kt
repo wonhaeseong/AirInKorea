@@ -1,9 +1,9 @@
 package com.phil.airinkorea
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
@@ -37,8 +38,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -137,47 +136,6 @@ class MainActivity : ComponentActivity() {
                     val geocoder = Geocoder(this@MainActivity, Locale.US)
                     Log.d("GPS latitude", location.latitude.toString())
                     Log.d("GPS longitude", location.longitude.toString())
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val addresses = suspendCoroutine<List<Address>?> { continuation ->
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                geocoder.getFromLocation(
-                                    location.latitude, location.longitude, 1
-                                ) { addresses ->
-                                    continuation.resume(addresses)
-                                }
-                            } else {
-                                geocoder.getFromLocation(
-                                    location.latitude, location.longitude, 1
-                                )
-                            }
-                        }
-                        val eupmyeondong =
-                            addresses?.get(0)?.getAddressLine(0)?.split(",")?.get(1)?.trim()
-                        val newLocation = eupmyeondong?.let {
-                            homeViewModel.getMatchLocationByEupmyeondong(it)
-                        }
-                        homeViewModel.fetchGPSLocation(newLocation)
-                        val airData =
-                            withContext(Dispatchers.IO) {
-                                homeViewModel.getAirData(newLocation?.station)
-                            }
-                        Log.d("TAG1", airData.toString())
-                        homeViewModel.emitHomeUiState(
-                            HomeUiState.Success(
-                                location = newLocation,
-                                dataTime = airData.date,
-                                airLevel = airData.airLevel,
-                                detailAirData = airData.detailAirData,
-                                information = airData.information,
-                                dailyForecast = airData.dailyForecast,
-                                forecastModelUrl = airData.koreaForecastModelGif,
-                                page = 0,
-                                isRefreshing = false,
-                                isPageLoading = false
-                            )
-                        )
-                    }
-
                 }.addOnFailureListener {
                     Toast.makeText(this, "Can't get Location Data", Toast.LENGTH_LONG).show()
                 }

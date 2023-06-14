@@ -155,7 +155,7 @@ fun DrawerScreen(
                     //particulate Matter Info 미세먼지 정보
                     DrawerTitle(
                         icon = painterResource(id = AIKIcons.Info),
-                        stringId = R.string.particulate_matter_info,
+                        stringId = R.string.app_guide,
                         clickable = true,
                         onClick = onParticulateMatterInfoClick
                     )

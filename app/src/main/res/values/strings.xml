@@ -28,7 +28,7 @@
     <string name="bookmark_is_not_set">Bookmark is not set</string>
     <string name="please_add_a_location">Please add a location.</string>
     <string name="manage_locations">Manage Locations</string>
-    <string name="particulate_matter_info">Particulate Matter Info</string>
+    <string name="app_guide">App Guide</string>
     <string name="app_info">App Info</string>
     <string name="korea_forecast_model_error">Image could not be loaded</string>
     <string name="add_location">Add a Location</string>
@@ -37,5 +37,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="data_loading">Data Loading</string>
+    <string name="air_pollution_level">Air Pollution Level</string>
     <string name="daily_forecast_day_layout">%1$s/%2$s/%3$s</string>
 </resources>

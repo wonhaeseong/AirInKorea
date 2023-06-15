@@ -3,13 +3,12 @@ package com.phil.airinkorea.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.ui.addlocation.AddLocationRoute
+import com.phil.airinkorea.ui.appguide.AppGuideRoute
 import com.phil.airinkorea.ui.home.HomeRoute
 import com.phil.airinkorea.ui.managelocations.ManageLocationRoute
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
@@ -56,8 +55,10 @@ fun NavGraph(
         composable("AppInfo") {
 
         }
-        composable("ParticulateMatterInfo") {
-
+        composable("AppGuide") {
+            AppGuideRoute(
+                onBackButtonClick = { navController.popBackStack() }
+            )
         }
     }
 }

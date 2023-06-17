@@ -4,10 +4,11 @@ import android.util.Log
 import com.phil.airinkorea.data.database.dao.GPSLocationDao
 import com.phil.airinkorea.data.database.dao.LocationDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
-import com.phil.airinkorea.data.database.model.GPSLocationEntity
 import com.phil.airinkorea.data.database.model.mapToExternalModel
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.model.mapToLocationEntity
 import com.phil.airinkorea.data.model.mapToUserLocationEntity
+import com.phil.airinkorea.data.network.firebase.FirebaseClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class LocationRepositoryImpl @Inject constructor(
     private val locationDao: LocationDao,
     private val gpsLocationDao: GPSLocationDao,
-    private val userLocationsDao: UserLocationsDao
+    private val userLocationsDao: UserLocationsDao,
+    private val firebaseClient: FirebaseClient
 ) : LocationRepository {
     override fun getSearchResult(query: String): Flow<List<Location>> =
         locationDao.searchLocation(query).map { locationList ->
@@ -70,35 +72,27 @@ class LocationRepositoryImpl @Inject constructor(
     override fun getGPSLocation(): Flow<Location?> =
         gpsLocationDao.getGPSLocation().map { it?.mapToExternalModel() }
 
-    override suspend fun fetchGPSLocation(location: Location?) {
-        if (location == null){
+    override suspend fun fetchGPSLocation(latitude: Double, longitude: Double) {
+        val location = firebaseClient.getLocationByCoordinate(latitude, longitude)?.mapToLocationEntity()
+        if (location == null) {
             gpsLocationDao.deleteGPSLocation()
-        }else{
+        } else {
             Log.d("TAG fetchGPS", location.toString())
             val isLocationExists = withContext(Dispatchers.IO) {
                 gpsLocationDao.isExists()
             }
             if (isLocationExists) {
                 gpsLocationDao.updateGPSLocation(
-                    enDo = location.`do`,
-                    enSigungu = location.sigungu,
-                    enEupmyeondong = location.eupmyeondong,
+                    enDo = location.enDo,
+                    enSigungu = location.enSigungu,
+                    enEupmyeondong = location.enEupmyeondong,
                     station = location.station
                 )
             } else {
                 gpsLocationDao.insertGPSLocation(
-                    GPSLocationEntity(
-                        enDo = location.`do`,
-                        enSigungu = location.sigungu,
-                        enEupmyeondong = location.eupmyeondong,
-                        station = location.station
-                    )
+                    location
                 )
             }
         }
     }
-
-    override suspend fun getMatchLocationByEupmyeondong(eupmyeondong: String): Location =
-        locationDao.getMatchLocationByEupmyeondong(eupmyeondong).mapToExternalModel()
-
 }

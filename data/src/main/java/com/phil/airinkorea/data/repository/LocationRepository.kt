@@ -17,6 +17,5 @@ interface LocationRepository {
     suspend fun removeBookmark(bookmark: Location)
     suspend fun addBookmark(bookmark: Location)
     fun getGPSLocation(): Flow<Location?>
-    suspend fun fetchGPSLocation(location: Location?)
-    suspend fun getMatchLocationByEupmyeondong(eupmyeondong: String): Location
+    suspend fun fetchGPSLocation(latitude: Double, longitude: Double)
 }

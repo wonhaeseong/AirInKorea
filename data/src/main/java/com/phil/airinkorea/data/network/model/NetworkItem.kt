@@ -45,3 +45,11 @@ data class NetworkDetailAirData(
     val sidoName: String?,
     val airLevel: String
 )
+
+@Serializable
+data class NetworkLocation(
+    @SerialName("en_do") val `do`: String,
+    @SerialName("en_sigungu") val sigungu: String,
+    @SerialName("en_eupmyeondong") val eupmyeondong: String,
+    @SerialName("station") val station: String
+)

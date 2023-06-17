@@ -5,10 +5,20 @@ import com.phil.airinkorea.data.database.model.DailyForecastEntity
 import com.phil.airinkorea.data.database.model.DetailAirDataEntity
 import com.phil.airinkorea.data.database.model.GPSLocationEntity
 import com.phil.airinkorea.data.database.model.KoreaForecastModelGifEntity
+import com.phil.airinkorea.data.database.model.LocationEntity
 import com.phil.airinkorea.data.database.model.UserLocationEntity
 import com.phil.airinkorea.data.network.model.NetworkAirData
 import com.phil.airinkorea.data.network.model.NetworkDetailAirData
 import com.phil.airinkorea.data.network.model.NetworkForecastItem
+import com.phil.airinkorea.data.network.model.NetworkLocation
+
+fun NetworkLocation.mapToLocationEntity(): GPSLocationEntity =
+    GPSLocationEntity(
+        enDo = `do`,
+        enSigungu = sigungu,
+        enEupmyeondong = eupmyeondong,
+        station = station
+    )
 
 fun NetworkAirData.mapToAirDataEntity(station: String): AirDataEntity =
     AirDataEntity(
@@ -72,12 +82,5 @@ fun Location.mapToUserLocationEntity(bookmark: Boolean) =
         bookmark = if (bookmark) 1 else 0
     )
 
-fun Location.mapToGPSLocationEntity() =
-    GPSLocationEntity(
-        enDo = `do`,
-        enSigungu = sigungu,
-        enEupmyeondong = eupmyeondong,
-        station = station
-    )
 
 

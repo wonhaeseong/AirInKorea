@@ -133,9 +133,9 @@ class MainActivity : ComponentActivity() {
                     Priority.PRIORITY_HIGH_ACCURACY,
                     null
                 ).addOnSuccessListener { location ->
-                    val geocoder = Geocoder(this@MainActivity, Locale.US)
                     Log.d("GPS latitude", location.latitude.toString())
                     Log.d("GPS longitude", location.longitude.toString())
+                    homeViewModel.fetchGPSLocation(location.latitude, location.longitude)
                 }.addOnFailureListener {
                     Toast.makeText(this, "Can't get Location Data", Toast.LENGTH_LONG).show()
                 }

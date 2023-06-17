@@ -14,10 +14,3 @@ data class Location(
     val eupmyeondong: String,
     val station: String
     )
-data class UserLocation(
-    val `do`: String,
-    val sigungu: String,
-    val eupmyeondong: String,
-    val station: String,
-    var bookmark: Boolean
-    )

@@ -242,17 +242,40 @@ class HomeViewModel @Inject constructor(
         Log.d("TAG", station.toString())
         return airDataRepository.getAirData(station).first()
             .also { Log.d("TAG", it.toString()) }
-
     }
-
-    suspend fun getMatchLocationByEupmyeondong(eupmyeondong: String): Location =
-        locationRepository.getMatchLocationByEupmyeondong(eupmyeondong)
 
     suspend fun emitHomeUiState(newHomeUiState: HomeUiState) {
         homeUiState.emit(newHomeUiState)
     }
 
-    suspend fun fetchGPSLocation(location: Location?) {
-        locationRepository.fetchGPSLocation(location)
+    fun fetchGPSLocation(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                locationRepository.fetchGPSLocation(
+                    latitude,
+                    longitude
+                )
+            }
+            val newGPSLocation = locationRepository.getGPSLocation().first()
+            val airData =
+                withContext(Dispatchers.IO) {
+                    getAirData(newGPSLocation?.station)
+                }
+            Log.d("TAG1", airData.toString())
+            emitHomeUiState(
+                HomeUiState.Success(
+                    location = newGPSLocation,
+                    dataTime = airData.date,
+                    airLevel = airData.airLevel,
+                    detailAirData = airData.detailAirData,
+                    information = airData.information,
+                    dailyForecast = airData.dailyForecast,
+                    forecastModelUrl = airData.koreaForecastModelGif,
+                    page = 0,
+                    isRefreshing = false,
+                    isPageLoading = false
+                )
+            )
+        }
     }
 }

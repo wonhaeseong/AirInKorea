@@ -30,7 +30,7 @@ fun NavGraph(
             }
             HomeRoute(
                 onManageLocationClick = { navController.navigate("ManageLocation") },
-                onParticulateMatterInfoClick = { navController.navigate("ParticulateMatterInfo") },
+                onParticulateMatterInfoClick = { navController.navigate("AppGuide") },
                 onAppInfoClick = { navController.navigate("AppInfo") },
                 homeViewModel = homeViewModel
             )
@@ -53,9 +53,21 @@ fun NavGraph(
             )
         }
         composable("AppInfo") {
+            SideEffect {
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent,
+                    darkIcons = true
+                )
+            }
 
         }
         composable("AppGuide") {
+            SideEffect {
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent,
+                    darkIcons = true
+                )
+            }
             AppGuideRoute(
                 onBackButtonClick = { navController.popBackStack() }
             )

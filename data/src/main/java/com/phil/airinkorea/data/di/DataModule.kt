@@ -2,6 +2,8 @@ package com.phil.airinkorea.data.di
 
 import com.phil.airinkorea.data.repository.AirDataRepository
 import com.phil.airinkorea.data.repository.AirDataRepositoryImpl
+import com.phil.airinkorea.data.repository.AppGuideRepository
+import com.phil.airinkorea.data.repository.AppGuideRepositoryImpl
 import com.phil.airinkorea.data.repository.AppStatusRepository
 import com.phil.airinkorea.data.repository.AppStatusRepositoryImpl
 import com.phil.airinkorea.data.repository.LocationRepository
@@ -28,5 +30,10 @@ class DataModule {
     fun provideAppStatusRepository(
         appStatusRepository: AppStatusRepositoryImpl
     ): AppStatusRepository = appStatusRepository
+
+    @Provides
+    fun provideAppGuideRepository(
+        appGuideRepository: AppGuideRepositoryImpl
+    ): AppGuideRepository = appGuideRepository
 }
 

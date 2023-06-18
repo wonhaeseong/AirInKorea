@@ -278,4 +278,19 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
+
+    fun fetchToPageBookmark() {
+        viewModelScope.launch(Dispatchers.IO) {
+            appStatusRepository.fetchDefaultPage(1)
+        }
+    }
+
+    fun setRefreshingState(isRefreshing: Boolean) {
+        val currentHomeUiState = homeUiState.value
+        if (currentHomeUiState is HomeUiState.Success) {
+            homeUiState.update {
+                currentHomeUiState.copy(isRefreshing = isRefreshing)
+            }
+        }
+    }
 }

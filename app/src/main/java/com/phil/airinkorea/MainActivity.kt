@@ -23,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
@@ -60,6 +61,8 @@ class MainActivity : ComponentActivity() {
                 }
 
                 else -> {
+                    homeViewModel.fetchToPageBookmark()
+                    Toast.makeText(this, "Please turn on location permission to get location data", Toast.LENGTH_LONG).show()
                     Log.d("TAG a", "Permission 거부")
                 }
             }
@@ -73,6 +76,8 @@ class MainActivity : ComponentActivity() {
                 getGPSLocation()
                 Log.d("TAG a", "GPS 허용됨")
             } else {
+                homeViewModel.fetchToPageBookmark()
+                homeViewModel.setRefreshingState(false)
                 Log.d("TAG a", "GPS 허용안됨")
             }
         }
@@ -123,7 +128,12 @@ class MainActivity : ComponentActivity() {
 
     private fun getGPSLocation() {
         if (checkPermission()) {
-            val builder = LocationSettingsRequest.Builder()
+            val locationRequest =
+                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 6000L).apply {
+                    setMinUpdateDistanceMeters(100f)
+                    setWaitForAccurateLocation(true)
+                }.build()
+            val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
             val client: SettingsClient = LocationServices.getSettingsClient(this)
             val task: Task<LocationSettingsResponse> =
                 client.checkLocationSettings(builder.build())
@@ -133,9 +143,11 @@ class MainActivity : ComponentActivity() {
                     Priority.PRIORITY_HIGH_ACCURACY,
                     null
                 ).addOnSuccessListener { location ->
-                    Log.d("GPS latitude", location.latitude.toString())
-                    Log.d("GPS longitude", location.longitude.toString())
-                    homeViewModel.fetchGPSLocation(location.latitude, location.longitude)
+                    if (location != null) {
+                        Log.d("GPS latitude", location.latitude.toString())
+                        Log.d("GPS longitude", location.longitude.toString())
+                        homeViewModel.fetchGPSLocation(location.latitude, location.longitude)
+                    }
                 }.addOnFailureListener {
                     Toast.makeText(this, "Can't get Location Data", Toast.LENGTH_LONG).show()
                 }

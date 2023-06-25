@@ -132,7 +132,7 @@ class HomeViewModel @Inject constructor(
                     } else {
                         locationRepository.getUserLocationList().first()[it - 2]
                     }
-                val airData = getAirData(location.station)
+                val airData = getAirDataAfterFetch(location.station)
                 emitHomeUiState(
                     HomeUiState.Success(
                         location = location,
@@ -197,7 +197,7 @@ class HomeViewModel @Inject constructor(
                     getGPSLocation()
                 } else {
                     val location = locationStateFlow.value
-                    val airData = getAirData(location?.station)
+                    val airData = getAirDataAfterFetch(location?.station)
                     emitHomeUiState(
                         HomeUiState.Success(
                             location = location,
@@ -233,18 +233,25 @@ class HomeViewModel @Inject constructor(
         _activityEvent.emit(ActivityEvent.GetGPSLocation)
     }
 
-    suspend fun getAirData(station: String?): AirData {
-        withContext(Dispatchers.Default) {
-            if (station != null) {
-                airDataRepository.fetchAirData(station)
+    private suspend fun getAirDataAfterFetch(station: String?): AirData {
+        withContext(Dispatchers.IO){
+            if (station !=null){
+                fetchAirData(station)
             }
         }
-        Log.d("TAG", station.toString())
-        return airDataRepository.getAirData(station).first()
-            .also { Log.d("TAG", it.toString()) }
+        return getAirData(station)
     }
 
-    suspend fun emitHomeUiState(newHomeUiState: HomeUiState) {
+    private suspend fun fetchAirData(station: String) =
+        airDataRepository.fetchAirData(station)
+
+
+    private suspend fun getAirData(station: String?): AirData =
+        airDataRepository.getAirData(station).first()
+            .also { Log.d("getAirData", it.toString()) }
+
+
+    private suspend fun emitHomeUiState(newHomeUiState: HomeUiState) {
         homeUiState.emit(newHomeUiState)
     }
 
@@ -261,7 +268,6 @@ class HomeViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     getAirData(newGPSLocation?.station)
                 }
-            Log.d("TAG1", airData.toString())
             emitHomeUiState(
                 HomeUiState.Success(
                     location = newGPSLocation,

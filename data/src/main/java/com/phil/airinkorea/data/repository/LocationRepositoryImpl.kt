@@ -1,11 +1,17 @@
 package com.phil.airinkorea.data.repository
 
 import android.util.Log
+import com.phil.airinkorea.data.database.dao.AirDataDao
 import com.phil.airinkorea.data.database.dao.GPSLocationDao
 import com.phil.airinkorea.data.database.dao.LocationDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
+import com.phil.airinkorea.data.database.model.AirDataEntity
+import com.phil.airinkorea.data.database.model.DetailAirDataEntity
+import com.phil.airinkorea.data.database.model.KoreaForecastModelGifEntity
 import com.phil.airinkorea.data.database.model.mapToExternalModel
+import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.model.mapToAirDataEntity
 import com.phil.airinkorea.data.model.mapToLocationEntity
 import com.phil.airinkorea.data.model.mapToUserLocationEntity
 import com.phil.airinkorea.data.network.firebase.FirebaseClient
@@ -19,6 +25,7 @@ class LocationRepositoryImpl @Inject constructor(
     private val locationDao: LocationDao,
     private val gpsLocationDao: GPSLocationDao,
     private val userLocationsDao: UserLocationsDao,
+    private val airDataDao: AirDataDao,
     private val firebaseClient: FirebaseClient
 ) : LocationRepository {
     override fun getSearchResult(query: String): Flow<List<Location>> =
@@ -73,26 +80,33 @@ class LocationRepositoryImpl @Inject constructor(
         gpsLocationDao.getGPSLocation().map { it?.mapToExternalModel() }
 
     override suspend fun fetchGPSLocation(latitude: Double, longitude: Double) {
-        val location = firebaseClient.getLocationByCoordinate(latitude, longitude)?.mapToLocationEntity()
-        if (location == null) {
+        val networkResult = firebaseClient.getAirDataByCoordinate(latitude, longitude)
+        val locationEntity = networkResult?.networkLocation?.mapToLocationEntity()
+        val networkAirData = networkResult?.networkAirData
+        if (locationEntity == null) {
             gpsLocationDao.deleteGPSLocation()
         } else {
-            Log.d("TAG fetchGPS", location.toString())
+            Log.d("TAG fetchGPS", locationEntity.toString())
             val isLocationExists = withContext(Dispatchers.IO) {
                 gpsLocationDao.isExists()
             }
             if (isLocationExists) {
                 gpsLocationDao.updateGPSLocation(
-                    enDo = location.enDo,
-                    enSigungu = location.enSigungu,
-                    enEupmyeondong = location.enEupmyeondong,
-                    station = location.station
+                    enDo = locationEntity.enDo,
+                    enSigungu = locationEntity.enSigungu,
+                    enEupmyeondong = locationEntity.enEupmyeondong,
+                    station = locationEntity.station
                 )
             } else {
                 gpsLocationDao.insertGPSLocation(
-                    location
+                    locationEntity
                 )
             }
+        }
+        if (networkAirData != null && locationEntity != null) {
+            airDataDao.insertAirData(
+                networkAirData.mapToAirDataEntity(locationEntity.station)
+            )
         }
     }
 }

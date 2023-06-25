@@ -53,3 +53,9 @@ data class NetworkLocation(
     @SerialName("en_eupmyeondong") val eupmyeondong: String,
     @SerialName("station") val station: String
 )
+
+@Serializable
+data class NetworkCoordinateResult(
+    @SerialName("location")val networkLocation: NetworkLocation,
+    @SerialName("airData")val networkAirData: NetworkAirData
+)

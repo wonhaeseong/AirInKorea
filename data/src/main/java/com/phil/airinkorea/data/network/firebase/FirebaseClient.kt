@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.phil.airinkorea.data.network.model.NetworkAirData
+import com.phil.airinkorea.data.network.model.NetworkCoordinateResult
 import com.phil.airinkorea.data.network.model.NetworkLocation
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.decodeFromString
@@ -38,19 +39,19 @@ class FirebaseClient {
         }
     }
 
-    suspend fun getLocationByCoordinate(latitude: Double, longitude: Double): NetworkLocation? {
+    suspend fun getAirDataByCoordinate(latitude: Double, longitude: Double): NetworkCoordinateResult? {
         val data = hashMapOf(
             "latitude" to latitude,
             "longitude" to longitude
         )
         try {
             val result =
-                functions.getHttpsCallable("getLocationByCoordinate")
+                functions.getHttpsCallable("getAirDataByCoordinate")
                     .call(data)
                     .await()
                     .data
             Log.d("API GPS result1", result.toString())
-            return convertJsonToNetworkLocation(result.toString())
+            return convertJsonToNetworkCoordinate(result.toString())
         } catch (e: Exception) {
             if (e is FirebaseFunctionsException) {
                 val code = e.code
@@ -71,7 +72,7 @@ class FirebaseClient {
         return json.decodeFromString(result)
     }
 
-    private fun convertJsonToNetworkLocation(result: String): NetworkLocation {
+    private fun convertJsonToNetworkCoordinate(result: String): NetworkCoordinateResult {
         val json = Json {
             prettyPrint = true
             ignoreUnknownKeys = true

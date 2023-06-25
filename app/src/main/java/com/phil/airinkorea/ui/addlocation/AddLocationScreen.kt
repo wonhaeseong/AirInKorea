@@ -8,6 +8,7 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -93,7 +94,7 @@ fun AddLocationContent(
     onSearchTextChange: (TextFieldValue) -> Unit,
     onAddButtonClick: (Location) -> Unit
 ) {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var text by rememberSaveable(stateSaver = TextFieldValue.Saver){ mutableStateOf(TextFieldValue("")) }
     val bringIntoViewRequester = remember {
         BringIntoViewRequester()
     }

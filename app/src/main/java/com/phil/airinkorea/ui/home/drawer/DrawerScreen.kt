@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -44,7 +43,6 @@ import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.AIKTypography
-import com.phil.airinkorea.ui.theme.Shapes
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
@@ -84,28 +82,15 @@ fun DrawerScreen(
                         .padding(horizontal = 15.dp)
                         .verticalScroll(scrollState)
                 ) {
-                    //setting
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = AIKIcons.Setting,
-                                tint = AIKTheme.colors.on_core_container,
-                                contentDescription = null
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.size(30.dp))
                     //GPS
                     GPS(
                         location = drawerUiState.gps,
                         onClick = { onDrawerLocationClick(0) },
                         page = drawerUiState.page
                     )
+
+                    Spacer(modifier = Modifier.size(3.dp))
                     Divider(
                         color = divider, modifier = Modifier
                             .fillMaxWidth()
@@ -117,6 +102,7 @@ fun DrawerScreen(
                         onClick = { onDrawerLocationClick(1) },
                         page = drawerUiState.page
                     )
+                    Spacer(modifier = Modifier.size(3.dp))
                     Divider(
                         color = divider, modifier = Modifier
                             .fillMaxWidth()
@@ -191,7 +177,8 @@ fun GPS(
             DrawerItem(
                 text = stringResource(id = R.string.unable_gps),
                 onClick = { onClick(0) },
-                isSelected = page == 0
+                isSelected = page == 0,
+                hasData = false
             )
         } else {
             DrawerItem(
@@ -219,7 +206,8 @@ fun Bookmark(
             DrawerItem(
                 text = stringResource(id = R.string.bookmark_is_not_set),
                 itemEnable = false,
-                isSelected = page == 1
+                isSelected = page == 1,
+                hasData = false
             )
         } else {
             DrawerItem(
@@ -255,7 +243,8 @@ fun MyLocations(
             ) {
                 DrawerItem(
                     text = stringResource(id = R.string.please_add_a_location),
-                    itemEnable = false
+                    itemEnable = false,
+                    hasData = false
                 )
             }
         } else {
@@ -326,45 +315,40 @@ fun DrawerItem(
     modifier: Modifier = Modifier,
     text: String,
     itemEnable: Boolean = true,
+    hasData: Boolean = true,
     onClick: () -> Unit = {},
     isSelected: Boolean = false
 ) {
+    val backgroundColor = if (isSelected) AIKTheme.colors.core_20 else AIKTheme.colors.core_container
+    val contentColor = if (isSelected) AIKTheme.colors.core else AIKTheme.colors.on_core_container
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(PaddingValues(start = 15.dp, top = 10.dp, bottom = 12.dp))
             .clickable(enabled = itemEnable) { onClick() }
+            .background(
+                backgroundColor
+            )
+            .padding(PaddingValues(start = 15.dp, top = 8.dp, bottom = 8.dp))
     ) {
-        if (itemEnable) {
+        if (hasData) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_circle),
                 contentDescription = null,
+                tint = contentColor,
                 modifier = Modifier
                     .size(5.dp)
             )
         }
         Spacer(modifier = Modifier.size(10.dp))
-        if (isSelected) {
-            Box(modifier = Modifier.background(Color.Gray, Shapes.medium)) {
-                Text(
-                    text = text,
-                    style = AIKTypography.subtitle1,
-                    color = AIKTheme.colors.core_container,
-                    textAlign = TextAlign.Start,
-                    modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                )
-            }
-        } else {
-            Text(
-                text = text,
-                style = AIKTypography.subtitle1,
-                color = AIKTheme.colors.on_core_container,
-                textAlign = TextAlign.Start
-            )
-        }
+        Text(
+            text = text,
+            style = AIKTypography.subtitle1,
+            color = contentColor,
+            textAlign = TextAlign.Start
+        )
     }
 }
 

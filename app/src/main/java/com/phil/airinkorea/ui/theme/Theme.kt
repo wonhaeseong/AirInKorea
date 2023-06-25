@@ -10,6 +10,7 @@ import com.phil.airinkorea.data.model.AirLevel
 
 private val level1Color = AIKColors(
     core = level1_core,
+    core_20 = level1_core_20,
     on_core = level1_on_core,
     core_container = level1_core_container,
     on_core_container = level1_on_core_container,
@@ -20,6 +21,7 @@ private val level1Color = AIKColors(
 
 private val level2Color = AIKColors(
     core = level2_core,
+    core_20 = level2_core_20,
     on_core = level2_on_core,
     core_container = level2_core_container,
     on_core_container = level2_on_core_container,
@@ -30,6 +32,7 @@ private val level2Color = AIKColors(
 
 private val level3Color = AIKColors(
     core = level3_core,
+    core_20 = level3_core_20,
     on_core = level3_on_core,
     core_container = level3_core_container,
     on_core_container = level3_on_core_container,
@@ -40,6 +43,7 @@ private val level3Color = AIKColors(
 
 private val level4Color = AIKColors(
     core = level4_core,
+    core_20 = level4_core_20,
     on_core = level4_on_core,
     core_container = level4_core_container,
     on_core_container = level4_on_core_container,
@@ -50,6 +54,7 @@ private val level4Color = AIKColors(
 
 private val level5Color = AIKColors(
     core = level5_core,
+    core_20 = level5_core_20,
     on_core = level5_on_core,
     core_container = level5_core_container,
     on_core_container = level5_on_core_container,
@@ -60,6 +65,7 @@ private val level5Color = AIKColors(
 
 private val level6Color = AIKColors(
     core = level6_core,
+    core_20 = level6_core_20,
     on_core = level6_on_core,
     core_container = level6_core_container,
     on_core_container = level6_on_core_container,
@@ -70,6 +76,7 @@ private val level6Color = AIKColors(
 
 private val levelErrorColor = AIKColors(
     core = level6_core,
+    core_20 = level6_core_20,
     on_core = level6_on_core,
     core_container = level6_core_container,
     on_core_container = level6_on_core_container,
@@ -82,6 +89,7 @@ private val levelErrorColor = AIKColors(
 @Stable
 class AIKColors(
     core: Color,
+    core_20: Color,
     on_core: Color,
     core_container: Color,
     on_core_container: Color,
@@ -90,6 +98,8 @@ class AIKColors(
     core_background: Brush
 ) {
     var core by mutableStateOf(core)
+        private set
+    var core_20 by mutableStateOf(core_20)
         private set
     var on_core by mutableStateOf(on_core)
         private set
@@ -106,6 +116,7 @@ class AIKColors(
 
     fun update(other: AIKColors) {
         core = other.core
+        core_20 = other.core_20
         on_core = other.on_core
         core_container = other.core_container
         on_core_container = other.on_core_container
@@ -116,6 +127,7 @@ class AIKColors(
 
     fun copy(): AIKColors = AIKColors(
         core = core,
+        core_20 = core_20,
         on_core = on_core,
         core_container = core_container,
         on_core_container = on_core_container,

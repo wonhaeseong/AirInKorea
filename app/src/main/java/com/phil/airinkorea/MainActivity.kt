@@ -1,11 +1,8 @@
 package com.phil.airinkorea
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -14,7 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
@@ -32,13 +28,10 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.phil.airinkorea.ui.NavGraph
 import com.phil.airinkorea.ui.viewmodel.ActivityEvent
-import com.phil.airinkorea.ui.viewmodel.HomeUiState
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -601,8 +601,7 @@ fun DetailLayout(
                     style = MaterialTheme.typography.h5,
                     color = AIKTheme.colors.on_core_container,
                     textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 2
                 )
             }
             Spacer(modifier = Modifier.size(5.dp))
@@ -641,12 +640,11 @@ fun DetailLayout(
             ) {
                 Text(
                     text = level.value,
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.subtitle3,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     color = AIKTheme.colors.on_core_container,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 2
                 )
             }
             Spacer(modifier = Modifier.size(4.dp))
@@ -660,7 +658,8 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(6.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.body2,
+                fontWeight = FontWeight.SemiBold,
                 color = AIKTheme.colors.on_core_container
             )
         }
@@ -755,7 +754,7 @@ fun DailyForecastComponent(
             )
         }
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
                 .fillMaxHeight()
@@ -764,13 +763,13 @@ fun DailyForecastComponent(
             Text(
                 text = airLevel,
                 color = AIKTheme.colors.on_core_container,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.subtitle2
             )
             Box(
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.medium)
-                    .width(60.dp)
-                    .height(4.dp)
+                    .width(50.dp)
+                    .height(5.dp)
                     .background(color = airLevelColor)
             )
         }
@@ -886,7 +885,6 @@ fun KoreaForecastMap(
             modifier = Modifier.wrapContentSize(),
             color = AIKTheme.colors.core_container
         ) {
-
             Column(modifier = Modifier.fillMaxSize()) {
                 if (gifUrl.pm10GifUrl != null) {
                     GlideImage(
@@ -896,7 +894,24 @@ fun KoreaForecastMap(
                         contentScale = ContentScale.FillWidth
                     )
                 } else {
-                    Text(text = stringResource(id = R.string.korea_forecast_model_error))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_error_outline),
+                            contentDescription = null,
+                            modifier = Modifier.size(100.dp)
+                        )
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text(
+                            text = stringResource(id = R.string.korea_forecast_model_error),
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
                 }
                 if (gifUrl.pm25GifUrl != null) {
                     GlideImage(
@@ -905,8 +920,6 @@ fun KoreaForecastMap(
                         modifier = Modifier.fillMaxWidth(),
                         contentScale = ContentScale.FillWidth
                     )
-                } else {
-                    Text(text = stringResource(id = R.string.korea_forecast_model_error))
                 }
             }
         }
@@ -928,7 +941,7 @@ fun HomeScreenPreviewSuccess() {
             airLevel = AirLevel.Level1,
             detailAirData =
             DetailAirData(
-                pm25Level = AirLevel.Level3,
+                pm25Level = AirLevel.Level5,
                 pm25Value = "25",
                 pm10Level = AirLevel.Level4,
                 pm10Value = "69",
@@ -936,7 +949,7 @@ fun HomeScreenPreviewSuccess() {
                 no2Value = "0.011",
                 so2Level = AirLevel.Level2,
                 so2Value = "0.003",
-                coLevel = AirLevel.Level1,
+                coLevel = AirLevel.Level5,
                 coValue = "0.5",
                 o3Level = AirLevel.Level1,
                 o3Value = "0.049"
@@ -956,7 +969,7 @@ fun HomeScreenPreviewSuccess() {
                 ),
                 DailyForecast(
                     date = "2023-05-01",
-                    airLevel = AirLevel.Level1
+                    airLevel = AirLevel.Level5
                 ),
                 DailyForecast(
                     date = "2023-05-02",

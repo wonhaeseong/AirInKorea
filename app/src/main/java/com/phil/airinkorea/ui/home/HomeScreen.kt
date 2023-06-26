@@ -180,7 +180,7 @@ fun HomeInitialLoadingScreen(
             .fillMaxSize()
             .background(color = level1_core_container)
     ) {
-        LoadingIndicator(modifier = Modifier.size(200.dp))
+        LoadingIndicator(modifier = Modifier.size(250.dp))
     }
 }
 
@@ -224,14 +224,14 @@ fun LoadingIndicator(
     modifier: Modifier = Modifier,
     isPlaying: Boolean = true
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loadingblue))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loadingdots))
     val progress by animateLottieCompositionAsState(
         composition,
         isPlaying = isPlaying,
         iterations = LottieConstants.IterateForever,
         reverseOnRepeat = true,
         restartOnPlay = false,
-        speed = 1.5f
+        speed = 1.0f
     )
     LottieAnimation(
         composition = composition,

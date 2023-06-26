@@ -16,7 +16,7 @@
     <string name="koreaForecastMap">Korea Forecast Map</string>
 
     <string name="gps_error">Please turn on the GPS to get current location information.</string>
-    <string name="data_error">Please refresh the screen by pulling the screen down after a while. Or check your network connection.</string>
+    <string name="data_error">The station may be undergoing inspection, or please ensure that your network connection is functioning properly.</string>
     <string name="dismiss">DISMISS</string>
     <string name="turn_on_gps">TURN ON GPS</string>
     <string name="no_information_data">Unable to retrieve information from the server.</string>

@@ -141,7 +141,9 @@ fun HomeScreen(
                                 CloudIndicator(isPlaying = homeUiState.isRefreshing)
                             }
                             if (homeUiState.airLevel == AirLevel.LevelError) {
+                                val isUnderMaintenance: Boolean = homeUiState.dataTime != null
                                 ErrorBanner(
+                                    isUnderMaintenance = isUnderMaintenance,
                                     modifier = Modifier.padding(10.dp)
                                 )
                             }
@@ -361,8 +363,15 @@ fun CloudIndicator(
 
 @Composable
 fun ErrorBanner(
+    isUnderMaintenance: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val text =
+        if (isUnderMaintenance) {
+            stringResource(id = R.string.under_maintenance)
+        } else {
+            stringResource(id = R.string.data_error)
+        }
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = AIKTheme.colors.core_container,
@@ -386,7 +395,7 @@ fun ErrorBanner(
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
-                    text = stringResource(id = R.string.data_error),
+                    text =text,
                     color = AIKTheme.colors.on_core_container,
                     style = MaterialTheme.typography.body1,
                 )

@@ -5,11 +5,7 @@ import com.phil.airinkorea.data.database.dao.AirDataDao
 import com.phil.airinkorea.data.database.dao.GPSLocationDao
 import com.phil.airinkorea.data.database.dao.LocationDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
-import com.phil.airinkorea.data.database.model.AirDataEntity
-import com.phil.airinkorea.data.database.model.DetailAirDataEntity
-import com.phil.airinkorea.data.database.model.KoreaForecastModelGifEntity
 import com.phil.airinkorea.data.database.model.mapToExternalModel
-import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.mapToAirDataEntity
 import com.phil.airinkorea.data.model.mapToLocationEntity
@@ -55,7 +51,15 @@ class LocationRepositoryImpl @Inject constructor(
                 sigungu = "Yongsan-gu",
                 eupmyeondong = "Namyeong-dong",
                 station = "한강대로"
-            )
+            ).also { defaultLocation ->
+                withContext(Dispatchers.IO){
+                    userLocationsDao.insertUserLocation(
+                        defaultLocation.mapToUserLocationEntity(
+                            true
+                        )
+                    )
+                }
+            }
         }
 
     override suspend fun updateBookmark(newBookmark: Location, oldBookmark: Location) {
@@ -66,15 +70,6 @@ class LocationRepositoryImpl @Inject constructor(
             newBookmark.mapToUserLocationEntity(true)
         )
     }
-
-    override suspend fun removeBookmark(bookmark: Location) {
-        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity(false))
-    }
-
-    override suspend fun addBookmark(bookmark: Location) {
-        userLocationsDao.updateUserLocation(bookmark.mapToUserLocationEntity(true))
-    }
-
 
     override fun getGPSLocation(): Flow<Location?> =
         gpsLocationDao.getGPSLocation().map { it?.mapToExternalModel() }

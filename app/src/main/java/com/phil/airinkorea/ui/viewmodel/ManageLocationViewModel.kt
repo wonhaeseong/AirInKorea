@@ -3,6 +3,7 @@ package com.phil.airinkorea.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.repository.AppStatusRepository
 import com.phil.airinkorea.data.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,7 +27,8 @@ sealed interface ManageLocationUiState {
 
 @HiltViewModel
 class ManageLocationViewModel @Inject constructor(
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val appStatusRepository: AppStatusRepository
 ) : ViewModel() {
     val manageLocationUiState: StateFlow<ManageLocationUiState> =
         combine(
@@ -44,16 +47,17 @@ class ManageLocationViewModel @Inject constructor(
 
     fun deleteLocation(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
+            locationRepository.deleteUserLocation(location)
         }
     }
 
     fun updateBookmark(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            //1.bookmark 해제시 기존 location에 추가
-            //2.bookmark 밀려났을때
-            //3.bookmark 추가
-            //4.bookmark 삭제 안댐
+            locationRepository.updateBookmark(
+                oldBookmark = locationRepository.getBookmark().first(),
+                newBookmark = location
+            )
+            appStatusRepository.fetchDefaultPage(1)
         }
     }
-
 }

@@ -14,8 +14,6 @@ interface LocationRepository {
     suspend fun addUserLocation(userLocation: Location)
     fun getBookmark(): Flow<Location>
     suspend fun updateBookmark(newBookmark: Location, oldBookmark: Location)
-    suspend fun removeBookmark(bookmark: Location)
-    suspend fun addBookmark(bookmark: Location)
     fun getGPSLocation(): Flow<Location?>
     suspend fun fetchGPSLocation(latitude: Double, longitude: Double)
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 sealed interface ManageLocationUiState {
@@ -53,10 +54,12 @@ class ManageLocationViewModel @Inject constructor(
 
     fun updateBookmark(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            locationRepository.updateBookmark(
+            withContext(Dispatchers.IO){
+              locationRepository.updateBookmark(
                 oldBookmark = locationRepository.getBookmark().first(),
                 newBookmark = location
-            )
+              )
+            }
             appStatusRepository.fetchDefaultPage(1)
         }
     }

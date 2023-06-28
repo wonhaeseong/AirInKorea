@@ -17,8 +17,8 @@ fun ManageLocationRoute(
     ManageLocationScreen(
         onAddLocationButtonClick = onAddLocationButtonClick,
         onBackButtonClick = onBackButtonClick,
-        onBookmarkButtonClick = { manageLocationViewModel.updateBookmark(it) },
-        onLocationDeleteButtonClick = { manageLocationViewModel.deleteLocation(it) },
+        onBookmarkDialogConfirmButtonClick = { manageLocationViewModel.updateBookmark(it) },
+        onDeleteDialogConfirmButtonClick = { manageLocationViewModel.deleteLocation(it) },
         manageLocationUiState = manageLocationUiState
     )
 }

@@ -6,6 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,11 +27,20 @@ import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 @Composable
 fun ManageLocationScreen(
     onBackButtonClick: () -> Unit,
-    onBookmarkButtonClick: (Location) -> Unit,
-    onLocationDeleteButtonClick: (Location) -> Unit,
+    onBookmarkDialogConfirmButtonClick: (Location) -> Unit,
+    onDeleteDialogConfirmButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
     manageLocationUiState: ManageLocationUiState
 ) {
+    var dialogOpen by remember {
+        mutableStateOf(false)
+    }
+    var dialogLocation: Location? by remember {
+        mutableStateOf(null)
+    }
+    var dialogContent: ManageLocationDialogContent by remember {
+        mutableStateOf(ManageLocationDialogContent.Delete)
+    }
     Scaffold(
         topBar = {
             CommonTopAppBar(
@@ -38,9 +51,38 @@ fun ManageLocationScreen(
         },
         backgroundColor = common_background
     ) { innerPadding ->
+        if (dialogOpen && dialogLocation != null) {
+            when (dialogContent) {
+                ManageLocationDialogContent.Delete -> {
+                    ManageLocationDialog(
+                        onConfirmButtonClick = onDeleteDialogConfirmButtonClick,
+                        onDismissRequest = { dialogOpen = false },
+                        location = dialogLocation!!,
+                        content = ManageLocationDialogContent.Delete
+                    )
+                }
+
+                ManageLocationDialogContent.Bookmark -> {
+                    ManageLocationDialog(
+                        onConfirmButtonClick = onBookmarkDialogConfirmButtonClick,
+                        onDismissRequest = { dialogOpen = false },
+                        location = dialogLocation!!,
+                        content = ManageLocationDialogContent.Bookmark
+                    )
+                }
+            }
+        }
         ManageLocationContent(
-            onBookmarkButtonClick = onBookmarkButtonClick,
-            onLocationDeleteButtonClick = onLocationDeleteButtonClick,
+            onBookmarkButtonClick = {
+                dialogLocation = it
+                dialogOpen = true
+                dialogContent = ManageLocationDialogContent.Bookmark
+            },
+            onLocationDeleteButtonClick = {
+                dialogLocation = it
+                dialogOpen = true
+                dialogContent = ManageLocationDialogContent.Delete
+            },
             onAddLocationButtonClick = onAddLocationButtonClick,
             manageLocationUiState = manageLocationUiState,
             modifier = Modifier.padding(innerPadding)
@@ -84,7 +126,6 @@ fun ManageLocationContent(
                 //bookmark
                 ManageLocationsBookmark(
                     bookmarkedLocation = manageLocationUiState.bookmark,
-                    onBookmarkButtonClick = onBookmarkButtonClick,
                     onLocationDeleteButtonClick = onLocationDeleteButtonClick,
                 )
                 Divider(modifier = Modifier.fillMaxWidth(), color = divider, thickness = 1.dp)
@@ -102,7 +143,6 @@ fun ManageLocationContent(
 @Composable
 fun ManageLocationsBookmark(
     bookmarkedLocation: Location?,
-    onBookmarkButtonClick: (Location) -> Unit,
     onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -127,7 +167,6 @@ fun ManageLocationsBookmark(
             ManageLocationsItem(
                 isBookmarked = true,
                 location = bookmarkedLocation,
-                onBookmarkButtonClick = onBookmarkButtonClick,
                 onLocationDeleteButtonClick = onLocationDeleteButtonClick,
             )
         }
@@ -178,11 +217,11 @@ fun ManageLocationsLocationList(
 
 @Composable
 fun ManageLocationsItem(
+    modifier: Modifier = Modifier,
     isBookmarked: Boolean,
     location: Location,
-    onBookmarkButtonClick: (Location) -> Unit,
-    onLocationDeleteButtonClick: (Location) -> Unit,
-    modifier: Modifier = Modifier
+    onBookmarkButtonClick: (Location) -> Unit = {},
+    onLocationDeleteButtonClick: (Location) -> Unit
 ) {
 
     Row(
@@ -204,7 +243,9 @@ fun ManageLocationsItem(
                 .weight(1f)
         ) {
             IconButton(
-                onClick = { onBookmarkButtonClick(location) },
+                onClick = {
+                    onBookmarkButtonClick(location)
+                },
                 enabled = !isBookmarked
             ) {
                 Icon(
@@ -250,13 +291,89 @@ fun ManageLocationsItem(
     }
 }
 
+enum class ManageLocationDialogContent {
+    Delete,
+    Bookmark
+}
+
+@Composable
+fun ManageLocationDialog(
+    onConfirmButtonClick: (Location) -> Unit,
+    onDismissRequest: () -> Unit,
+    location: Location,
+    content: ManageLocationDialogContent
+) {
+    val title = when (content) {
+        ManageLocationDialogContent.Delete -> {
+            R.string.delete_location
+        }
+
+        ManageLocationDialogContent.Bookmark -> {
+            R.string.change_bookmark
+        }
+    }
+
+    val contentText = when (content) {
+        ManageLocationDialogContent.Delete -> {
+            R.string.delete_location_dialog_text
+        }
+
+        ManageLocationDialogContent.Bookmark -> {
+            R.string.change_bookmark_dialog_text
+        }
+    }
+    AlertDialog(
+        backgroundColor = common_background,
+        shape = MaterialTheme.shapes.medium,
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = stringResource(id = title),
+                style = MaterialTheme.typography.h5,
+                color = level1_on_core_container
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(
+                    id = contentText,
+                    location.eupmyeondong
+                ),
+                style = MaterialTheme.typography.body1,
+                color = level1_on_core_container
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirmButtonClick(location)
+                onDismissRequest()
+            }) {
+                Text(
+                    text = stringResource(id = R.string.yes),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = level1_on_core_container
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(
+                    text = stringResource(id = R.string.no),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = level1_on_core_container
+                )
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 fun ManageLocationScreenPreviewSuccess() {
     ManageLocationScreen(
         onBackButtonClick = {},
-        onBookmarkButtonClick = {},
-        onLocationDeleteButtonClick = {},
+        onBookmarkDialogConfirmButtonClick = {},
+        onDeleteDialogConfirmButtonClick = {},
         onAddLocationButtonClick = {},
         manageLocationUiState = ManageLocationUiState.Success(
             bookmark = Location(
@@ -313,8 +430,8 @@ fun ManageLocationScreenPreviewSuccess() {
 fun ManageLocationScreenPreviewEmpty() {
     ManageLocationScreen(
         onBackButtonClick = {},
-        onBookmarkButtonClick = {},
-        onLocationDeleteButtonClick = {},
+        onBookmarkDialogConfirmButtonClick = {},
+        onDeleteDialogConfirmButtonClick = {},
         onAddLocationButtonClick = {},
         manageLocationUiState = ManageLocationUiState.Success()
     )

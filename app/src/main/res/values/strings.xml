@@ -29,6 +29,10 @@
     <string name="bookmark_is_not_set">Bookmark is not set</string>
     <string name="please_add_a_location">Please add a location.</string>
     <string name="manage_locations">Manage Locations</string>
+    <string name="delete_location">Delete Location</string>
+    <string name="delete_location_dialog_text">Are you sure you want to delete\n\'%1$s\'?</string>
+    <string name="change_bookmark">Change Bookmark</string>
+    <string name="change_bookmark_dialog_text">Do you want to change the bookmark to \n\'%1$s\'?</string>
     <string name="app_guide">App Guide</string>
     <string name="app_info">App Info</string>
     <string name="korea_forecast_model_error">Image could not be loaded</string>

@@ -1,14 +1,24 @@
 package com.phil.airinkorea.ui.appguide
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,16 +38,18 @@ fun AppGuideRoute(
     onBackButtonClick: () -> Unit
 ) {
     val appGuideUiState by appGuideViewModel.appGuideUiState
-    when(appGuideUiState){
+    when (appGuideUiState) {
         AppGuideUiState.Loading -> Unit
-        is AppGuideUiState.Success ->{
+        is AppGuideUiState.Success -> {
             val appGuideContentList = listOf(
-                AppGuideContent(R.string.data_loading) { DataLoading(text = (appGuideUiState as AppGuideUiState.Success).appGuide.dataLoading) },
-                AppGuideContent(R.string.air_pollution_level) {},
-                AppGuideContent(R.string.details) {},
-                AppGuideContent(R.string.information) {},
-                AppGuideContent(R.string.dailyForecast) {},
-                AppGuideContent(R.string.koreaForecastMap) {}
+                AppGuideContent(R.string.cautions) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.cautionGuideText) },
+                AppGuideContent(R.string.data_loading) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.dataLoadingGuideText) },
+                AppGuideContent(R.string.air_pollution_level) { GuideContentAirPollutionLevel(text = (appGuideUiState as AppGuideUiState.Success).appGuide.airPollutionLevelGuideText) },
+                AppGuideContent(R.string.details) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.detailGuideText) },
+                AppGuideContent(R.string.information) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.informationGuideText )},
+                AppGuideContent(R.string.dailyForecast) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.dailyForecastGuideText )},
+                AppGuideContent(R.string.koreaForecastMap) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.koreaForecastModelGuideText )},
+                AppGuideContent(R.string.add_location) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.addLocationGuideText )}
             )
 
             AppGuideScreen(
@@ -51,7 +63,7 @@ fun AppGuideRoute(
 private val contentPadding = 10.dp
 
 @Composable
-fun DataLoading(
+fun GuideContentCommon(
     modifier: Modifier = Modifier,
     text: String
 ) {
@@ -70,3 +82,42 @@ fun DataLoading(
     }
 }
 
+@Composable
+fun GuideContentAirPollutionLevel(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    val pollutionImgList = arrayListOf<@receiver:DrawableRes Int>(
+        R.drawable.pm10,
+        R.drawable.pm25,
+        R.drawable.no2,
+        R.drawable.so2,
+        R.drawable.co,
+        R.drawable.o3
+    )
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = contentPadding)
+    ) {
+        Text(
+            text = text,
+            style = AIKTypography.body1,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.fillMaxWidth()
+        )
+        for (img in pollutionImgList) {
+            Row(
+                modifier = modifier
+                    .wrapContentSize()
+                    .horizontalScroll(state = rememberScrollState())
+            ) {
+                Image(
+                    painter = painterResource(id = img),
+                    contentDescription = null,
+                    modifier = Modifier.width(1000.dp)
+                )
+            }
+        }
+    }
+}

@@ -67,14 +67,15 @@ fun AppGuideScreen(
 @Composable
 fun AppGuideScreenPreview() {
     val appGuideContentList = listOf(
-        AppGuideContent(R.string.data_loading) {
-            DataLoading(text = "ASDSAD")
-        },
+        AppGuideContent(R.string.data_loading) {},
         AppGuideContent(R.string.air_pollution_level) {},
         AppGuideContent(R.string.details) {},
         AppGuideContent(R.string.information) {},
         AppGuideContent(R.string.dailyForecast) {},
-        AppGuideContent(R.string.koreaForecastMap) {}
+        AppGuideContent(R.string.koreaForecastMap) {},
+        AppGuideContent(R.string.add_location){
+
+        }
     )
     AIKTheme(airLevel = AirLevel.Level1) {
         AppGuideScreen(

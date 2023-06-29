@@ -41,7 +41,8 @@
     <string name="add_location_dialog_text">Do you want to add\n\'%1$s\'?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
+    
+    <string name="cautions">Cautions</string>
     <string name="data_loading">Data Loading</string>
     <string name="air_pollution_level">Air Pollution Level</string>
     <string name="daily_forecast_day_layout">%1$s/%2$s/%3$s</string>

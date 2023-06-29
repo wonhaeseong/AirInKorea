@@ -1,10 +1,28 @@
 package com.phil.airinkorea.ui.managelocations
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,8 +38,16 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
+import com.phil.airinkorea.ui.theme.AIKTypography
+import com.phil.airinkorea.ui.theme.bookmark
+import com.phil.airinkorea.ui.theme.common_background
+import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.theme.*
+import com.phil.airinkorea.ui.theme.level1_button
+import com.phil.airinkorea.ui.theme.level1_core
+import com.phil.airinkorea.ui.theme.level1_core_container
+import com.phil.airinkorea.ui.theme.level1_on_core_container
+import com.phil.airinkorea.ui.theme.unselected_bookmark
 import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 
 @Composable
@@ -32,15 +58,16 @@ fun ManageLocationScreen(
     onAddLocationButtonClick: () -> Unit,
     manageLocationUiState: ManageLocationUiState
 ) {
-    var dialogOpen by remember {
+    var deleteDialogOpen by remember {
+        mutableStateOf(false)
+    }
+    var changeBookmarkDialogOpen by remember {
         mutableStateOf(false)
     }
     var dialogLocation: Location? by remember {
         mutableStateOf(null)
     }
-    var dialogContent: ManageLocationDialogContent by remember {
-        mutableStateOf(ManageLocationDialogContent.Delete)
-    }
+
     Scaffold(
         topBar = {
             CommonTopAppBar(
@@ -51,37 +78,29 @@ fun ManageLocationScreen(
         },
         backgroundColor = common_background
     ) { innerPadding ->
-        if (dialogOpen && dialogLocation != null) {
-            when (dialogContent) {
-                ManageLocationDialogContent.Delete -> {
-                    ManageLocationDialog(
-                        onConfirmButtonClick = onDeleteDialogConfirmButtonClick,
-                        onDismissRequest = { dialogOpen = false },
-                        location = dialogLocation!!,
-                        content = ManageLocationDialogContent.Delete
-                    )
-                }
+        if (changeBookmarkDialogOpen && dialogLocation != null) {
+            ManageLocationChangeBookmarkDialog(
+                onConfirmButtonClick = onBookmarkDialogConfirmButtonClick,
+                onDismissRequest = { changeBookmarkDialogOpen = false },
+                location = dialogLocation!!,
+            )
+        }
 
-                ManageLocationDialogContent.Bookmark -> {
-                    ManageLocationDialog(
-                        onConfirmButtonClick = onBookmarkDialogConfirmButtonClick,
-                        onDismissRequest = { dialogOpen = false },
-                        location = dialogLocation!!,
-                        content = ManageLocationDialogContent.Bookmark
-                    )
-                }
-            }
+        if (deleteDialogOpen && dialogLocation != null) {
+            ManageLocationDeleteLocationDialog(
+                onConfirmButtonClick = onDeleteDialogConfirmButtonClick,
+                onDismissRequest = { deleteDialogOpen = false },
+                location = dialogLocation!!
+            )
         }
         ManageLocationContent(
-            onBookmarkButtonClick = {
-                dialogLocation = it
-                dialogOpen = true
-                dialogContent = ManageLocationDialogContent.Bookmark
+            onBookmarkButtonClick = { location ->
+                dialogLocation = location
+                changeBookmarkDialogOpen = true
             },
             onLocationDeleteButtonClick = {
                 dialogLocation = it
-                dialogOpen = true
-                dialogContent = ManageLocationDialogContent.Delete
+                deleteDialogOpen = true
             },
             onAddLocationButtonClick = onAddLocationButtonClick,
             manageLocationUiState = manageLocationUiState,
@@ -289,44 +308,19 @@ fun ManageLocationsItem(
     }
 }
 
-enum class ManageLocationDialogContent {
-    Delete,
-    Bookmark
-}
-
 @Composable
-fun ManageLocationDialog(
+fun ManageLocationChangeBookmarkDialog(
     onConfirmButtonClick: (Location) -> Unit,
     onDismissRequest: () -> Unit,
-    location: Location,
-    content: ManageLocationDialogContent
+    location: Location
 ) {
-    val title = when (content) {
-        ManageLocationDialogContent.Delete -> {
-            R.string.delete_location
-        }
-
-        ManageLocationDialogContent.Bookmark -> {
-            R.string.change_bookmark
-        }
-    }
-
-    val contentText = when (content) {
-        ManageLocationDialogContent.Delete -> {
-            R.string.delete_location_dialog_text
-        }
-
-        ManageLocationDialogContent.Bookmark -> {
-            R.string.change_bookmark_dialog_text
-        }
-    }
     AlertDialog(
         backgroundColor = common_background,
         shape = MaterialTheme.shapes.medium,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
-                text = stringResource(id = title),
+                text = stringResource(id = R.string.change_bookmark),
                 style = MaterialTheme.typography.h5,
                 color = level1_on_core_container
             )
@@ -334,7 +328,58 @@ fun ManageLocationDialog(
         text = {
             Text(
                 text = stringResource(
-                    id = contentText,
+                    id = R.string.change_bookmark_dialog_text,
+                    location.eupmyeondong
+                ),
+                style = MaterialTheme.typography.body1,
+                color = level1_on_core_container
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirmButtonClick(location)
+                onDismissRequest()
+            }) {
+                Text(
+                    text = stringResource(id = R.string.yes),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = level1_on_core_container
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(
+                    text = stringResource(id = R.string.no),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = level1_on_core_container
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun ManageLocationDeleteLocationDialog(
+    onConfirmButtonClick: (Location) -> Unit,
+    onDismissRequest: () -> Unit,
+    location: Location
+) {
+    AlertDialog(
+        backgroundColor = common_background,
+        shape = MaterialTheme.shapes.medium,
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = stringResource(id = R.string.delete_location),
+                style = MaterialTheme.typography.h5,
+                color = level1_on_core_container
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(
+                    id = R.string.delete_location_dialog_text,
                     location.eupmyeondong
                 ),
                 style = MaterialTheme.typography.body1,
@@ -431,6 +476,13 @@ fun ManageLocationScreenPreviewEmpty() {
         onBookmarkDialogConfirmButtonClick = {},
         onDeleteDialogConfirmButtonClick = {},
         onAddLocationButtonClick = {},
-        manageLocationUiState = ManageLocationUiState.Success()
+        manageLocationUiState = ManageLocationUiState.Success(
+            bookmark = Location(
+                `do` = "Gyeongsangnam-do",
+                sigungu = "Hamyang-gun",
+                eupmyeondong = "Anui-myeon",
+                station = "Dd"
+            )
+        )
     )
 }

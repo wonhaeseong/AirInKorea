@@ -106,7 +106,7 @@ fun ManageLocationContent(
                     .fillMaxSize()
                     .padding(horizontal = 15.dp)
             ) {
-                Spacer(modifier = Modifier.size(10.dp))
+                Spacer(modifier = Modifier.size(5.dp))
                 //Add Location Button
                 Button(
                     shape = MaterialTheme.shapes.medium,
@@ -114,7 +114,6 @@ fun ManageLocationContent(
                     onClick = onAddLocationButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.add_location),
@@ -122,11 +121,11 @@ fun ManageLocationContent(
                         color = level1_core_container
                     )
                 }
-                Spacer(modifier = Modifier.size(10.dp))
                 //bookmark
                 ManageLocationsBookmark(
                     bookmarkedLocation = manageLocationUiState.bookmark,
                     onLocationDeleteButtonClick = onLocationDeleteButtonClick,
+                    modifier = Modifier.padding(vertical = 10.dp)
                 )
                 Divider(modifier = Modifier.fillMaxWidth(), color = divider, thickness = 1.dp)
                 //Location List
@@ -149,7 +148,6 @@ fun ManageLocationsBookmark(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
     ) {
         Text(
             text = stringResource(id = R.string.bookmark),
@@ -261,7 +259,7 @@ fun ManageLocationsItem(
             Column(
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
-                    .padding(top = 10.dp, bottom = 10.dp, start = 50.dp)
+                    .padding(top = 10.dp, bottom = 10.dp, start = 40.dp)
             ) {
                 Text(
                     text = location.eupmyeondong,

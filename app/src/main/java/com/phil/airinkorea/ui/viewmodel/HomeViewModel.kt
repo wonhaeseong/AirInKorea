@@ -218,14 +218,14 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onDrawerLocationClick(page: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val currentHomeUiState = homeUiState.value
-            if (currentHomeUiState is HomeUiState.Success) {
-                homeUiState.update {
-                    currentHomeUiState.copy(isPageLoading = true)
-                }
+        val currentHomeUiState = homeUiState.value
+        if (currentHomeUiState is HomeUiState.Success && currentHomeUiState.page != page) {
+            homeUiState.update {
+                currentHomeUiState.copy(isPageLoading = true)
             }
-            appStatusRepository.fetchDefaultPage(page)
+            viewModelScope.launch(Dispatchers.IO) {
+                appStatusRepository.fetchDefaultPage(page)
+            }
         }
     }
 
@@ -234,8 +234,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getAirDataAfterFetch(station: String?): AirData {
-        withContext(Dispatchers.IO){
-            if (station !=null){
+        withContext(Dispatchers.IO) {
+            if (station != null) {
                 fetchAirData(station)
             }
         }

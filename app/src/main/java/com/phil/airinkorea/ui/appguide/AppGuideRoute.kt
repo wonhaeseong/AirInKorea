@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,15 +41,16 @@ fun AppGuideRoute(
     when (appGuideUiState) {
         AppGuideUiState.Loading -> Unit
         is AppGuideUiState.Success -> {
+            val successAppGuideUiState = (appGuideUiState as AppGuideUiState.Success)
             val appGuideContentList = listOf(
-                AppGuideContent(R.string.cautions) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.cautionGuideText) },
-                AppGuideContent(R.string.data_loading) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.dataLoadingGuideText) },
-                AppGuideContent(R.string.air_pollution_level) { GuideContentAirPollutionLevel(text = (appGuideUiState as AppGuideUiState.Success).appGuide.airPollutionLevelGuideText) },
-                AppGuideContent(R.string.details) { GuideContentCommon(text = (appGuideUiState as AppGuideUiState.Success).appGuide.detailGuideText) },
-                AppGuideContent(R.string.information) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.informationGuideText )},
-                AppGuideContent(R.string.dailyForecast) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.dailyForecastGuideText )},
-                AppGuideContent(R.string.koreaForecastMap) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.koreaForecastModelGuideText )},
-                AppGuideContent(R.string.add_location) { GuideContentCommon(text =(appGuideUiState as AppGuideUiState.Success).appGuide.addLocationGuideText )}
+                AppGuideContent(R.string.cautions) { GuideContentCommon(text = successAppGuideUiState.appGuide.cautionGuideText) },
+                AppGuideContent(R.string.data_loading) { GuideContentCommon(text = successAppGuideUiState.appGuide.dataLoadingGuideText) },
+                AppGuideContent(R.string.air_pollution_level) { GuideContentAirPollutionLevel(text = successAppGuideUiState.appGuide.airPollutionLevelGuideText) },
+                AppGuideContent(R.string.details) { GuideContentCommon(text = successAppGuideUiState.appGuide.detailGuideText) },
+                AppGuideContent(R.string.information) { GuideContentCommon(text =successAppGuideUiState.appGuide.informationGuideText )},
+                AppGuideContent(R.string.dailyForecast) { GuideContentCommon(text =successAppGuideUiState.appGuide.dailyForecastGuideText )},
+                AppGuideContent(R.string.koreaForecastMap) { GuideContentCommon(text =successAppGuideUiState.appGuide.koreaForecastModelGuideText )},
+                AppGuideContent(R.string.add_location) { GuideContentCommon(text =successAppGuideUiState.appGuide.addLocationGuideText )}
             )
 
             AppGuideScreen(
@@ -110,12 +111,12 @@ fun GuideContentAirPollutionLevel(
             Row(
                 modifier = modifier
                     .wrapContentSize()
+                    .padding(vertical = 10.dp)
                     .horizontalScroll(state = rememberScrollState())
             ) {
                 Image(
                     painter = painterResource(id = img),
-                    contentDescription = null,
-                    modifier = Modifier.width(1000.dp)
+                    contentDescription = null
                 )
             }
         }

@@ -1,6 +1,7 @@
 package com.phil.airinkorea.ui.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.data.model.DeveloperInfo
 import com.phil.airinkorea.data.repository.AppInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,13 +51,13 @@ class AppInfoViewModel @Inject constructor(
     }
 
     fun showOpenSourceLicenses() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _activityEvent.emit(AppInfoScreenActivityEvent.ShowOpenSourceLicenses)
         }
     }
 
     fun showGithubInBrowser(uri: Uri) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _activityEvent.emit(AppInfoScreenActivityEvent.ShowGithubInBrowser(uri = uri))
         }
     }

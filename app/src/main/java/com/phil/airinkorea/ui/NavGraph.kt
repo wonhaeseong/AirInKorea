@@ -12,13 +12,13 @@ import com.phil.airinkorea.ui.appguide.AppGuideRoute
 import com.phil.airinkorea.ui.appinfo.AppInfoRoute
 import com.phil.airinkorea.ui.home.HomeRoute
 import com.phil.airinkorea.ui.managelocations.ManageLocationRoute
+import com.phil.airinkorea.ui.viewmodel.AppInfoViewModel
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
 
 
 @Composable
 fun NavGraph(
-    navController: NavHostController,
-    homeViewModel: HomeViewModel
+    navController: NavHostController
 ) {
     val systemUiController = rememberSystemUiController()
     NavHost(navController = navController, startDestination = "Home") {
@@ -32,8 +32,7 @@ fun NavGraph(
             HomeRoute(
                 onManageLocationClick = { navController.navigate("ManageLocation") },
                 onParticulateMatterInfoClick = { navController.navigate("AppGuide") },
-                onAppInfoClick = { navController.navigate("AppInfo") },
-                homeViewModel = homeViewModel
+                onAppInfoClick = { navController.navigate("AppInfo") }
             )
         }
         composable("ManageLocation") {

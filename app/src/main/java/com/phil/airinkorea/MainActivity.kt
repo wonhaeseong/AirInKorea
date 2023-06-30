@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            NavGraph(navController = navController, homeViewModel = homeViewModel)
+            NavGraph(navController = navController)
         }
 
         fusedLocationProviderClient =
@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             appInfoViewModel.activityEvent.collect {
+                Log.d("TAG", it.toString())
                 when (it) {
                     AppInfoScreenActivityEvent.ShowOpenSourceLicenses -> {
                         startOpenSourceLicensesActivity()

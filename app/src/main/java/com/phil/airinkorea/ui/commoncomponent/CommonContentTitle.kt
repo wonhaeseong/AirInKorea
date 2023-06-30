@@ -23,7 +23,6 @@ import com.phil.airinkorea.ui.theme.level1_on_core_container
 fun CommonExpendableContent(
     modifier: Modifier = Modifier,
     title: String,
-    onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     var expandedState by rememberSaveable {
@@ -33,7 +32,6 @@ fun CommonExpendableContent(
         modifier = modifier
             .clickable {
                 expandedState = !expandedState
-                onClick()
             }
             .padding(10.dp)
     ) {

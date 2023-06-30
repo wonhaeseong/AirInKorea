@@ -138,6 +138,9 @@ fun InfoContentDeveloperInfo(
             //국적
             Text(text = developerInfo.nationality, style = MaterialTheme.typography.subtitle1)
             Spacer(modifier = Modifier.size(5.dp))
+            //이메일
+            Text(text = developerInfo.email, style = MaterialTheme.typography.subtitle1)
+            Spacer(modifier = Modifier.size(5.dp))
             //github
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { onGithubIconClick(developerInfo.github) }) {
@@ -155,6 +158,7 @@ fun InfoContentDeveloperInfoPreview() {
     val developerInfo = DeveloperInfo(
         firstName = "Won",
         lastName = "HaeSeong",
+        email = "gotjd8607@gmail.com",
         github = Uri.parse("https://github.com/want8607"),
         nationality = "South Korea"
     )

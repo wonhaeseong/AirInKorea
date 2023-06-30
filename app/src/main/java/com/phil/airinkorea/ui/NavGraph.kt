@@ -12,8 +12,6 @@ import com.phil.airinkorea.ui.appguide.AppGuideRoute
 import com.phil.airinkorea.ui.appinfo.AppInfoRoute
 import com.phil.airinkorea.ui.home.HomeRoute
 import com.phil.airinkorea.ui.managelocations.ManageLocationRoute
-import com.phil.airinkorea.ui.viewmodel.AppInfoViewModel
-import com.phil.airinkorea.ui.viewmodel.HomeViewModel
 
 
 @Composable

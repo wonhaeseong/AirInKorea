@@ -40,6 +40,7 @@ class AppInfoViewModel @Inject constructor(
     val activityEvent: SharedFlow<AppInfoScreenActivityEvent> = _activityEvent.asSharedFlow()
 
     init {
+        Log.d("TAG","viewmodel 생성")
         getAppInfoData()
     }
 
@@ -51,13 +52,13 @@ class AppInfoViewModel @Inject constructor(
     }
 
     fun showOpenSourceLicenses() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _activityEvent.emit(AppInfoScreenActivityEvent.ShowOpenSourceLicenses)
         }
     }
 
     fun showGithubInBrowser(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _activityEvent.emit(AppInfoScreenActivityEvent.ShowGithubInBrowser(uri = uri))
         }
     }

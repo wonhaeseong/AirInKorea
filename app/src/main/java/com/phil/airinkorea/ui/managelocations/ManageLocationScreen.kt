@@ -259,7 +259,7 @@ fun ManageLocationsItem(
             Column(
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
-                    .padding(top = 10.dp, bottom = 10.dp, start = 40.dp)
+                    .padding(top = 10.dp, bottom = 10.dp, start = 30.dp)
             ) {
                 Text(
                     text = location.eupmyeondong,

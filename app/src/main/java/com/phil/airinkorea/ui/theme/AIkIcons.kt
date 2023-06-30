@@ -26,4 +26,5 @@ object AIKIcons {
     val Cancel = R.drawable.ic_cancel
     val Heart = R.drawable.ic_heart
     val Circle = R.drawable.ic_circle
+    val github = R.drawable.ic_github_mark
 }

@@ -24,9 +24,8 @@ sealed interface AppGuideUiState {
 class AppGuideViewModel @Inject constructor(
     private val appGuideRepository: AppGuideRepository
 ) : ViewModel() {
-    val appGuideUiState: MutableState<AppGuideUiState> =
-        mutableStateOf(AppGuideUiState.Loading)
-
+    var appGuideUiState: MutableState<AppGuideUiState> = mutableStateOf(AppGuideUiState.Loading)
+        private set
     init {
         getAppGuideData()
     }

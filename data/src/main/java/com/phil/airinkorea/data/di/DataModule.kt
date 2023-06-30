@@ -4,6 +4,8 @@ import com.phil.airinkorea.data.repository.AirDataRepository
 import com.phil.airinkorea.data.repository.AirDataRepositoryImpl
 import com.phil.airinkorea.data.repository.AppGuideRepository
 import com.phil.airinkorea.data.repository.AppGuideRepositoryImpl
+import com.phil.airinkorea.data.repository.AppInfoRepository
+import com.phil.airinkorea.data.repository.AppInfoRepositoryImpl
 import com.phil.airinkorea.data.repository.AppStatusRepository
 import com.phil.airinkorea.data.repository.AppStatusRepositoryImpl
 import com.phil.airinkorea.data.repository.LocationRepository
@@ -35,5 +37,10 @@ class DataModule {
     fun provideAppGuideRepository(
         appGuideRepository: AppGuideRepositoryImpl
     ): AppGuideRepository = appGuideRepository
+
+    @Provides
+    fun provideAppInfoRepository(
+        appInfoRepository: AppInfoRepositoryImpl
+    ): AppInfoRepository = appInfoRepository
 }
 

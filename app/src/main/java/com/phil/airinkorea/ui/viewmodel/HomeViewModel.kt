@@ -101,8 +101,8 @@ sealed interface DrawerUiState {
     ) : DrawerUiState
 }
 
-sealed interface ActivityEvent {
-    object GetGPSLocation : ActivityEvent
+sealed interface HomeScreenActivityEvent {
+    object GetGPSLocation : HomeScreenActivityEvent
 }
 
 @HiltViewModel
@@ -115,8 +115,8 @@ class HomeViewModel @Inject constructor(
     val homeUiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Initializing)
     private val locationStateFlow: MutableStateFlow<Location?> = MutableStateFlow(null)
 
-    private val _activityEvent = MutableSharedFlow<ActivityEvent>()
-    val activityEvent: SharedFlow<ActivityEvent> = _activityEvent.asSharedFlow()
+    private val _activityEvent = MutableSharedFlow<HomeScreenActivityEvent>()
+    val activityEvent: SharedFlow<HomeScreenActivityEvent> = _activityEvent.asSharedFlow()
 
     //page가 변경되면 현재 location이 변경되고 그에 맞는
     private val pageStateFlow: StateFlow<Int> = appStatusRepository.getDefaultPage().onEach {
@@ -230,7 +230,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getGPSLocation() {
-        _activityEvent.emit(ActivityEvent.GetGPSLocation)
+        _activityEvent.emit(HomeScreenActivityEvent.GetGPSLocation)
     }
 
     private suspend fun getAirDataAfterFetch(station: String?): AirData {

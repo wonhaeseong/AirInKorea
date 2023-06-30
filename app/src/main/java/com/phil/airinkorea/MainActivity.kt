@@ -1,16 +1,18 @@
 package com.phil.airinkorea
 
 import android.Manifest
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
@@ -25,17 +27,20 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.gms.tasks.Task
 import com.phil.airinkorea.ui.NavGraph
-import com.phil.airinkorea.ui.viewmodel.ActivityEvent
+import com.phil.airinkorea.ui.viewmodel.AppInfoScreenActivityEvent
+import com.phil.airinkorea.ui.viewmodel.AppInfoViewModel
+import com.phil.airinkorea.ui.viewmodel.HomeScreenActivityEvent
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
+    private val appInfoViewModel: AppInfoViewModel by viewModels()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val locationPermissionResultCaller =
@@ -55,7 +60,11 @@ class MainActivity : ComponentActivity() {
 
                 else -> {
                     homeViewModel.fetchToPageBookmark()
-                    Toast.makeText(this, "Please turn on location permission to get location data", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "Please turn on location permission to get location data",
+                        Toast.LENGTH_LONG
+                    ).show()
                     Log.d("TAG a", "Permission 거부")
                 }
             }
@@ -87,11 +96,24 @@ class MainActivity : ComponentActivity() {
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this)
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             homeViewModel.activityEvent.collect {
                 when (it) {
-                    ActivityEvent.GetGPSLocation -> {
+                    HomeScreenActivityEvent.GetGPSLocation -> {
                         getGPSLocation()
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            appInfoViewModel.activityEvent.collect {
+                when (it) {
+                    AppInfoScreenActivityEvent.ShowOpenSourceLicenses -> {
+                        startOpenSourceLicensesActivity()
+                    }
+
+                    is AppInfoScreenActivityEvent.ShowGithubInBrowser -> {
+                        openUriInBrowser(it.uri)
                     }
                 }
             }
@@ -160,5 +182,14 @@ class MainActivity : ComponentActivity() {
         } else {
             requestPermission()
         }
+    }
+
+    private fun startOpenSourceLicensesActivity() {
+        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+        OssLicensesMenuActivity.setActivityTitle(getString(R.string.open_source_licenses))
+    }
+
+    private fun openUriInBrowser(uri: Uri) {
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 }

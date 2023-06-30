@@ -12,8 +12,8 @@
 
     <string name="details">Details</string>
     <string name="information">Information</string>
-    <string name="dailyForecast">Daily Forecast</string>
-    <string name="koreaForecastMap">Korea Forecast Map</string>
+    <string name="dailyForecast">Daily forecast</string>
+    <string name="koreaForecastMap">Korea forecast map</string>
 
     <string name="gps_error">Please turn on the GPS to get current location information.</string>
     <string name="data_error">Please refresh the screen by pulling the screen down after a while. Or check your network connection.</string>
@@ -23,27 +23,34 @@
     <string name="no_information_data">Unable to retrieve information from the server.</string>
     <string name="bookmark">Bookmark</string>
     <string name="gps">GPS</string>
-    <string name="my_locations">My Locations</string>
+    <string name="my_locations">My locations</string>
     <string name="locations">Locations</string>
     <string name="unable_gps">Unable to retrieve GPS information</string>
     <string name="bookmark_is_not_set">Bookmark is not set</string>
     <string name="please_add_a_location">Please add a location.</string>
-    <string name="manage_locations">Manage Locations</string>
-    <string name="delete_location">Delete Location</string>
+    <string name="manage_locations">Manage locations</string>
+    <string name="delete_location">Delete location</string>
     <string name="delete_location_dialog_text">Are you sure you want to delete\n\'%1$s\'?</string>
-    <string name="change_bookmark">Change Bookmark</string>
+    <string name="change_bookmark">Change bookmark</string>
     <string name="change_bookmark_dialog_text">Do you want to change the bookmark to \n\'%1$s\'?</string>
-    <string name="app_guide">App Guide</string>
-    <string name="app_info">App Info</string>
+    <string name="app_guide">App guide</string>
+    <string name="app_info">App info</string>
     <string name="korea_forecast_model_error">Image could not be loaded</string>
-    <string name="add_location">Add a Location</string>
-    <string name="search_location">Search Locations</string>
+    <string name="add_location">Add a location</string>
+    <string name="search_location">Search locations</string>
     <string name="add_location_dialog_text">Do you want to add\n\'%1$s\'?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     
     <string name="cautions">Cautions</string>
-    <string name="data_loading">Data Loading</string>
-    <string name="air_pollution_level">Air Pollution Level</string>
+    <string name="data_loading">Data loading</string>
+    <string name="air_pollution_level">Air pollution level</string>
     <string name="daily_forecast_day_layout">%1$s/%2$s/%3$s</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="developer_info">Developer info</string>
+
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="nationality">Nationality</string>
+    <string name="github">Github</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.phil.airinkorea.ui.addlocation.AddLocationRoute
 import com.phil.airinkorea.ui.appguide.AppGuideRoute
+import com.phil.airinkorea.ui.appinfo.AppInfoRoute
 import com.phil.airinkorea.ui.home.HomeRoute
 import com.phil.airinkorea.ui.managelocations.ManageLocationRoute
 import com.phil.airinkorea.ui.viewmodel.HomeViewModel
@@ -59,7 +60,9 @@ fun NavGraph(
                     darkIcons = true
                 )
             }
-
+            AppInfoRoute(
+                onBackButtonClick = { navController.popBackStack() }
+            )
         }
         composable("AppGuide") {
             SideEffect {

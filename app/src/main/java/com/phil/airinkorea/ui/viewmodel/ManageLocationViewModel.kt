@@ -47,28 +47,27 @@ class ManageLocationViewModel @Inject constructor(
 
     //같으면 북마크로 다르면 삭제후 페이지 가져와보고 찾아서 바꿔야함
     fun deleteLocation(location: Location) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (manageLocationUiState.value is ManageLocationUiState.Success) {
                 val successManageLocationUiState =
                     (manageLocationUiState.value as ManageLocationUiState.Success)
                 val currentPage =
                     withContext(Dispatchers.IO) { appStatusRepository.getDefaultPage().first() }
                 val deletePage = successManageLocationUiState.userLocationList.indexOf(location) + 2
-                if (currentPage == deletePage) {
-                    withContext(Dispatchers.IO) {
-                        locationRepository.deleteUserLocation(location)
-                        appStatusRepository.fetchDefaultPage(1)
+                if (currentPage >= 2 && currentPage == deletePage) {
+                    locationRepository.deleteUserLocation(location)
+                    appStatusRepository.fetchDefaultPage(1)
+                } else if (currentPage >= 2) {
+                    val currentLocation =
+                        successManageLocationUiState.userLocationList[currentPage - 2]
+                    locationRepository.deleteUserLocation(location)
+                    val currentPageAfterDelete = withContext(Dispatchers.IO) {
+                        locationRepository.getUserLocationList().first()
+                            .indexOf(currentLocation) + 2
                     }
+                    appStatusRepository.fetchDefaultPage(currentPageAfterDelete)
                 } else {
-                    withContext(Dispatchers.IO) {
-                        val currentLocation =
-                            successManageLocationUiState.userLocationList[currentPage - 2]
-                        locationRepository.deleteUserLocation(location)
-                        val currentPageAfterDelete =
-                            locationRepository.getUserLocationList().first()
-                                .indexOf(currentLocation) + 2
-                        appStatusRepository.fetchDefaultPage(currentPageAfterDelete)
-                    }
+                    locationRepository.deleteUserLocation(location)
                 }
             }
         }
@@ -80,7 +79,7 @@ class ManageLocationViewModel @Inject constructor(
      * 다른 -> 만약 선택된게 현재 페이지면  1로 이동, 다른페이지가 선택되면 페이지 정렬 후 location page로 가야함
      */
     fun updateBookmark(location: Location) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (manageLocationUiState.value is ManageLocationUiState.Success) {
                 val successManageLocationUiState =
                     (manageLocationUiState.value as ManageLocationUiState.Success)
@@ -89,42 +88,37 @@ class ManageLocationViewModel @Inject constructor(
                     withContext(Dispatchers.IO) { appStatusRepository.getDefaultPage().first() }) {
                     0 -> Unit
                     1 -> {
-                        withContext(Dispatchers.IO) {
-                            locationRepository.updateBookmark(
-                                oldBookmark = oldBookmark,
-                                newBookmark = location
-                            )
-                            val oldBookmarkPageAfterUpdate =
-                                locationRepository.getUserLocationList().first()
-                                    .indexOf(oldBookmark) + 2
-                            appStatusRepository.fetchDefaultPage(oldBookmarkPageAfterUpdate)
-                        }
+                        locationRepository.updateBookmark(
+                            oldBookmark = oldBookmark,
+                            newBookmark = location
+                        )
+                        val oldBookmarkPageAfterUpdate =
+                            locationRepository.getUserLocationList().first()
+                                .indexOf(oldBookmark) + 2
+                        appStatusRepository.fetchDefaultPage(oldBookmarkPageAfterUpdate)
                     }
 
                     else -> {
                         val selectedPage =
                             successManageLocationUiState.userLocationList.indexOf(location) + 2
                         if (currentPage == selectedPage) {
-                            withContext(Dispatchers.IO) {
-                                locationRepository.updateBookmark(
-                                    oldBookmark = oldBookmark,
-                                    newBookmark = location
-                                )
-                                appStatusRepository.fetchDefaultPage(1)
-                            }
+                            locationRepository.updateBookmark(
+                                oldBookmark = oldBookmark,
+                                newBookmark = location
+                            )
+                            appStatusRepository.fetchDefaultPage(1)
                         } else {
-                            withContext(Dispatchers.IO) {
-                                val currentLocation =
-                                    successManageLocationUiState.userLocationList[currentPage - 2]
-                                locationRepository.updateBookmark(
-                                    oldBookmark = oldBookmark,
-                                    newBookmark = location
-                                )
-                                val currentPageAfterUpdate =
-                                    locationRepository.getUserLocationList().first()
-                                        .indexOf(currentLocation) + 2
-                                appStatusRepository.fetchDefaultPage(currentPageAfterUpdate)
+                            val currentLocation =
+                                successManageLocationUiState.userLocationList[currentPage - 2]
+                            locationRepository.updateBookmark(
+                                oldBookmark = oldBookmark,
+                                newBookmark = location
+                            )
+                            val currentPageAfterUpdate = withContext(Dispatchers.IO) {
+                                locationRepository.getUserLocationList().first()
+                                    .indexOf(currentLocation) + 2
                             }
+                            appStatusRepository.fetchDefaultPage(currentPageAfterUpdate)
                         }
                     }
                 }

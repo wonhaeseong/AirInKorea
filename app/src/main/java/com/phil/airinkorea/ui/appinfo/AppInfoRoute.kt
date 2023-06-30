@@ -6,6 +6,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -71,7 +73,7 @@ fun InfoContentDeveloperInfo(
 ) {
     val myFaceImg: Int = R.drawable.myface
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(10.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -82,7 +84,7 @@ fun InfoContentDeveloperInfo(
                 .clip(shape = CircleShape)
         )
         Spacer(modifier = Modifier.size(10.dp))
-        Column {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             //Name
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = developerInfo.lastName, style = MaterialTheme.typography.subtitle1)
@@ -92,6 +94,7 @@ fun InfoContentDeveloperInfo(
             Spacer(modifier = Modifier.size(5.dp))
             //국적
             Text(text = developerInfo.nationality, style = MaterialTheme.typography.subtitle1)
+            Spacer(modifier = Modifier.size(5.dp))
             //github
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { onGithubIconClick(developerInfo.github) }) {

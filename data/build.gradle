@@ -40,7 +40,7 @@ dependencies {
 
     //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
     //kotlinx-serializer
@@ -53,8 +53,8 @@ dependencies {
     implementation "androidx.room:room-ktx:2.5.2" // for coroutines
 
     //hilt
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.44.2")
+    implementation "com.google.dagger:hilt-android:2.44.2"
+    kapt "com.google.dagger:hilt-android-compiler:2.44.2"
 
     //datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
@@ -64,7 +64,7 @@ dependencies {
 
     //hamcrest
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.10.0"
 
     //Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.3')

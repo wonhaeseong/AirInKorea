@@ -1,5 +1,6 @@
 package com.phil.airinkorea.data.database.model
 
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -35,7 +36,7 @@ fun AirDataEntity.mapToExternalModel(): AirData =
         information = information,
         koreaForecastModelGif = koreaModelGif.mapToExternalModel()
     )
-
+@Keep
 @Serializable
 data class DailyForecastEntity(
     val date: String,

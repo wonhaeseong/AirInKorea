@@ -1,8 +1,10 @@
 package com.phil.airinkorea.data.network.model
 
+import androidx.annotation.Keep
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Keep
 @Serializable
 data class NetworkAirData(
     val forecast: ArrayList<NetworkForecastItem>,
@@ -13,12 +15,14 @@ data class NetworkAirData(
     val information: String
 )
 
+@Keep
 @Serializable
 data class NetworkForecastItem(
     @SerialName("day") val date: String,
     @SerialName("forecastLevel") val airLevel: String
 )
 
+@Keep
 @Serializable
 data class NetworkDetailAirData(
     val pm10Value: String?,
@@ -46,6 +50,7 @@ data class NetworkDetailAirData(
     val airLevel: String
 )
 
+@Keep
 @Serializable
 data class NetworkLocation(
     @SerialName("en_do") val `do`: String,
@@ -54,8 +59,9 @@ data class NetworkLocation(
     @SerialName("station") val station: String
 )
 
+@Keep
 @Serializable
 data class NetworkCoordinateResult(
-    @SerialName("location")val networkLocation: NetworkLocation,
-    @SerialName("airData")val networkAirData: NetworkAirData
+    @SerialName("location") val networkLocation: NetworkLocation,
+    @SerialName("airData") val networkAirData: NetworkAirData
 )

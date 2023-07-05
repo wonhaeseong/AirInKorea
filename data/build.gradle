@@ -2,7 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.dagger.hilt.android'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.0'
+    id 'kotlinx-serialization'
     id 'kotlin-kapt'
 }
 

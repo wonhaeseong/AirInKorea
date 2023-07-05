@@ -5,7 +5,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.gms.oss-licenses-plugin'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.0'
+    id 'kotlinx-serialization'
     id 'kotlin-kapt'
 }
 
@@ -17,8 +17,8 @@ android {
         applicationId "com.phil.airinkorea"
         minSdk 26
         targetSdk 33
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 4
+        versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

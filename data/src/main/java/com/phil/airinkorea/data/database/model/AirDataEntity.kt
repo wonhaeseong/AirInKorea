@@ -36,7 +36,6 @@ fun AirDataEntity.mapToExternalModel(): AirData =
         information = information,
         koreaForecastModelGif = koreaModelGif.mapToExternalModel()
     )
-@Keep
 @Serializable
 data class DailyForecastEntity(
     val date: String,

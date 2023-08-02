@@ -1,23 +1,26 @@
 buildscript {
     ext {
-        compose_ui_version = '1.3.3'
+        coroutines_version = '1.6.0'
+        kotlinx_serialization_version = '1.4.0'
+        junit_version = '4.13.2'
+        hilt_version = '2.44.2'
+        mockito_version = '4.1.0'
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.6'
     }
 }
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '7.3.1' apply false
-    id 'com.android.library' version '7.3.1' apply false
+    id 'com.android.application' version '8.0.0' apply false
+    id 'com.android.library' version '8.0.0' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
-    id 'org.jetbrains.kotlin.jvm' version '1.8.10' apply false
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
     id 'com.google.dagger.hilt.android' version "2.44" apply false
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10' apply false
+    id 'com.google.gms.google-services' version '4.3.15' apply false
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.21'
 }

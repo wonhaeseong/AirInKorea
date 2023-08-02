@@ -15,8 +15,8 @@
 **1. 휴대폰 내장 GPS를 이용한 위치기반 미세먼지 정보 제공**  
 **2. 지역 검색을 통한 미세먼지 정보제공**  
 
-![feature1](https://github.com/want8607/AirInKorea/assets/84075111/149c1117-bb49-4d5b-b163-5a55a080be68)
-  
+![feature drawio (2)](https://github.com/want8607/AirInKorea/assets/84075111/faba922b-cbaa-4233-9b3c-1a438971d822)  
+
  
 # Architecture
 
@@ -24,9 +24,8 @@
 **2. Repository Pattern을 사용하여 UI layer와 data layer의 의존성을 최소화했습니다.**  
 **3. Firebase의 CloudFunctions 이용하여 서버와 클라이언트를 연결합니다.**
  
-   
-![123](https://github.com/want8607/AirInKorea/assets/84075111/31f8357d-badb-4e1c-9abc-2fd2b011c387)
- 
+![AirInKoreaArchitecture drawio (2)](https://github.com/want8607/AirInKorea/assets/84075111/8defa616-bb09-443a-bc25-d11fb3974f73)
+
  
 # UI
 
@@ -37,8 +36,7 @@
   
 **추후에 사용자의 화면 사이즈에 따라 변경되는 Adaptive layout을 적용할 생각입니다.**  
 
-
-![feature2](https://github.com/want8607/AirInKorea/assets/84075111/aa2faf2e-270e-481b-8546-ef36cc5606e3)
+![feature drawio (3)](https://github.com/want8607/AirInKorea/assets/84075111/8730a0c8-cccb-4622-85c0-f459a0ca78a2)  
 
  
 # Libraries

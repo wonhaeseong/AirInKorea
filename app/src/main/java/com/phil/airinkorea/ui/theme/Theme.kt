@@ -137,19 +137,7 @@ class AIKColors(
     )
 }
 
-@Composable
-fun ProvideAIKColors(
-    colors: AIKColors,
-    content: @Composable () -> Unit
-) {
-    val colorPalette = remember {
-        colors.copy()
-    }
-    colorPalette.update(colors)
-    CompositionLocalProvider(LocalAIKColors provides colorPalette, content = content)
-}
-
-private val LocalAIKColors = staticCompositionLocalOf<AIKColors>{
+private val LocalAIKColors = staticCompositionLocalOf<AIKColors> {
     error("No AIKColorPalette provided")
 }
 
@@ -163,8 +151,8 @@ object AIKTheme {
 fun AIKTheme(
     airLevel: AirLevel,
     content: @Composable () -> Unit
-){
-    val colors = when(airLevel){
+) {
+    val colors = when (airLevel) {
         AirLevel.Level1 -> level1Color
         AirLevel.Level2 -> level2Color
         AirLevel.Level3 -> level3Color
@@ -174,21 +162,13 @@ fun AIKTheme(
         AirLevel.LevelError -> levelErrorColor
     }
 
-    val sysUicController = rememberSystemUiController()
-    SideEffect {
-        sysUicController.setStatusBarColor(
-            color = Color.Transparent
-        )
-    }
+//    val rememberedColors = remember {
+//        // Explicitly creating a new object here so we don't mutate the initial [colors]
+//        // provided, and overwrite the values set in it.
+//        colors.copy()
+//    }.apply { update(colors) }
 
-    ProvideAIKColors(colors = colors) {
-        MaterialTheme(
-            colors = debugColors(),
-            typography = AIKTypography,
-            shapes = Shapes,
-            content = content
-        )
-    }
+    CompositionLocalProvider(LocalAIKColors provides colors, content = content)
 }
 
 fun debugColors(

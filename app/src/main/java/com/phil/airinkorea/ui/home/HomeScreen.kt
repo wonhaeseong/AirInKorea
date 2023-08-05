@@ -70,7 +70,9 @@ fun HomeScreen(
 
         is HomeUiState.Success -> {
             val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
-
+            val isGPS = remember {
+                mutableStateOf(homeUiState.page == 0)
+            }
             AIKTheme(airLevel = homeUiState.airLevel) {
                 Box(
                     modifier = modifier
@@ -86,7 +88,7 @@ fun HomeScreen(
                         backgroundColor = Color.Transparent,
                         topBar = {
                             HomeTopAppBar(
-                                isGPS = homeUiState.page == 0,
+                                isGPS = isGPS.value,
                                 location = homeUiState.location,
                                 onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
                             )
@@ -291,6 +293,18 @@ fun HomeTopAppBar(
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
                 )
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = AIKTheme.colors.on_core,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "5",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = AIKTheme.colors.on_core,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -395,7 +409,7 @@ fun ErrorBanner(
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(
-                    text =text,
+                    text = text,
                     color = AIKTheme.colors.on_core_container,
                     style = MaterialTheme.typography.body1,
                 )

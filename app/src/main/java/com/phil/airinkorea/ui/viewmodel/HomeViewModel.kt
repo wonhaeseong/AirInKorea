@@ -1,6 +1,7 @@
 package com.phil.airinkorea.ui.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.data.model.AirData
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
+@Stable
 sealed interface HomeUiState {
     object Initializing : HomeUiState //앱 초기 로딩 화면
     data class Success(

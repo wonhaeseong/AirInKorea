@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
 import com.phil.airinkorea.ui.modifier.bottomBorder
+import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.level1_on_core_container
@@ -51,7 +52,7 @@ fun CommonTopAppBar(
         }
         Text(
             text = title,
-            style = MaterialTheme.typography.h5,
+            style = AIKTheme.typography.h5,
             color = level1_on_core_container
         )
     }

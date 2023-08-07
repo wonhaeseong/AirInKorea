@@ -1,11 +1,18 @@
 package com.phil.airinkorea.ui.theme
 
-import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material.Shapes
+import androidx.compose.material.Typography
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.ui.graphics.Color
 import com.phil.airinkorea.data.model.AirLevel
 
 private val level1Color = AIKColors(
@@ -85,7 +92,6 @@ private val levelErrorColor = AIKColors(
     core_background = level6_background
 )
 
-
 @Stable
 class AIKColors(
     core: Color,
@@ -114,37 +120,48 @@ class AIKColors(
     var core_background by mutableStateOf(core_background)
         private set
 
-    fun update(other: AIKColors) {
-        core = other.core
-        core_20 = other.core_20
-        on_core = other.on_core
-        core_container = other.core_container
-        on_core_container = other.on_core_container
-        on_core_container_subtext = other.on_core_container_subtext
-        core_button = other.core_button
-        core_background = other.core_background
-    }
-
-    fun copy(): AIKColors = AIKColors(
-        core = core,
-        core_20 = core_20,
-        on_core = on_core,
-        core_container = core_container,
-        on_core_container = on_core_container,
-        on_core_container_subtext = on_core_container_subtext,
-        core_button = core_button,
-        core_background = core_background
-    )
+//    fun update(other: AIKColors) {
+//        core = other.core
+//        core_20 = other.core_20
+//        on_core = other.on_core
+//        core_container = other.core_container
+//        on_core_container = other.on_core_container
+//        on_core_container_subtext = other.on_core_container_subtext
+//        core_button = other.core_button
+//        core_background = other.core_background
+//    }
+//
+//    fun copy(): AIKColors = AIKColors(
+//        core = core,
+//        core_20 = core_20,
+//        on_core = on_core,
+//        core_container = core_container,
+//        on_core_container = on_core_container,
+//        on_core_container_subtext = on_core_container_subtext,
+//        core_button = core_button,
+//        core_background = core_background
+//    )
 }
 
-private val LocalAIKColors = staticCompositionLocalOf<AIKColors> {
-    error("No AIKColorPalette provided")
+private val LocalAIKColors = compositionLocalOf<AIKColors> {
+    error("No AIKColor Provided")
 }
 
 object AIKTheme {
     val colors: AIKColors
         @Composable
+        @ReadOnlyComposable
         get() = LocalAIKColors.current
+
+    val typography: Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = AIKTypography
+
+    val shapes: Shapes
+        @Composable
+        @ReadOnlyComposable
+        get() = Shapes
 }
 
 @Composable
@@ -168,23 +185,8 @@ fun AIKTheme(
 //        colors.copy()
 //    }.apply { update(colors) }
 
-    CompositionLocalProvider(LocalAIKColors provides colors, content = content)
+    CompositionLocalProvider(
+        LocalAIKColors provides colors,
+        content = content
+    )
 }
-
-fun debugColors(
-    debugColor: Color = Color.Transparent
-) = Colors(
-    primary = debugColor,
-    primaryVariant = debugColor,
-    secondary = debugColor,
-    secondaryVariant = debugColor,
-    background = debugColor,
-    surface = debugColor,
-    error = debugColor,
-    onPrimary = debugColor,
-    onSecondary = debugColor,
-    onBackground = debugColor,
-    onSurface = debugColor,
-    onError = debugColor,
-    isLight = true
-)

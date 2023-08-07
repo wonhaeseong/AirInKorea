@@ -73,9 +73,7 @@ fun AppGuideScreenPreview() {
         AppGuideContent(R.string.information) {},
         AppGuideContent(R.string.dailyForecast) {},
         AppGuideContent(R.string.koreaForecastMap) {},
-        AppGuideContent(R.string.add_location){
-
-        }
+        AppGuideContent(R.string.add_location){}
     )
     AIKTheme(airLevel = AirLevel.Level1) {
         AppGuideScreen(

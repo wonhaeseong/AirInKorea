@@ -19,7 +19,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -38,15 +37,15 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
-import com.phil.airinkorea.ui.theme.AIKTypography
+import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.theme.level1_button
-import com.phil.airinkorea.ui.theme.level1_core
-import com.phil.airinkorea.ui.theme.level1_core_container
-import com.phil.airinkorea.ui.theme.level1_on_core_container
+import com.phil.airinkorea.ui.theme.manage_location_button
+import com.phil.airinkorea.ui.theme.manage_location_core
+import com.phil.airinkorea.ui.theme.manage_location_core_container
+import com.phil.airinkorea.ui.theme.manage_location_on_core_container
 import com.phil.airinkorea.ui.theme.unselected_bookmark
 import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
 
@@ -127,17 +126,17 @@ fun ManageLocationContent(
             ) {
                 Spacer(modifier = Modifier.size(5.dp))
                 //Add Location Button
-                Button(
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(level1_button),
+                TextButton(
+                    shape = AIKTheme.shapes.small,
+                    colors = ButtonDefaults.buttonColors(manage_location_button),
                     onClick = onAddLocationButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
                     Text(
                         text = stringResource(id = R.string.add_location),
-                        style = AIKTypography.button,
-                        color = level1_core_container
+                        style = AIKTheme.typography.button,
+                        color = manage_location_core_container
                     )
                 }
                 //bookmark
@@ -170,13 +169,13 @@ fun ManageLocationsBookmark(
     ) {
         Text(
             text = stringResource(id = R.string.bookmark),
-            style = AIKTypography.subtitle1
+            style = AIKTheme.typography.subtitle1
         )
         if (bookmarkedLocation == null) {
             Spacer(modifier = Modifier.size(10.dp))
             Text(
                 text = stringResource(id = R.string.bookmark_is_not_set),
-                style = MaterialTheme.typography.body1
+                style = AIKTheme.typography.body1
             )
             Spacer(modifier = Modifier.size(10.dp))
         } else {
@@ -204,7 +203,7 @@ fun ManageLocationsLocationList(
     ) {
         Text(
             text = stringResource(id = R.string.my_locations),
-            style = AIKTypography.subtitle1
+            style = AIKTheme.typography.subtitle1
         )
         if (locationData.isNotEmpty()) {
             LazyColumn(
@@ -225,7 +224,7 @@ fun ManageLocationsLocationList(
             Spacer(modifier = Modifier.size(10.dp))
             Text(
                 text = stringResource(id = R.string.please_add_a_location),
-                style = MaterialTheme.typography.body1
+                style = AIKTheme.typography.body1
             )
             Spacer(modifier = Modifier.size(10.dp))
         }
@@ -248,8 +247,8 @@ fun ManageLocationsItem(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = level1_core,
-                shape = MaterialTheme.shapes.medium
+                color = manage_location_core,
+                shape = AIKTheme.shapes.small
             )
             .padding(horizontal = 10.dp)
     ) {
@@ -283,19 +282,19 @@ fun ManageLocationsItem(
                 Text(
                     text = location.eupmyeondong,
                     maxLines = 1,
-                    style = AIKTypography.subtitle2,
+                    style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = location.sigungu,
                     maxLines = 1,
-                    style = AIKTypography.subtitle2,
+                    style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = location.`do`,
                     maxLines = 1,
-                    style = AIKTypography.subtitle2,
+                    style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
                 )
             }
@@ -316,13 +315,13 @@ fun ManageLocationChangeBookmarkDialog(
 ) {
     AlertDialog(
         backgroundColor = common_background,
-        shape = MaterialTheme.shapes.medium,
+        shape = AIKTheme.shapes.medium,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
                 text = stringResource(id = R.string.change_bookmark),
-                style = MaterialTheme.typography.h5,
-                color = level1_on_core_container
+                style = AIKTheme.typography.h5,
+                color = manage_location_on_core_container
             )
         },
         text = {
@@ -331,8 +330,8 @@ fun ManageLocationChangeBookmarkDialog(
                     id = R.string.change_bookmark_dialog_text,
                     location.eupmyeondong
                 ),
-                style = MaterialTheme.typography.body1,
-                color = level1_on_core_container
+                style = AIKTheme.typography.body1,
+                color = AIKTheme.colors.on_core_container
             )
         },
         confirmButton = {
@@ -342,8 +341,8 @@ fun ManageLocationChangeBookmarkDialog(
             }) {
                 Text(
                     text = stringResource(id = R.string.yes),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = level1_on_core_container
+                    style = AIKTheme.typography.subtitle1,
+                    color = manage_location_on_core_container
                 )
             }
         },
@@ -351,8 +350,8 @@ fun ManageLocationChangeBookmarkDialog(
             TextButton(onClick = onDismissRequest) {
                 Text(
                     text = stringResource(id = R.string.no),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = level1_on_core_container
+                    style = AIKTheme.typography.subtitle1,
+                    color = manage_location_on_core_container
                 )
             }
         }
@@ -367,13 +366,13 @@ fun ManageLocationDeleteLocationDialog(
 ) {
     AlertDialog(
         backgroundColor = common_background,
-        shape = MaterialTheme.shapes.medium,
+        shape = AIKTheme.shapes.medium,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
                 text = stringResource(id = R.string.delete_location),
-                style = MaterialTheme.typography.h5,
-                color = level1_on_core_container
+                style = AIKTheme.typography.h5,
+                color = manage_location_on_core_container
             )
         },
         text = {
@@ -382,8 +381,8 @@ fun ManageLocationDeleteLocationDialog(
                     id = R.string.delete_location_dialog_text,
                     location.eupmyeondong
                 ),
-                style = MaterialTheme.typography.body1,
-                color = level1_on_core_container
+                style = AIKTheme.typography.body1,
+                color = manage_location_on_core_container
             )
         },
         confirmButton = {
@@ -393,8 +392,8 @@ fun ManageLocationDeleteLocationDialog(
             }) {
                 Text(
                     text = stringResource(id = R.string.yes),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = level1_on_core_container
+                    style = AIKTheme.typography.subtitle1,
+                    color = manage_location_on_core_container
                 )
             }
         },
@@ -402,8 +401,8 @@ fun ManageLocationDeleteLocationDialog(
             TextButton(onClick = onDismissRequest) {
                 Text(
                     text = stringResource(id = R.string.no),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = level1_on_core_container
+                    style = AIKTheme.typography.subtitle1,
+                    color = manage_location_on_core_container
                 )
             }
         }

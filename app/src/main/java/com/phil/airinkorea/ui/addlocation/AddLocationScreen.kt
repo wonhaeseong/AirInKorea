@@ -116,7 +116,7 @@ fun AddLocationContent(
                 text = value
                 onSearchTextChange(value)
             },
-            textStyle = MaterialTheme.typography.body1,
+            textStyle = AIKTheme.typography.body1,
             label = { Text(text = stringResource(id = R.string.search_location)) },
             leadingIcon = {
                 Icon(
@@ -135,7 +135,7 @@ fun AddLocationContent(
                 }
             },
             singleLine = true,
-            shape = MaterialTheme.shapes.small,
+            shape = AIKTheme.shapes.small,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 backgroundColor = common_background,
                 cursorColor = Color.Black,
@@ -201,19 +201,19 @@ fun SearchResultItem(
             Text(
                 text = location.eupmyeondong,
                 maxLines = 1,
-                style = AIKTypography.subtitle2,
+                style = AIKTheme.typography.subtitle2,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = location.sigungu,
                 maxLines = 1,
-                style = AIKTypography.subtitle2,
+                style = AIKTheme.typography.subtitle2,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = location.`do`,
                 maxLines = 1,
-                style = AIKTypography.subtitle2,
+                style = AIKTheme.typography.subtitle2,
                 textAlign = TextAlign.Center
             )
         }
@@ -234,12 +234,12 @@ fun AddLocationDialog(
 ) {
     AlertDialog(
         backgroundColor = common_background,
-        shape = MaterialTheme.shapes.medium,
+        shape = AIKTheme.shapes.medium,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
                 text = stringResource(id = R.string.add_location),
-                style = MaterialTheme.typography.h5,
+                style = AIKTheme.typography.h5,
                 color = level1_on_core_container
             )
         },
@@ -249,7 +249,7 @@ fun AddLocationDialog(
                     id = R.string.add_location_dialog_text,
                     location.eupmyeondong
                 ),
-                style = MaterialTheme.typography.body1,
+                style = AIKTheme.typography.body1,
                 color = level1_on_core_container
             )
         },
@@ -260,7 +260,7 @@ fun AddLocationDialog(
             }) {
                 Text(
                     text = stringResource(id = R.string.yes),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = AIKTheme.typography.subtitle1,
                     color = level1_on_core_container
                 )
             }
@@ -269,7 +269,7 @@ fun AddLocationDialog(
             TextButton(onClick = onDismissRequest) {
                 Text(
                     text = stringResource(id = R.string.no),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = AIKTheme.typography.subtitle1,
                     color = level1_on_core_container
                 )
             }

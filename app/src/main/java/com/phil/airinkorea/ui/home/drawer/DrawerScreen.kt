@@ -42,7 +42,6 @@ import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.theme.AIKTheme
-import com.phil.airinkorea.ui.theme.AIKTypography
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
@@ -127,7 +126,7 @@ fun DrawerScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.manage_locations),
-                            style = AIKTypography.button,
+                            style = AIKTheme.typography.button,
                             overflow = TextOverflow.Ellipsis,
                             color = AIKTheme.colors.core_container
                         )
@@ -265,12 +264,7 @@ fun MyLocations(
     }
 }
 
-/**
- * @param icon painterResource에 전달할 resource Id
- * @param tint icon 색상
- * @param stringId 타이틀로 들어갈 String resource Id
- * @param clickable 클릭 활성화 비활성화
- */
+
 @Composable
 fun DrawerTitle(
     modifier: Modifier = Modifier,
@@ -304,7 +298,7 @@ fun DrawerTitle(
         Spacer(modifier = Modifier.size(10.dp))
         Text(
             text = stringResource(id = stringId),
-            style = AIKTypography.subtitle1,
+            style = AIKTheme.typography.subtitle1,
             color = AIKTheme.colors.on_core_container
         )
     }
@@ -319,7 +313,6 @@ fun DrawerItem(
     onClick: () -> Unit = {},
     isSelected: Boolean = false
 ) {
-    val backgroundColor = if (isSelected) AIKTheme.colors.core_20 else AIKTheme.colors.core_container
     val contentColor = if (isSelected) AIKTheme.colors.core else AIKTheme.colors.on_core_container
 
     Row(
@@ -329,7 +322,7 @@ fun DrawerItem(
             .fillMaxWidth()
             .clickable(enabled = itemEnable) { onClick() }
             .background(
-                backgroundColor
+                if (isSelected) AIKTheme.colors.core_20 else AIKTheme.colors.core_container
             )
             .padding(PaddingValues(start = 15.dp, top = 8.dp, bottom = 8.dp))
     ) {
@@ -345,7 +338,7 @@ fun DrawerItem(
         Spacer(modifier = Modifier.size(10.dp))
         Text(
             text = text,
-            style = AIKTypography.subtitle1,
+            style = AIKTheme.typography.subtitle1,
             color = contentColor,
             textAlign = TextAlign.Start
         )

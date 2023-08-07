@@ -70,9 +70,6 @@ fun HomeScreen(
 
         is HomeUiState.Success -> {
             val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
-            val isGPS = remember {
-                mutableStateOf(homeUiState.page == 0)
-            }
             AIKTheme(airLevel = homeUiState.airLevel) {
                 Box(
                     modifier = modifier
@@ -88,7 +85,7 @@ fun HomeScreen(
                         backgroundColor = Color.Transparent,
                         topBar = {
                             HomeTopAppBar(
-                                isGPS = isGPS.value,
+                                isGPS = homeUiState.page == 0,
                                 location = homeUiState.location,
                                 onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
                             )
@@ -288,20 +285,8 @@ fun HomeTopAppBar(
                     )
                 }
                 Text(
-                    text = location?.eupmyeondong ?: "-",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = AIKTheme.colors.on_core,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "-",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = AIKTheme.colors.on_core,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "5",
-                    style = MaterialTheme.typography.subtitle2,
+                    text = location?.eupmyeondong ?: "???",
+                    style = AIKTheme.typography.subtitle2,
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
                 )
@@ -325,7 +310,7 @@ fun DateInfo(
     ) {
         Text(
             text = date ?: "",
-            style = MaterialTheme.typography.subtitle2,
+            style = AIKTheme.typography.subtitle2,
             color = AIKTheme.colors.on_core,
             textAlign = TextAlign.Center,
             maxLines = 1,
@@ -348,7 +333,7 @@ fun AirValue(
     ) {
         Text(
             text = airLevel.value,
-            style = MaterialTheme.typography.h4,
+            style = AIKTheme.typography.h4,
             color = AIKTheme.colors.on_core,
         )
     }
@@ -387,7 +372,7 @@ fun ErrorBanner(
             stringResource(id = R.string.data_error)
         }
     Surface(
-        shape = MaterialTheme.shapes.medium,
+        shape = AIKTheme.shapes.medium,
         color = AIKTheme.colors.core_container,
         modifier = modifier
             .fillMaxWidth()
@@ -411,7 +396,7 @@ fun ErrorBanner(
                 Text(
                     text = text,
                     color = AIKTheme.colors.on_core_container,
-                    style = MaterialTheme.typography.body1,
+                    style = AIKTheme.typography.body1,
                 )
             }
         }
@@ -458,7 +443,7 @@ fun ExpendableDetailsGrid(
     Surface(
         onClick = onClick,
         elevation = ContentElevation,
-        shape = MaterialTheme.shapes.medium,
+        shape = AIKTheme.shapes.medium,
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -610,7 +595,7 @@ fun DetailLayout(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle1,
+                style = AIKTheme.typography.subtitle1,
                 color = AIKTheme.colors.on_core_container
             )
             Spacer(modifier = Modifier.size(5.dp))
@@ -621,7 +606,7 @@ fun DetailLayout(
             ) {
                 Text(
                     text = level.value,
-                    style = MaterialTheme.typography.h5,
+                    style = AIKTheme.typography.h5,
                     color = AIKTheme.colors.on_core_container,
                     textAlign = TextAlign.Center,
                     maxLines = 2
@@ -630,7 +615,7 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(5.dp))
             Box(
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(AIKTheme.shapes.medium)
                     .width(70.dp)
                     .height(6.dp)
                     .background(color = sourceColor)
@@ -638,7 +623,7 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(7.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.subtitle1,
+                style = AIKTheme.typography.subtitle1,
                 color = AIKTheme.colors.on_core_container
             )
         }
@@ -652,7 +637,7 @@ fun DetailLayout(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle1,
+                style = AIKTheme.typography.subtitle1,
                 color = AIKTheme.colors.on_core_container
             )
             Spacer(modifier = Modifier.size(4.dp))
@@ -663,7 +648,7 @@ fun DetailLayout(
             ) {
                 Text(
                     text = level.value,
-                    style = MaterialTheme.typography.subtitle3,
+                    style = AIKTheme.typography.subtitle3,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     color = AIKTheme.colors.on_core_container,
@@ -673,7 +658,7 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(4.dp))
             Box(
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(AIKTheme.shapes.medium)
                     .width(45.dp)
                     .height(4.dp)
                     .background(color = sourceColor)
@@ -681,7 +666,7 @@ fun DetailLayout(
             Spacer(modifier = Modifier.size(6.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.body2,
+                style = AIKTheme.typography.body2,
                 fontWeight = FontWeight.SemiBold,
                 color = AIKTheme.colors.on_core_container
             )
@@ -768,12 +753,12 @@ fun DailyForecastComponent(
             Text(
                 text = daysOfTheWeek,
                 color = AIKTheme.colors.on_core_container,
-                style = MaterialTheme.typography.body2
+                style = AIKTheme.typography.body2
             )
             Text(
                 text = date,
                 color = AIKTheme.colors.on_core_container_subtext,
-                style = MaterialTheme.typography.body2
+                style = AIKTheme.typography.body2
             )
         }
         Column(
@@ -786,11 +771,11 @@ fun DailyForecastComponent(
             Text(
                 text = airLevel,
                 color = AIKTheme.colors.on_core_container,
-                style = MaterialTheme.typography.subtitle2
+                style = AIKTheme.typography.subtitle2
             )
             Box(
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(AIKTheme.shapes.medium)
                     .width(50.dp)
                     .height(5.dp)
                     .background(color = airLevelColor)
@@ -817,7 +802,7 @@ fun Information(
         ) {
             Text(
                 text = information ?: stringResource(id = R.string.no_information_data),
-                style = MaterialTheme.typography.subtitle2,
+                style = AIKTheme.typography.subtitle2,
                 color = AIKTheme.colors.on_core_container,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             )
@@ -840,7 +825,7 @@ fun TitleBar(
         Text(
             text = titleText,
             color = AIKTheme.colors.on_core,
-            style = MaterialTheme.typography.subtitle1
+            style = AIKTheme.typography.subtitle1
         )
     }
 }
@@ -862,7 +847,7 @@ fun ExpendableTitleBar(
         Text(
             text = titleText,
             color = AIKTheme.colors.on_core,
-            style = MaterialTheme.typography.subtitle1
+            style = AIKTheme.typography.subtitle1
         )
         if (expandedState) {
             IconButton(
@@ -932,7 +917,7 @@ fun KoreaForecastMap(
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
                             text = stringResource(id = R.string.korea_forecast_model_error),
-                            style = MaterialTheme.typography.h6
+                            style = AIKTheme.typography.h6
                         )
                     }
                 }

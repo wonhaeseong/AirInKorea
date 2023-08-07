@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,11 +31,12 @@ import com.phil.airinkorea.data.model.DeveloperInfo
 import com.phil.airinkorea.ui.commoncomponent.CommonExpendableContent
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.modifier.bottomBorder
-import com.phil.airinkorea.ui.theme.AIKTypography
+import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.app_info_core_container
+import com.phil.airinkorea.ui.theme.app_info_on_core_container
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.theme.level1_on_core_container
 import com.phil.airinkorea.ui.viewmodel.AppInfoUiState
 
 @Composable
@@ -100,8 +100,8 @@ fun InfoContentOpensourceLicenses(
     ) {
         Text(
             text = stringResource(id = R.string.open_source_licenses),
-            style = AIKTypography.subtitle1,
-            color = level1_on_core_container
+            style = AIKTheme.typography.subtitle1,
+            color = app_info_on_core_container
         )
     }
 }
@@ -130,16 +130,16 @@ fun InfoContentDeveloperInfo(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             //Name
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = developerInfo.lastName, style = MaterialTheme.typography.subtitle1)
+                Text(text = developerInfo.lastName, style = AIKTheme.typography.subtitle1)
                 Spacer(modifier = Modifier.size(5.dp))
-                Text(text = developerInfo.firstName, style = MaterialTheme.typography.subtitle1)
+                Text(text = developerInfo.firstName, style = AIKTheme.typography.subtitle1)
             }
             Spacer(modifier = Modifier.size(5.dp))
             //국적
-            Text(text = developerInfo.nationality, style = MaterialTheme.typography.subtitle1)
+            Text(text = developerInfo.nationality, style = AIKTheme.typography.subtitle1)
             Spacer(modifier = Modifier.size(5.dp))
             //이메일
-            Text(text = developerInfo.email, style = MaterialTheme.typography.subtitle1)
+            Text(text = developerInfo.email, style = AIKTheme.typography.subtitle1)
             Spacer(modifier = Modifier.size(5.dp))
             //github
             Row(verticalAlignment = Alignment.CenterVertically) {

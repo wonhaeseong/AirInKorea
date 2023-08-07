@@ -16,7 +16,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.phil.airinkorea.ui.theme.AIKTypography
+import com.phil.airinkorea.ui.theme.AIKTheme
+import com.phil.airinkorea.ui.theme.AIKTheme.typography
 import com.phil.airinkorea.ui.theme.level1_on_core_container
 
 @Composable
@@ -37,7 +38,7 @@ fun CommonExpendableContent(
     ) {
         Text(
             text = title,
-            style = AIKTypography.subtitle1,
+            style = AIKTheme.typography.subtitle1,
             color = level1_on_core_container
         )
         AnimatedVisibility(visible = expandedState) {

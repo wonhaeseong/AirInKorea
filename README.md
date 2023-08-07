@@ -15,8 +15,9 @@
 **1. 휴대폰 내장 GPS를 이용한 위치기반 미세먼지 정보 제공**  
 **2. 지역 검색을 통한 미세먼지 정보제공**  
 
-![feature1](https://github.com/want8607/AirInKorea/assets/84075111/149c1117-bb49-4d5b-b163-5a55a080be68)
-  
+
+![feature drawio (5)](https://github.com/want8607/AirInKorea/assets/84075111/82db29ef-8eac-44c3-a82e-24cfedf018c8)
+
  
 # Architecture
 
@@ -24,9 +25,8 @@
 **2. Repository Pattern을 사용하여 UI layer와 data layer의 의존성을 최소화했습니다.**  
 **3. Firebase의 CloudFunctions 이용하여 서버와 클라이언트를 연결합니다.**
  
-   
-![123](https://github.com/want8607/AirInKorea/assets/84075111/31f8357d-badb-4e1c-9abc-2fd2b011c387)
- 
+![AirInKoreaArchitecture drawio (2)](https://github.com/want8607/AirInKorea/assets/84075111/8defa616-bb09-443a-bc25-d11fb3974f73)
+
  
 # UI
 
@@ -35,12 +35,11 @@
 **그대로 사용하거나 일부만 커스텀하기보다는 새로운 커스텀 Theme인 AIKTheme을 만들었습니다.**  
 **Typography는 Material Theme의 것을 그대로 사용하고 커스텀 필요 시 확장함수를 사용하였습니다.**  
   
-**추후에 사용자의 화면 사이즈에 따라 변경되는 Adaptive layout을 적용할 생각입니다.**  
+**추후에 사용자의 화면 사이즈에 따라 변경되는 Adaptive layout을 적용할 예정입니다.**  
 
+![feature drawio (4)](https://github.com/want8607/AirInKorea/assets/84075111/999121a7-0be5-4f18-adad-6de11965fca8)
 
-![feature2](https://github.com/want8607/AirInKorea/assets/84075111/aa2faf2e-270e-481b-8546-ef36cc5606e3)
-
- 
+  
 # Libraries
   
 **1. Hilt**    

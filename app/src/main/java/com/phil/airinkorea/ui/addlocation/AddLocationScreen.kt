@@ -29,7 +29,7 @@ import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.modifier.addFocusCleaner
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.AddLocationUiState
+import com.phil.airinkorea.viewmodel.AddLocationUiState
 import kotlinx.coroutines.launch
 
 @Composable

@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.viewmodel
+package com.phil.airinkorea.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

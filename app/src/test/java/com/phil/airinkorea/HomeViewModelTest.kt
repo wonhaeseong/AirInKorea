@@ -1,6 +1,6 @@
 package com.phil.airinkorea
 
-import com.phil.airinkorea.ui.viewmodel.HomeViewModel
+import com.phil.airinkorea.viewmodel.HomeViewModel
 import org.junit.Assert.*
 import org.junit.Before
 

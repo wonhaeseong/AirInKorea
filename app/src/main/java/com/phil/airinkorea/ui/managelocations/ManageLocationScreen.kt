@@ -47,7 +47,7 @@ import com.phil.airinkorea.ui.theme.manage_location_core
 import com.phil.airinkorea.ui.theme.manage_location_core_container
 import com.phil.airinkorea.ui.theme.manage_location_on_core_container
 import com.phil.airinkorea.ui.theme.unselected_bookmark
-import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
+import com.phil.airinkorea.viewmodel.ManageLocationUiState
 
 @Composable
 fun ManageLocationScreen(

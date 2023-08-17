@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.phil.airinkorea.R
 import com.phil.airinkorea.ui.theme.AIKTheme
-import com.phil.airinkorea.ui.viewmodel.AppGuideUiState
-import com.phil.airinkorea.ui.viewmodel.AppGuideViewModel
+import com.phil.airinkorea.viewmodel.AppGuideUiState
+import com.phil.airinkorea.viewmodel.AppGuideViewModel
 
 data class AppGuideContent(
     @StringRes val title: Int,

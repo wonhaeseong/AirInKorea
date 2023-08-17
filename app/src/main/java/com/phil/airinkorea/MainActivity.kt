@@ -34,10 +34,10 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.gms.tasks.Task
 import com.phil.airinkorea.ui.NavGraph
-import com.phil.airinkorea.ui.viewmodel.AppInfoScreenActivityEvent
-import com.phil.airinkorea.ui.viewmodel.AppInfoViewModel
-import com.phil.airinkorea.ui.viewmodel.HomeScreenActivityEvent
-import com.phil.airinkorea.ui.viewmodel.HomeViewModel
+import com.phil.airinkorea.viewmodel.AppInfoScreenActivityEvent
+import com.phil.airinkorea.viewmodel.AppInfoViewModel
+import com.phil.airinkorea.viewmodel.HomeScreenActivityEvent
+import com.phil.airinkorea.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.phil.airinkorea.ui.viewmodel.AppInfoViewModel
+import com.phil.airinkorea.viewmodel.AppInfoViewModel
 
 @Composable
 fun AppInfoRoute(

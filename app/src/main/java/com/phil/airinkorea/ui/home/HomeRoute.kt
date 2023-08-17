@@ -6,9 +6,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.phil.airinkorea.ui.viewmodel.DrawerUiState
-import com.phil.airinkorea.ui.viewmodel.HomeUiState
-import com.phil.airinkorea.ui.viewmodel.HomeViewModel
+import com.phil.airinkorea.viewmodel.DrawerUiState
+import com.phil.airinkorea.viewmodel.HomeUiState
+import com.phil.airinkorea.viewmodel.HomeViewModel
 
 @Composable
 fun HomeRoute(

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.phil.airinkorea.ui.viewmodel.ManageLocationUiState
-import com.phil.airinkorea.ui.viewmodel.ManageLocationViewModel
+import com.phil.airinkorea.viewmodel.ManageLocationUiState
+import com.phil.airinkorea.viewmodel.ManageLocationViewModel
 
 @Composable
 fun ManageLocationRoute(

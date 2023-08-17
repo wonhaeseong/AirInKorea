@@ -1,4 +1,4 @@
-package com.phil.airinkorea.ui.viewmodel
+package com.phil.airinkorea.viewmodel
 
 import android.net.Uri
 import android.util.Log

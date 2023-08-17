@@ -37,7 +37,7 @@ import com.phil.airinkorea.ui.theme.app_info_on_core_container
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.AppInfoUiState
+import com.phil.airinkorea.viewmodel.AppInfoUiState
 
 @Composable
 fun AppInfoScreen(

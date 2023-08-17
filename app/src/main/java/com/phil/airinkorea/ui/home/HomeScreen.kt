@@ -37,8 +37,8 @@ import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.DrawerUiState
-import com.phil.airinkorea.ui.viewmodel.HomeUiState
+import com.phil.airinkorea.viewmodel.DrawerUiState
+import com.phil.airinkorea.viewmodel.HomeUiState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

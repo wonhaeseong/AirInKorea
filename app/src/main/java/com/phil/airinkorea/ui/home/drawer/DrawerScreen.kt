@@ -46,7 +46,7 @@ import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
 import com.phil.airinkorea.ui.theme.heart
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
-import com.phil.airinkorea.ui.viewmodel.DrawerUiState
+import com.phil.airinkorea.viewmodel.DrawerUiState
 
 @Composable
 fun DrawerScreen(

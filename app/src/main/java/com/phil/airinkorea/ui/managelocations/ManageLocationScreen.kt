@@ -331,7 +331,7 @@ fun ManageLocationChangeBookmarkDialog(
                     location.eupmyeondong
                 ),
                 style = AIKTheme.typography.body1,
-                color = AIKTheme.colors.on_core_container
+                color = manage_location_on_core_container
             )
         },
         confirmButton = {

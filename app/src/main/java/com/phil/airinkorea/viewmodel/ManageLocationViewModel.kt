@@ -86,7 +86,12 @@ class ManageLocationViewModel @Inject constructor(
                 val oldBookmark = successManageLocationUiState.bookmark
                 when (val currentPage =
                     withContext(Dispatchers.IO) { appStatusRepository.getDefaultPage().first() }) {
-                    0 -> Unit
+                    0 -> {
+                        locationRepository.updateBookmark(
+                            oldBookmark = oldBookmark,
+                            newBookmark = location
+                        )
+                    }
                     1 -> {
                         locationRepository.updateBookmark(
                             oldBookmark = oldBookmark,

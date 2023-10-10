@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -39,24 +40,24 @@ import com.phil.airinkorea.viewmodel.AppInfoViewModel
 import com.phil.airinkorea.viewmodel.HomeScreenActivityEvent
 import com.phil.airinkorea.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Resolver {
+    @Inject
+    lateinit var locationManager: LocationManager
+    @Inject
+    lateinit var settingManager: SettingManager
     private val homeViewModel: HomeViewModel by viewModels()
     private val appInfoViewModel: AppInfoViewModel by viewModels()
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val locationPermissionResultCaller =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             when {
-                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    getGPSLocation()
-                    Log.d("TAG a", "Fine Location")
-                }
-
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     getGPSLocation()
                     Log.d("TAG a", "Coarse Location")
@@ -67,31 +68,28 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(
                         this,
                         "Please turn on location permission to get location data",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
                     Log.d("TAG a", "Permission 거부")
                 }
             }
         }
 
-    private val GPSRequestResultCaller =
+    private val locationSettingResultCaller =
         registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 getGPSLocation()
-                Log.d("TAG a", "GPS 허용됨")
             } else {
                 homeViewModel.fetchToPageBookmark()
                 homeViewModel.setRefreshingState(false)
-                Log.d("TAG a", "GPS 허용안됨")
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.statusBarColor = Color.Transparent.toArgb()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
         super.onCreate(savedInstanceState)
         setContent {
             val sysUicController = rememberSystemUiController()
@@ -104,8 +102,6 @@ class MainActivity : AppCompatActivity() {
             NavGraph(navController = navController)
         }
 
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(this)
         lifecycleScope.launch {
             homeViewModel.activityEvent.collect {
                 when (it) {
@@ -134,64 +130,44 @@ class MainActivity : AppCompatActivity() {
     private fun requestPermission() {
         locationPermissionResultCaller.launch(
             arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
     }
 
-    private fun checkPermission(): Boolean {
-        return (
-                PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )) && (
-                PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ))
-    }
+    private fun checkPermission(): Boolean =
+        PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
 
     private fun getGPSLocation() {
-        if (checkPermission()) {
-            val locationRequest =
-                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 6000L).apply {
-                    setMinUpdateDistanceMeters(100f)
-                    setWaitForAccurateLocation(true)
-                }.build()
-            val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-            val client: SettingsClient = LocationServices.getSettingsClient(this)
-            val task: Task<LocationSettingsResponse> =
-                client.checkLocationSettings(builder.build())
-            task.addOnSuccessListener {
-                Log.d("GPS1", "폰 위치 켜져있음")
-                fusedLocationProviderClient.getCurrentLocation(
-                    Priority.PRIORITY_HIGH_ACCURACY,
-                    null
-                ).addOnSuccessListener { location ->
-                    if (location != null) {
-                        Log.d("GPS latitude", location.latitude.toString())
-                        Log.d("GPS longitude", location.longitude.toString())
-                        homeViewModel.fetchGPSLocation(location.latitude, location.longitude)
+        lifecycleScope.launch {
+            if (checkPermission()) {
+                if (!settingManager.isLocationSettingOn()) {
+                    settingManager.enableLocationSetting(this@MainActivity)
+                } else {
+                    val coordinate: Coordinate? =
+                        locationManager.getLastKnownCoordinate()
+                            ?: locationManager.getCurrentCoordinate()
+                    if (coordinate == null) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Can't get Location Data",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    } else {
+                        homeViewModel.fetchGPSLocation(
+                            coordinate.latitude,
+                            coordinate.longitude
+                        )
+                        Log.d("location", "널아님 $coordinate")
                     }
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Can't get Location Data", Toast.LENGTH_LONG).show()
                 }
-            }.addOnFailureListener { exception ->
-                if (exception is ResolvableApiException) {
-                    try {
-                        val intentSenderRequest = IntentSenderRequest.Builder(
-                            exception.resolution
-                        ).build()
-                        GPSRequestResultCaller.launch(intentSenderRequest)
-                    } catch (e: IntentSender.SendIntentException) {
-                        Log.d("GPS", e.message.toString())
-                    }
-                    Log.d("GPS1", "폰 위치 꺼져있음")
-                }
+            } else {
+                requestPermission()
             }
-        } else {
-            requestPermission()
         }
     }
 
@@ -202,5 +178,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun openUriInBrowser(uri: Uri) {
         startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
+
+    override fun startResolution(throwable: Throwable) {
+        if (throwable is ResolvableApiException) {
+            try {
+                val intentSenderRequest = IntentSenderRequest.Builder(
+                    throwable.resolution
+                ).build()
+                locationSettingResultCaller.launch(intentSenderRequest)
+            } catch (e: IntentSender.SendIntentException) {
+                Log.d("GPS", e.message.toString())
+            }
+            Log.d("GPS1", "폰 위치 꺼져있음")
+        }
     }
 }

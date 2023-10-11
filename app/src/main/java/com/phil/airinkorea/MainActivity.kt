@@ -1,9 +1,7 @@
 package com.phil.airinkorea
 
 import android.Manifest
-import android.content.Intent
 import android.content.IntentSender
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -20,13 +18,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.phil.airinkorea.manager.Coordinate
 import com.phil.airinkorea.manager.LocationManager
 import com.phil.airinkorea.manager.PermissionManager
 import com.phil.airinkorea.manager.SettingManager
 import com.phil.airinkorea.ui.NavGraph
-import com.phil.airinkorea.viewmodel.AppInfoScreenActivityEvent
 import com.phil.airinkorea.viewmodel.AppInfoViewModel
 import com.phil.airinkorea.viewmodel.HomeScreenActivityEvent
 import com.phil.airinkorea.viewmodel.HomeViewModel
@@ -38,11 +34,12 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), Resolver {
     @Inject
     lateinit var locationManager: LocationManager
+
     @Inject
     lateinit var settingManager: SettingManager
+
     @Inject
     lateinit var permissionManager: PermissionManager
-
     private val homeViewModel: HomeViewModel by viewModels()
     private val appInfoViewModel: AppInfoViewModel by viewModels()
 
@@ -104,20 +101,6 @@ class MainActivity : AppCompatActivity(), Resolver {
                 }
             }
         }
-        lifecycleScope.launch {
-            appInfoViewModel.activityEvent.collect {
-                Log.d("TAG", it.toString())
-                when (it) {
-                    AppInfoScreenActivityEvent.ShowOpenSourceLicenses -> {
-                        startOpenSourceLicensesActivity()
-                    }
-
-                    is AppInfoScreenActivityEvent.ShowGithubInBrowser -> {
-                        openUriInBrowser(it.uri)
-                    }
-                }
-            }
-        }
     }
 
     private fun getGPSLocation() {
@@ -148,15 +131,6 @@ class MainActivity : AppCompatActivity(), Resolver {
                 permissionManager.requestCoarseLocationPermission(locationPermissionResultCaller)
             }
         }
-    }
-
-    private fun startOpenSourceLicensesActivity() {
-        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
-        OssLicensesMenuActivity.setActivityTitle(getString(R.string.open_source_licenses))
-    }
-
-    private fun openUriInBrowser(uri: Uri) {
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
     override fun startResolution(throwable: Throwable) {

@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity(), Resolver {
     lateinit var locationManager: LocationManager
     @Inject
     lateinit var settingManager: SettingManager
+    @Inject
+    lateinit var permissionManager: PermissionManager
+
     private val homeViewModel: HomeViewModel by viewModels()
     private val appInfoViewModel: AppInfoViewModel by viewModels()
 
@@ -127,23 +130,9 @@ class MainActivity : AppCompatActivity(), Resolver {
         }
     }
 
-    private fun requestPermission() {
-        locationPermissionResultCaller.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-    }
-
-    private fun checkPermission(): Boolean =
-        PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-
     private fun getGPSLocation() {
         lifecycleScope.launch {
-            if (checkPermission()) {
+            if (permissionManager.checkPermission()) {
                 if (!settingManager.isLocationSettingOn()) {
                     settingManager.enableLocationSetting(this@MainActivity)
                 } else {
@@ -166,7 +155,7 @@ class MainActivity : AppCompatActivity(), Resolver {
                     }
                 }
             } else {
-                requestPermission()
+                permissionManager.requestCoarseLocationPermission(locationPermissionResultCaller)
             }
         }
     }

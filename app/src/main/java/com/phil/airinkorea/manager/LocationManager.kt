@@ -1,4 +1,4 @@
-package com.phil.airinkorea
+package com.phil.airinkorea.manager
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.phil.airinkorea
+package com.phil.airinkorea.manager
 
 import android.Manifest
 import android.content.Context

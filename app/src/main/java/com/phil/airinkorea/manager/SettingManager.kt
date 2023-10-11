@@ -1,13 +1,12 @@
-package com.phil.airinkorea
+package com.phil.airinkorea.manager
 
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
-import dagger.hilt.android.qualifiers.ActivityContext
+import com.phil.airinkorea.Resolver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -28,10 +27,11 @@ class SettingManager @Inject constructor(
     suspend fun enableLocationSetting(resolver: Resolver) {
         return withContext(Dispatchers.IO) {
             val locationRequest =
-                LocationRequest.Builder(LOCATION_REQUEST_PRIORITY, LOCATION_REQUEST_INTERVAL).apply {
-                    setMinUpdateDistanceMeters(LOCATION_MININUM_UPDATE_DISTANCE)
-                    setWaitForAccurateLocation(true)
-                }.build()
+                LocationRequest.Builder(LOCATION_REQUEST_PRIORITY, LOCATION_REQUEST_INTERVAL)
+                    .apply {
+                        setMinUpdateDistanceMeters(LOCATION_MININUM_UPDATE_DISTANCE)
+                        setWaitForAccurateLocation(true)
+                    }.build()
             val locationSettingRequest =
                 LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build()
             val settingClient = LocationServices.getSettingsClient(context)

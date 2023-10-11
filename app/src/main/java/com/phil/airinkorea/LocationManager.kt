@@ -12,10 +12,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-//메세지가 객체를 선택하도록 한다.
 @SuppressLint("MissingPermission")
 @Singleton
-class LocationManager @Inject constructor (@ApplicationContext context: Context) {
+class LocationManager @Inject constructor(@ApplicationContext context: Context) {
     private val fusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 

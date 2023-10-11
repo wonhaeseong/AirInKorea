@@ -15,7 +15,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-//private val LOCATION_SETTINGS_REQUEST_CODE = SettingManager::class.java.hashCode() and 0xffff
+private val LOCATION_MININUM_UPDATE_DISTANCE = 100f
+private val LOCATION_REQUEST_INTERVAL = 6000L
+private val LOCATION_REQUEST_PRIORITY = Priority.PRIORITY_LOW_POWER
 @Singleton
 class SettingManager @Inject constructor(
     @ApplicationContext val context: Context
@@ -26,8 +28,8 @@ class SettingManager @Inject constructor(
     suspend fun enableLocationSetting(resolver: Resolver) {
         return withContext(Dispatchers.IO) {
             val locationRequest =
-                LocationRequest.Builder(Priority.PRIORITY_LOW_POWER, 6000L).apply {
-                    setMinUpdateDistanceMeters(100f)
+                LocationRequest.Builder(LOCATION_REQUEST_PRIORITY, LOCATION_REQUEST_INTERVAL).apply {
+                    setMinUpdateDistanceMeters(LOCATION_MININUM_UPDATE_DISTANCE)
                     setWaitForAccurateLocation(true)
                 }.build()
             val locationSettingRequest =

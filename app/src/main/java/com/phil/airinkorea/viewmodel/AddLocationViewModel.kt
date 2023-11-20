@@ -19,18 +19,18 @@ data class AddLocationUiState(
 class AddLocationViewModel @Inject constructor(
     private val locationRepository: LocationRepository
 ) : ViewModel() {
-    private val _searchResult = MutableStateFlow(AddLocationUiState())
-    val searchResult: StateFlow<AddLocationUiState> = _searchResult
+    private val _addLocationUiState = MutableStateFlow(AddLocationUiState())
+    val addLocationUiState: StateFlow<AddLocationUiState> = _addLocationUiState
     fun getSearchResult(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
             locationRepository.getSearchResult(query).collect { newResult ->
-                _searchResult.update {
+                _addLocationUiState.update {
                     it.copy(
                         searchResult = newResult
                     )
                 }
             }
-            Log.d("searchResult", searchResult.value.toString())
+            Log.d("searchResult", addLocationUiState.value.toString())
         }
     }
 

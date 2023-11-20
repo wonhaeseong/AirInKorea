@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.phil.airinkorea.R
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.viewmodel.AppGuideUiState
@@ -35,28 +36,54 @@ fun AppGuideRoute(
     appGuideViewModel: AppGuideViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit
 ) {
-    val appGuideUiState by appGuideViewModel.appGuideUiState
-    when (appGuideUiState) {
-        AppGuideUiState.Loading -> Unit
-        is AppGuideUiState.Success -> {
-            val successAppGuideUiState = (appGuideUiState as AppGuideUiState.Success)
-            val appGuideContentList = listOf(
-                AppGuideContent(R.string.cautions) { GuideContentCommon(text = successAppGuideUiState.appGuide.cautionGuideText) },
-                AppGuideContent(R.string.data_loading) { GuideContentCommon(text = successAppGuideUiState.appGuide.dataLoadingGuideText) },
-                AppGuideContent(R.string.air_pollution_level) { GuideContentAirPollutionLevel(text = successAppGuideUiState.appGuide.airPollutionLevelGuideText) },
-                AppGuideContent(R.string.details) { GuideContentCommon(text = successAppGuideUiState.appGuide.detailGuideText) },
-                AppGuideContent(R.string.information) { GuideContentCommon(text =successAppGuideUiState.appGuide.informationGuideText )},
-                AppGuideContent(R.string.dailyForecast) { GuideContentCommon(text =successAppGuideUiState.appGuide.dailyForecastGuideText )},
-                AppGuideContent(R.string.koreaForecastMap) { GuideContentCommon(text =successAppGuideUiState.appGuide.koreaForecastModelGuideText )},
-                AppGuideContent(R.string.add_location) { GuideContentCommon(text =successAppGuideUiState.appGuide.addLocationGuideText )}
+    val appGuideUiState: AppGuideUiState by appGuideViewModel.appGuideUiState.collectAsStateWithLifecycle()
+    val appGuideContentList = listOf(
+        AppGuideContent(R.string.cautions) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.cautionGuideText ?: ""
             )
-
-            AppGuideScreen(
-                appGuideContentList = appGuideContentList,
-                onBackButtonClick = onBackButtonClick
+        },
+        AppGuideContent(R.string.data_loading) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.dataLoadingGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.air_pollution_level) {
+            GuideContentAirPollutionLevel(
+                text = appGuideUiState.appGuide?.airPollutionLevelGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.details) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.detailGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.information) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.informationGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.dailyForecast) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.dailyForecastGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.koreaForecastMap) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.koreaForecastModelGuideText ?: ""
+            )
+        },
+        AppGuideContent(R.string.add_location) {
+            GuideContentCommon(
+                text = appGuideUiState.appGuide?.addLocationGuideText ?: ""
             )
         }
-    }
+    )
+
+    AppGuideScreen(
+        appGuideContentList = appGuideContentList,
+        onBackButtonClick = onBackButtonClick
+    )
 }
 
 private val contentPadding = 10.dp

@@ -1,38 +1,25 @@
 package com.phil.airinkorea.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.data.model.DeveloperInfo
 import com.phil.airinkorea.data.repository.AppInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-sealed interface AppInfoUiState {
-    object Loading : AppInfoUiState
-    data class Success(
-        val developerInfo: DeveloperInfo
-    ) : AppInfoUiState
-}
+data class AppInfoUiState(
+    val developerInfo: DeveloperInfo? = null
+)
 
 @HiltViewModel
 class AppInfoViewModel @Inject constructor(
-    private val appInfoRepository: AppInfoRepository
+    appInfoRepository: AppInfoRepository
 ) : ViewModel() {
-
-    var appInfoUiState: MutableState<AppInfoUiState> = mutableStateOf(AppInfoUiState.Loading)
-        private set
-
-    init {
-        Log.d("TAG","viewmodel 생성")
-        getAppInfoData()
-    }
-
-    private fun getAppInfoData() {
-        appInfoUiState.value =
-            AppInfoUiState.Success(
-                developerInfo = appInfoRepository.getDeveloperInfo()
-            )
-    }
+    val appInfoUiState =
+        appInfoRepository.getDeveloperInfoStream().map { AppInfoUiState(it) }.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5_000), AppInfoUiState()
+        )
 }

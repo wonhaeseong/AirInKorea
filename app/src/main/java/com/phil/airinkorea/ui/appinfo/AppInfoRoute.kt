@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.phil.airinkorea.R
+import com.phil.airinkorea.viewmodel.AppInfoUiState
 import com.phil.airinkorea.viewmodel.AppInfoViewModel
 
 @Composable
@@ -16,7 +18,7 @@ fun AppInfoRoute(
     onBackButtonClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val appInfoUiState by appInfoViewModel.appInfoUiState
+    val appInfoUiState: AppInfoUiState by appInfoViewModel.appInfoUiState.collectAsStateWithLifecycle()
     AppInfoScreen(
         onBackButtonClick = onBackButtonClick,
         onOpensourceLicensesClick = {

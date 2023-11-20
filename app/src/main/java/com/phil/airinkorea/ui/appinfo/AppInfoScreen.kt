@@ -32,7 +32,6 @@ import com.phil.airinkorea.ui.commoncomponent.CommonExpendableContent
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.modifier.bottomBorder
 import com.phil.airinkorea.ui.theme.AIKTheme
-import com.phil.airinkorea.ui.theme.app_info_core_container
 import com.phil.airinkorea.ui.theme.app_info_on_core_container
 import com.phil.airinkorea.ui.theme.common_background
 import com.phil.airinkorea.ui.theme.divider
@@ -46,43 +45,38 @@ fun AppInfoScreen(
     onGithubIconClick: (Uri) -> Unit,
     appInfoUiState: AppInfoUiState
 ) {
-    when (appInfoUiState) {
-        AppInfoUiState.Loading -> Unit
-        is AppInfoUiState.Success -> {
-            val scrollState = rememberScrollState()
-            Scaffold(
-                topBar = {
-                    CommonTopAppBar(
-                        onBackButtonClick = onBackButtonClick,
-                        title = stringResource(id = R.string.app_info),
-                        modifier = Modifier.statusBarsPadding()
-                    )
-                },
-                backgroundColor = common_background
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                ) {
-                    InfoContentOpensourceLicenses(
-                        onClick = onOpensourceLicensesClick, modifier = Modifier
-                            .bottomBorder(1.dp, divider)
-                            .fillMaxWidth()
-                    )
-                    CommonExpendableContent(
-                        title = stringResource(id = R.string.developer_info),
-                        modifier = Modifier
-                            .bottomBorder(1.dp, divider)
-                            .fillMaxWidth()
-                    ) {
-                        InfoContentDeveloperInfo(
-                            developerInfo = appInfoUiState.developerInfo,
-                            onGithubIconClick = onGithubIconClick
-                        )
-                    }
-                }
+    val scrollState = rememberScrollState()
+    Scaffold(
+        topBar = {
+            CommonTopAppBar(
+                onBackButtonClick = onBackButtonClick,
+                title = stringResource(id = R.string.app_info),
+                modifier = Modifier.statusBarsPadding()
+            )
+        },
+        backgroundColor = common_background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
+            InfoContentOpensourceLicenses(
+                onClick = onOpensourceLicensesClick, modifier = Modifier
+                    .bottomBorder(1.dp, divider)
+                    .fillMaxWidth()
+            )
+            CommonExpendableContent(
+                title = stringResource(id = R.string.developer_info),
+                modifier = Modifier
+                    .bottomBorder(1.dp, divider)
+                    .fillMaxWidth()
+            ) {
+                InfoContentDeveloperInfo(
+                    developerInfo = appInfoUiState.developerInfo,
+                    onGithubIconClick = onGithubIconClick
+                )
             }
         }
     }
@@ -109,45 +103,50 @@ fun InfoContentOpensourceLicenses(
 @Composable
 fun InfoContentDeveloperInfo(
     modifier: Modifier = Modifier,
-    developerInfo: DeveloperInfo,
+    developerInfo: DeveloperInfo?,
     onGithubIconClick: (Uri) -> Unit
 ) {
-    val myFaceImg: Int = R.drawable.myface
-    Column(
-        modifier = modifier
-            .padding(10.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = myFaceImg),
-            contentDescription = null,
-            modifier = Modifier
-                .size(100.dp)
-                .clip(shape = CircleShape)
-        )
-        Spacer(modifier = Modifier.size(10.dp))
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            //Name
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = developerInfo.lastName, style = AIKTheme.typography.subtitle1)
-                Spacer(modifier = Modifier.size(5.dp))
-                Text(text = developerInfo.firstName, style = AIKTheme.typography.subtitle1)
-            }
-            Spacer(modifier = Modifier.size(5.dp))
-            //국적
-            Text(text = developerInfo.nationality, style = AIKTheme.typography.subtitle1)
-            Spacer(modifier = Modifier.size(5.dp))
-            //이메일
-            Text(text = developerInfo.email, style = AIKTheme.typography.subtitle1)
-            Spacer(modifier = Modifier.size(5.dp))
-            //github
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { onGithubIconClick(developerInfo.github) }) {
-                    Icon(painter = painterResource(id = AIKIcons.github), contentDescription = null)
+    if (developerInfo != null) {
+        val myFaceImg: Int = R.drawable.myface
+        Column(
+            modifier = modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = myFaceImg),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(shape = CircleShape)
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                //Name
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = developerInfo.lastName, style = AIKTheme.typography.subtitle1)
+                    Spacer(modifier = Modifier.size(5.dp))
+                    Text(text = developerInfo.firstName, style = AIKTheme.typography.subtitle1)
                 }
-            }
+                Spacer(modifier = Modifier.size(5.dp))
+                //국적
+                Text(text = developerInfo.nationality, style = AIKTheme.typography.subtitle1)
+                Spacer(modifier = Modifier.size(5.dp))
+                //이메일
+                Text(text = developerInfo.email, style = AIKTheme.typography.subtitle1)
+                Spacer(modifier = Modifier.size(5.dp))
+                //github
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { onGithubIconClick(developerInfo.github) }) {
+                        Icon(
+                            painter = painterResource(id = AIKIcons.github),
+                            contentDescription = null
+                        )
+                    }
+                }
 
+            }
         }
     }
 }

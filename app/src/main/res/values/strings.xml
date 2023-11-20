@@ -15,6 +15,7 @@
     <string name="dailyForecast">Daily forecast</string>
     <string name="koreaForecastMap">Korea forecast map</string>
 
+    <string name="location_permission_error">Please turn on the location permission to get current location information.</string>
     <string name="gps_error">Please turn on the GPS to get current location information.</string>
     <string name="data_error">Please refresh the screen by pulling the screen down after a while. Or check your network connection.</string>
     <string name="under_maintenance">Data cannot be retrieved as the station is currently undergoing maintenance. Try again later.</string>

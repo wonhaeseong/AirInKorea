@@ -1,38 +1,31 @@
 package com.phil.airinkorea.viewmodel
 
-import androidx.annotation.StringRes
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.phil.airinkorea.data.model.AppGuide
 import com.phil.airinkorea.data.repository.AppGuideRepository
-import com.phil.airinkorea.ui.appguide.AppGuideContent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 
-sealed interface AppGuideUiState {
-    object Loading : AppGuideUiState
-    data class Success(
-        val appGuide: AppGuide
-    ) : AppGuideUiState
-}
+data class AppGuideUiState(
+    val appGuide: AppGuide? = null
+)
 
 @HiltViewModel
 class AppGuideViewModel @Inject constructor(
-    private val appGuideRepository: AppGuideRepository
+    appGuideRepository: AppGuideRepository
 ) : ViewModel() {
-    var appGuideUiState: MutableState<AppGuideUiState> = mutableStateOf(AppGuideUiState.Loading)
-        private set
-    init {
-        getAppGuideData()
-    }
-
-    private fun getAppGuideData() {
-        appGuideUiState.value = AppGuideUiState.Success(
-            appGuide = appGuideRepository.getAppGuideData()
+    val appGuideUiState: StateFlow<AppGuideUiState> =
+        appGuideRepository.getAppGuideDataStream().map {
+            AppGuideUiState(it)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            AppGuideUiState()
         )
-    }
 }

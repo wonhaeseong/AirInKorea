@@ -3,17 +3,20 @@ package com.phil.airinkorea.data.network.firebase
 import android.util.Log
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
+import com.phil.airinkorea.data.network.NetworkDataSource
 import com.phil.airinkorea.data.network.model.NetworkAirData
 import com.phil.airinkorea.data.network.model.NetworkCoordinateResult
 import com.phil.airinkorea.data.network.model.NetworkLocation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-class FirebaseClient {
+class FirebaseClient:NetworkDataSource {
     private val functions = FirebaseFunctions.getInstance("asia-northeast3")
 
-    suspend fun getAirData(station: String): NetworkAirData? {
+    override suspend fun getAirData(station: String): NetworkAirData? = withContext(Dispatchers.IO) {
         val data = hashMapOf(
             "stationName" to station
         )
@@ -27,7 +30,7 @@ class FirebaseClient {
 
             Log.d("API result1", result.toString())
             Log.d("API result2", convertJsonToNetworkAirData(result.toString()).toString())
-            return convertJsonToNetworkAirData(result.toString())
+            convertJsonToNetworkAirData(result.toString())
         } catch (e: Exception) {
             if (e is FirebaseFunctionsException) {
                 val code = e.code
@@ -35,11 +38,14 @@ class FirebaseClient {
                 Log.d("Firebase Exception", "code: $code")
                 Log.d("Firebase Exception", "message: $message")
             }
-            return null
+            null
         }
     }
 
-    suspend fun getAirDataByCoordinate(latitude: Double, longitude: Double): NetworkCoordinateResult? {
+    override suspend fun getAirDataByCoordinate(
+        latitude: Double,
+        longitude: Double
+    ): NetworkCoordinateResult? = withContext(Dispatchers.IO){
         val data = hashMapOf(
             "latitude" to latitude,
             "longitude" to longitude
@@ -51,7 +57,7 @@ class FirebaseClient {
                     .await()
                     .data
             Log.d("API GPS result1", result.toString())
-            return convertJsonToNetworkCoordinate(result.toString())
+            convertJsonToNetworkCoordinate(result.toString())
         } catch (e: Exception) {
             if (e is FirebaseFunctionsException) {
                 val code = e.code
@@ -59,7 +65,7 @@ class FirebaseClient {
                 Log.d("Firebase Exception", "code: $code")
                 Log.d("Firebase Exception", "message: $message")
             }
-            return null
+            null
         }
     }
 

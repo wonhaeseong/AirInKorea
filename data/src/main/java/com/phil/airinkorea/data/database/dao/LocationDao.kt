@@ -25,8 +25,7 @@ interface LocationDao {
         """
         SELECT *
         FROM locations
-        WHERE 
-        en_eupmyeondong LIKE '%' || :query || '%'
+        WHERE en_eupmyeondong LIKE '%' || :query || '%'
         """
     )
     fun getMatchLocationByEupmyeondong(query: String): LocationEntity

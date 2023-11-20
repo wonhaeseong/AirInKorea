@@ -13,4 +13,11 @@ data class Location(
     val sigungu: String,
     val eupmyeondong: String,
     val station: String
-    )
+)
+
+data class UserLocation(
+    val location: Location,
+    val isGPS: Boolean = false,
+    val isBookmark: Boolean = false,
+    val isSelected: Boolean = false
+)

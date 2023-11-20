@@ -1,6 +1,8 @@
 package com.phil.airinkorea.data.repository
 
 import com.phil.airinkorea.data.model.AppGuide
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AppGuideRepositoryImpl @Inject constructor() : AppGuideRepository {
@@ -67,15 +69,20 @@ class AppGuideRepositoryImpl @Inject constructor() : AppGuideRepository {
         If you want to search for an area based on Korean 'eup', 'myeon', and 'dong', you must search for 'Legal Dong'. 
         I also plan to add administrative dong searches later.    
         """.trimIndent()
-    override fun getAppGuideData(): AppGuide = AppGuide(
-        cautionGuideText = caution,
-        dataLoadingGuideText = dataLoading,
-        particulateMatterGuideText = particulateMatter,
-        airPollutionLevelGuideText = airPollutionLevel,
-        detailGuideText = detail,
-        informationGuideText = information,
-        dailyForecastGuideText = dailyForecast,
-        koreaForecastModelGuideText = koreaForecastModel,
-        addLocationGuideText = addLocation
-    )
+
+    override fun getAppGuideDataStream(): Flow<AppGuide> = flow {
+        emit(
+            AppGuide(
+                cautionGuideText = caution,
+                dataLoadingGuideText = dataLoading,
+                particulateMatterGuideText = particulateMatter,
+                airPollutionLevelGuideText = airPollutionLevel,
+                detailGuideText = detail,
+                informationGuideText = information,
+                dailyForecastGuideText = dailyForecast,
+                koreaForecastModelGuideText = koreaForecastModel,
+                addLocationGuideText = addLocation
+            )
+        )
+    }
 }

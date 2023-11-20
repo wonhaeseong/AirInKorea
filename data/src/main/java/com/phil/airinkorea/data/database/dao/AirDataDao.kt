@@ -4,32 +4,25 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.phil.airinkorea.data.database.model.AirDataEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AirDataDao {
-    @Insert(
-        entity = AirDataEntity::class,
-        onConflict = OnConflictStrategy.REPLACE
-    )
-    suspend fun insertAirData(newData: AirDataEntity)
+    @Upsert(entity = AirDataEntity::class,)
+    fun upsertAirData(newData: AirDataEntity)
 
     @Query(
         """
-        SELECT 
-        *
-        FROM airData
-        WHERE station = :station
+        SELECT * 
+        FROM airData 
+        WHERE station in (
+            SELECT station
+            FROM user_locations 
+            WHERE is_selected = 1
+        ) 
         """
     )
-    fun getAirData(station: String): Flow<AirDataEntity>
-
-    @Query(
-        """
-        SELECT 
-        EXISTS(SELECT 1 FROM airData WHERE station = :station)
-        """
-    )
-    fun isStationExist(station: String): Boolean
+    fun getAirDataForSelectedUserLocations(): Flow<AirDataEntity?>
 }

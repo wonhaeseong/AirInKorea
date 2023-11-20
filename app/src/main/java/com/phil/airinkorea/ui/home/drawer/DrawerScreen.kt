@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.model.SelectedLocation
+import com.phil.airinkorea.data.model.UserLocation
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
@@ -55,107 +57,101 @@ fun DrawerScreen(
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onDrawerLocationClick: (Int) -> Unit
+    onDrawerLocationClick: (UserLocation?) -> Unit
 ) {
-    when (drawerUiState) {
-        DrawerUiState.Loading -> Unit
-        is DrawerUiState.Success -> {
-            val scrollState = rememberScrollState()
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .clickable(false) {}
+    val scrollState = rememberScrollState()
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .clickable(false) {}
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = AIKTheme.colors.core_container,
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomEnd = 16.dp
+                    )
+                )
+                .padding(horizontal = 15.dp)
+                .verticalScroll(scrollState)
+        ) {
+            Spacer(modifier = Modifier.size(30.dp))
+            //GPS
+            GPS(
+                userLocation = drawerUiState.gps,
+                onClick = { onDrawerLocationClick(it) },
+                selectedLocation = drawerUiState.selectedLocation
+            )
+
+            Spacer(modifier = Modifier.size(3.dp))
+            Divider(
+                color = divider, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp)
+            )
+            //bookmark
+            Bookmark(
+                userLocation = drawerUiState.bookmark,
+                onClick = { onDrawerLocationClick(it) },
+                selectedLocation = drawerUiState.selectedLocation
+            )
+            Spacer(modifier = Modifier.size(3.dp))
+            Divider(
+                color = divider, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp)
+            )
+
+            //My locations
+            MyLocations(
+                userLocationList = drawerUiState.userLocationList,
+                onClick = { onDrawerLocationClick(it) }
+            )
+
+            //manage locations Button
+            TextButton(
+                onClick = onManageLocationClick,
+                colors = ButtonDefaults.textButtonColors(AIKTheme.colors.core_button),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(15.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            color = AIKTheme.colors.core_container,
-                            shape = RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp,
-                                bottomEnd = 16.dp
-                            )
-                        )
-                        .padding(horizontal = 15.dp)
-                        .verticalScroll(scrollState)
-                ) {
-                    Spacer(modifier = Modifier.size(30.dp))
-                    //GPS
-                    GPS(
-                        location = drawerUiState.gps,
-                        onClick = { onDrawerLocationClick(0) },
-                        page = drawerUiState.page
-                    )
-
-                    Spacer(modifier = Modifier.size(3.dp))
-                    Divider(
-                        color = divider, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 15.dp)
-                    )
-                    //bookmark
-                    Bookmark(
-                        location = drawerUiState.bookmark,
-                        onClick = { onDrawerLocationClick(1) },
-                        page = drawerUiState.page
-                    )
-                    Spacer(modifier = Modifier.size(3.dp))
-                    Divider(
-                        color = divider, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 15.dp)
-                    )
-
-                    //My locations
-                    MyLocations(
-                        locationList = drawerUiState.userLocationList,
-                        onClick = { index -> onDrawerLocationClick(index) },
-                        page = drawerUiState.page
-                    )
-
-                    //manage locations Button
-                    TextButton(
-                        onClick = onManageLocationClick,
-                        colors = ButtonDefaults.textButtonColors(AIKTheme.colors.core_button),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(15.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.manage_locations),
-                            style = AIKTheme.typography.button,
-                            overflow = TextOverflow.Ellipsis,
-                            color = AIKTheme.colors.core_container
-                        )
-                    }
-                    Divider(
-                        color = divider, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 15.dp)
-                    )
-
-                    //particulate Matter Info 미세먼지 정보
-                    DrawerTitle(
-                        icon = painterResource(id = AIKIcons.Info),
-                        stringId = R.string.app_guide,
-                        clickable = true,
-                        onClick = onParticulateMatterInfoClick
-                    )
-                    Spacer(modifier = Modifier.size(10.dp))
-                    //App Info 앱 정보
-                    DrawerTitle(
-                        icon = painterResource(id = AIKIcons.AppIcon),
-                        tint = Color.White,
-                        iconBackgroundColor = colorResource(id = R.color.ic_aik_background),
-                        stringId = R.string.app_info,
-                        clickable = true,
-                        onClick = onAppInfoClick
-                    )
-                }
+                Text(
+                    text = stringResource(id = R.string.manage_locations),
+                    style = AIKTheme.typography.button,
+                    overflow = TextOverflow.Ellipsis,
+                    color = AIKTheme.colors.core_container
+                )
             }
+            Divider(
+                color = divider, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp)
+            )
+
+            //particulate Matter Info 미세먼지 정보
+            DrawerTitle(
+                icon = painterResource(id = AIKIcons.Info),
+                stringId = R.string.app_guide,
+                clickable = true,
+                onClick = onParticulateMatterInfoClick
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+            //App Info 앱 정보
+            DrawerTitle(
+                icon = painterResource(id = AIKIcons.AppIcon),
+                tint = Color.White,
+                iconBackgroundColor = colorResource(id = R.color.ic_aik_background),
+                stringId = R.string.app_info,
+                clickable = true,
+                onClick = onAppInfoClick
+            )
         }
     }
 }
@@ -163,26 +159,26 @@ fun DrawerScreen(
 @Composable
 fun GPS(
     modifier: Modifier = Modifier,
-    location: Location?,
-    onClick: (Int) -> Unit,
-    page: Int
+    userLocation: UserLocation?,
+    onClick: (UserLocation?) -> Unit,
+    selectedLocation: SelectedLocation
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
             icon = painterResource(id = AIKIcons.Location),
             stringId = R.string.gps
         )
-        if (location == null) {
+        if (userLocation == null) {
             DrawerItem(
                 text = stringResource(id = R.string.unable_gps),
-                onClick = { onClick(0) },
-                isSelected = page == 0,
+                onClick = { onClick(null) },
+                isSelected = SelectedLocation.GPS == selectedLocation,
                 hasData = false
             )
         } else {
             DrawerItem(
-                text = location.eupmyeondong, onClick = { onClick(0) },
-                isSelected = page == 0
+                text = userLocation.location.eupmyeondong, onClick = { onClick(userLocation) },
+                isSelected = SelectedLocation.GPS == selectedLocation
             )
         }
     }
@@ -191,9 +187,9 @@ fun GPS(
 @Composable
 fun Bookmark(
     modifier: Modifier = Modifier,
-    location: Location?,
-    onClick: (Int) -> Unit,
-    page: Int
+    userLocation: UserLocation?,
+    onClick: (UserLocation) -> Unit,
+    selectedLocation: SelectedLocation
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
@@ -201,17 +197,17 @@ fun Bookmark(
             tint = bookmark,
             stringId = R.string.bookmark
         )
-        if (location == null) {
+        if (userLocation == null) {
             DrawerItem(
                 text = stringResource(id = R.string.bookmark_is_not_set),
                 itemEnable = false,
-                isSelected = page == 1,
+                isSelected = SelectedLocation.Bookmark == selectedLocation,
                 hasData = false
             )
         } else {
             DrawerItem(
-                text = location.eupmyeondong, onClick = { onClick(1) },
-                isSelected = page == 1
+                text = userLocation.location.eupmyeondong, onClick = { onClick(userLocation) },
+                isSelected = SelectedLocation.Bookmark == selectedLocation
             )
         }
     }
@@ -220,9 +216,8 @@ fun Bookmark(
 @Composable
 fun MyLocations(
     modifier: Modifier = Modifier,
-    locationList: List<Location>,
-    onClick: (Int) -> Unit,
-    page: Int
+    userLocationList: List<UserLocation>,
+    onClick: (UserLocation) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -234,7 +229,7 @@ fun MyLocations(
             stringId = R.string.my_locations,
             tint = heart
         )
-        if (locationList.isEmpty()) {
+        if (userLocationList.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -252,11 +247,11 @@ fun MyLocations(
                     .fillMaxWidth()
                     .height(250.dp)
             ) {
-                itemsIndexed(locationList) { index, location ->
+                itemsIndexed(userLocationList) { index, userLocation ->
                     DrawerItem(
-                        text = location.eupmyeondong,
-                        onClick = { onClick(index + 2) },
-                        isSelected = page == index + 2
+                        text = userLocation.location.eupmyeondong,
+                        onClick = { onClick(userLocation) },
+                        isSelected = userLocation.isSelected
                     )
                 }
             }
@@ -350,43 +345,75 @@ fun DrawerItem(
 fun DrawerPreviewSuccess() {
     AIKTheme(AirLevel.Level1) {
         DrawerScreen(
-            drawerUiState = DrawerUiState.Success(
-                gps = Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ),
-                bookmark = Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ),
-                userLocationList = listOf(
+            drawerUiState = DrawerUiState(
+                gps = UserLocation(
+                    location =
                     Location(
                         `do` = "Gangwon-do",
                         sigungu = "Gangneung-si",
                         eupmyeondong = "Gangdong-myeon",
                         station = "옥천동"
-                    ), Location(
-                        `do` = "Gangwon-do",
-                        sigungu = "Gangneung-si",
-                        eupmyeondong = "Gangdong-myeon",
-                        station = "옥천동"
-                    ), Location(
-                        `do` = "Gangwon-do",
-                        sigungu = "Gangneung-si",
-                        eupmyeondong = "Gangdong-myeon",
-                        station = "옥천동"
-                    ), Location(
-                        `do` = "Gangwon-do",
-                        sigungu = "Gangneung-si",
-                        eupmyeondong = "Gangdong-myeon",
-                        station = "옥천동"
-                    )
+                    ), isGPS = true,
+                    isBookmark = false,
+                    isSelected = true
                 ),
-                page = 0
+                bookmark = UserLocation(
+                    location =
+                    Location(
+                        `do` = "Gangwon-do",
+                        sigungu = "Gangneung-si",
+                        eupmyeondong = "Gangdong-myeon",
+                        station = "옥천동"
+                    ), isGPS = false,
+                    isBookmark = true,
+                    isSelected = false
+                ),
+                userLocationList = listOf(
+                    UserLocation(
+                        location =
+                        Location(
+                            `do` = "Gangwon-do",
+                            sigungu = "Gangneung-si",
+                            eupmyeondong = "Gangdong-myeon",
+                            station = "옥천동"
+                        ), isGPS = false,
+                        isBookmark = false,
+                        isSelected = false
+                    ),
+                    UserLocation(
+                        location =
+                        Location(
+                            `do` = "Gangwon-do",
+                            sigungu = "Gangneung-si",
+                            eupmyeondong = "Gangdong-myeon",
+                            station = "옥천동"
+                        ), isGPS = false,
+                        isBookmark = false,
+                        isSelected = false
+                    ),
+                    UserLocation(
+                        location =
+                        Location(
+                            `do` = "Gangwon-do",
+                            sigungu = "Gangneung-si",
+                            eupmyeondong = "Gangdong-myeon",
+                            station = "옥천동"
+                        ), isGPS = false,
+                        isBookmark = false,
+                        isSelected = false
+                    ),
+                    UserLocation(
+                        location =
+                        Location(
+                            `do` = "Gangwon-do",
+                            sigungu = "Gangneung-si",
+                            eupmyeondong = "Gangdong-myeon",
+                            station = "옥천동"
+                        ), isGPS = false,
+                        isBookmark = false,
+                        isSelected = false
+                    )
+                )
             ),
             onManageLocationClick = {},
             onAppInfoClick = {},
@@ -401,7 +428,7 @@ fun DrawerPreviewSuccess() {
 fun DrawerPreviewEmptyData() {
     AIKTheme(AirLevel.Level1) {
         DrawerScreen(
-            drawerUiState = DrawerUiState.Success(),
+            drawerUiState = DrawerUiState(),
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {},

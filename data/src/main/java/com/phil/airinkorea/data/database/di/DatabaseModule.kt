@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.phil.airinkorea.data.database.AIKDatabase
 import com.phil.airinkorea.data.database.dao.AirDataDao
-import com.phil.airinkorea.data.database.dao.GPSLocationDao
 import com.phil.airinkorea.data.database.dao.LocationDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
 import dagger.Module
@@ -23,10 +22,6 @@ class DatabaseModule {
     @Provides
     fun provideUserLocationsDao(aIKDatabase: AIKDatabase): UserLocationsDao =
         aIKDatabase.userLocationsDao()
-
-    @Provides
-    fun provideGPSLocationDao(aIKDatabase: AIKDatabase): GPSLocationDao =
-        aIKDatabase.gpsLocationDao()
 
     @Provides
     fun provideAirDataDao(aIKDatabase: AIKDatabase): AirDataDao = aIKDatabase.airDataDao()

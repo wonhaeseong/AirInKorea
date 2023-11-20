@@ -26,9 +26,9 @@ data class AirDataEntity(
     @Embedded val koreaModelGif: KoreaForecastModelGifEntity
 )
 
-fun AirDataEntity.mapToExternalModel(): AirData =
+fun AirDataEntity.mapToExternalModel(userLocation: UserLocation?): AirData =
     AirData(
-        station = station,
+        userLocation = userLocation,
         date = date,
         airLevel = airLevel,
         detailAirData = detailAirDataEntity.mapToExternalModel(),

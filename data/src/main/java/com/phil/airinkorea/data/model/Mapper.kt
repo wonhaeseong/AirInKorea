@@ -3,22 +3,12 @@ package com.phil.airinkorea.data.model
 import com.phil.airinkorea.data.database.model.AirDataEntity
 import com.phil.airinkorea.data.database.model.DailyForecastEntity
 import com.phil.airinkorea.data.database.model.DetailAirDataEntity
-import com.phil.airinkorea.data.database.model.GPSLocationEntity
 import com.phil.airinkorea.data.database.model.KoreaForecastModelGifEntity
-import com.phil.airinkorea.data.database.model.LocationEntity
 import com.phil.airinkorea.data.database.model.UserLocationEntity
 import com.phil.airinkorea.data.network.model.NetworkAirData
 import com.phil.airinkorea.data.network.model.NetworkDetailAirData
 import com.phil.airinkorea.data.network.model.NetworkForecastItem
 import com.phil.airinkorea.data.network.model.NetworkLocation
-
-fun NetworkLocation.mapToLocationEntity(): GPSLocationEntity =
-    GPSLocationEntity(
-        enDo = `do`,
-        enSigungu = sigungu,
-        enEupmyeondong = eupmyeondong,
-        station = station
-    )
 
 fun NetworkAirData.mapToAirDataEntity(station: String): AirDataEntity =
     AirDataEntity(
@@ -73,14 +63,44 @@ private fun String?.mapToAirLevel(): AirLevel =
     }
 
 
-fun Location.mapToUserLocationEntity(bookmark: Boolean) =
+fun Location.mapToUserLocationEntity(
+    isGPS: Boolean = false,
+    isBookmark: Boolean = false,
+    isSelected: Boolean = false
+) =
     UserLocationEntity(
         enDo = `do`,
         enSigungu = sigungu,
         enEupmyeondong = eupmyeondong,
         station = station,
-        bookmark = if (bookmark) 1 else 0
+        isGPS = if (isGPS) 1 else 0,
+        isBookmark = if (isBookmark) 1 else 0,
+        isSelected = if (isSelected) 1 else 0
     )
 
+fun UserLocation.mapToUserLocationEntity()
+= UserLocationEntity(
+    enDo = location.`do`,
+    enSigungu = location.sigungu,
+    enEupmyeondong = location.eupmyeondong,
+    station = location.station,
+    isGPS = if (isGPS) 1 else 0,
+    isBookmark = if (isBookmark) 1 else 0,
+    isSelected = if (isSelected) 1 else 0
+)
 
+fun NetworkLocation.mapToUserLocationEntity(
+    isGPS: Boolean = false,
+    isBookmark: Boolean = false,
+    isSelected: Boolean = false
+) =
+    UserLocationEntity(
+        enDo = `do`,
+        enSigungu = sigungu,
+        enEupmyeondong = eupmyeondong,
+        station = station,
+        isGPS = if (isGPS) 1 else 0,
+        isBookmark = if (isBookmark) 1 else 0,
+        isSelected = if (isSelected) 1 else 0
+    )
 

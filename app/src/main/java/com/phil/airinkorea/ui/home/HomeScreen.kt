@@ -34,6 +34,8 @@ import com.phil.airinkorea.data.model.DailyForecast
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.model.SelectedLocation
+import com.phil.airinkorea.data.model.UserLocation
 import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
@@ -53,116 +55,116 @@ private val ContentElevation = 2.dp
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onRefresh: () -> Unit,
+    onSettingButtonClick: () -> Unit,
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onDrawerLocationClick: (Int) -> Unit,
+    onDrawerLocationClick: (UserLocation?) -> Unit,
     homeUiState: HomeUiState,
     drawerUiState: DrawerUiState
 ) {
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    when (homeUiState) {
-        HomeUiState.Initializing -> {
-            HomeInitialLoadingScreen()
-        }
-
-        is HomeUiState.Success -> {
-            val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
-            AIKTheme(airLevel = homeUiState.airLevel) {
-                Box(
-                    modifier = modifier
-                        .background(AIKTheme.colors.core_background)
-                ) {
-                    if (homeUiState.isPageLoading) {
-                        PageLoadingScreen(
-                            modifier = Modifier.zIndex(2.0f),
+    if (homeUiState.isInitializing) {
+        HomeInitialLoadingScreen()
+    } else {
+        val pullRefreshState = rememberPullRefreshState(homeUiState.isRefreshing, onRefresh)
+        AIKTheme(airLevel = homeUiState.airLevel) {
+            Box(
+                modifier = modifier
+                    .background(AIKTheme.colors.core_background)
+            ) {
+                if (homeUiState.isPageLoading) {
+                    PageLoadingScreen(
+                        modifier = Modifier.zIndex(2.0f),
+                    )
+                }
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    backgroundColor = Color.Transparent,
+                    topBar = {
+                        HomeTopAppBar(
+                            isGPS = homeUiState.selectedLocation == SelectedLocation.GPS,
+                            userLocation = homeUiState.userLocation,
+                            onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
                         )
-                    }
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        backgroundColor = Color.Transparent,
-                        topBar = {
-                            HomeTopAppBar(
-                                isGPS = homeUiState.page == 0,
-                                location = homeUiState.location,
-                                onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
-                            )
-                        },
-                        drawerContent = {
-                            DrawerScreen(
-                                drawerUiState = drawerUiState,
-                                onManageLocationClick = onManageLocationClick,
-                                onParticulateMatterInfoClick = onParticulateMatterInfoClick,
-                                onAppInfoClick = onAppInfoClick,
-                                onDrawerLocationClick = {
-                                    scope.launch { scaffoldState.drawerState.close() }
-                                    onDrawerLocationClick(it)
-                                }
-                            )
-                        },
-                        drawerGesturesEnabled = true,
-                        drawerScrimColor = scrim_color,
+                    },
+                    drawerContent = {
+                        DrawerScreen(
+                            drawerUiState = drawerUiState,
+                            onManageLocationClick = onManageLocationClick,
+                            onParticulateMatterInfoClick = onParticulateMatterInfoClick,
+                            onAppInfoClick = onAppInfoClick,
+                            onDrawerLocationClick = {
+                                scope.launch { scaffoldState.drawerState.close() }
+                                onDrawerLocationClick(it)
+                            }
+                        )
+                    },
+                    drawerGesturesEnabled = true,
+                    drawerScrimColor = scrim_color,
+                    modifier = Modifier
+                        .statusBarsPadding()
+                ) {
+                    Column(
                         modifier = Modifier
-                            .statusBarsPadding()
+                            .padding(it)
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                            .verticalScroll(scrollState)
                     ) {
-                        Column(
+                        DateInfo(date = homeUiState.dataTime)
+                        Spacer(modifier = Modifier.size(35.dp))
+                        AirValue(airLevel = homeUiState.airLevel)
+                        Spacer(modifier = Modifier.size(10.dp))
+                        //당겨서 새로고침
+                        Box(
                             modifier = Modifier
-                                .padding(it)
-                                .fillMaxSize()
-                                .pullRefresh(pullRefreshState)
-                                .verticalScroll(scrollState)
-                        ) {
-                            DateInfo(date = homeUiState.dataTime)
-                            Spacer(modifier = Modifier.size(35.dp))
-                            AirValue(airLevel = homeUiState.airLevel)
-                            Spacer(modifier = Modifier.size(10.dp))
-                            //당겨서 새로고침
-                            Box(
-                                modifier = Modifier
-                                    .background(Color.Transparent)
-                                    .fillMaxWidth()
-                                    .height(
-                                        if (homeUiState.isRefreshing) {
-                                            140.dp
-                                        } else {
-                                            with(LocalDensity.current) {
-                                                lerp(
-                                                    0.dp,
-                                                    140.dp,
-                                                    pullRefreshState.progress.coerceIn(0f..1f)
-                                                )
-                                            }
+                                .background(Color.Transparent)
+                                .fillMaxWidth()
+                                .height(
+                                    if (homeUiState.isRefreshing) {
+                                        140.dp
+                                    } else {
+                                        with(LocalDensity.current) {
+                                            lerp(
+                                                0.dp,
+                                                140.dp,
+                                                pullRefreshState.progress.coerceIn(0f..1f)
+                                            )
                                         }
-                                    )
-                            ) {
-                                CloudIndicator(isPlaying = homeUiState.isRefreshing)
-                            }
-                            if (homeUiState.airLevel == AirLevel.LevelError) {
-                                val isUnderMaintenance: Boolean = homeUiState.dataTime != null
-                                ErrorBanner(
-                                    isUnderMaintenance = isUnderMaintenance,
-                                    modifier = Modifier.padding(10.dp)
+                                    }
                                 )
-                            }
-                            Detail(
-                                detailData = homeUiState.detailAirData,
-                                modifier = Modifier.padding(10.dp)
-                            )
-                            Information(
-                                information = homeUiState.information,
-                                modifier = Modifier.padding(10.dp)
-                            )
-                            DailyForecast(
-                                dailyForecastDataList = homeUiState.dailyForecast,
-                                modifier = Modifier.padding(10.dp)
-                            )
-                            KoreaForecastMap(
-                                gifUrl = homeUiState.forecastModelUrl,
+                        ) {
+                            CloudIndicator(isPlaying = homeUiState.isRefreshing)
+                        }
+                        if (homeUiState.airLevel == AirLevel.LevelError || !homeUiState.isPermissionEnable || !homeUiState.isGPSOn) {
+                            val isUnderMaintenance: Boolean = homeUiState.dataTime != null
+                            ErrorBanner(
+                                isUnderMaintenance = isUnderMaintenance,
+                                isGPSOn = homeUiState.isGPSOn,
+                                isPermissionEnable = homeUiState.isPermissionEnable,
+                                onSettingButtonClick = onSettingButtonClick,
                                 modifier = Modifier.padding(10.dp)
                             )
                         }
+                        Detail(
+                            detailData = homeUiState.detailAirData,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        Information(
+                            information = homeUiState.information,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        DailyForecast(
+                            dailyForecastDataList = homeUiState.dailyForecast,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        KoreaForecastMap(
+                            gifUrl = homeUiState.forecastModelUrl,
+                            modifier = Modifier.padding(10.dp)
+                        )
                     }
                 }
             }
@@ -246,7 +248,7 @@ fun LoadingIndicator(
 fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     isGPS: Boolean,
-    location: Location?,
+    userLocation: UserLocation?,
     onMenuButtonClicked: () -> Unit = {}
 ) {
     TopAppBar(
@@ -285,7 +287,7 @@ fun HomeTopAppBar(
                     )
                 }
                 Text(
-                    text = location?.eupmyeondong ?: "???",
+                    text = userLocation?.location?.eupmyeondong ?: "???",
                     style = AIKTheme.typography.subtitle2,
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
@@ -363,14 +365,19 @@ fun CloudIndicator(
 @Composable
 fun ErrorBanner(
     isUnderMaintenance: Boolean,
+    isGPSOn: Boolean,
+    isPermissionEnable: Boolean,
+    onSettingButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val text =
-        if (isUnderMaintenance) {
-            stringResource(id = R.string.under_maintenance)
-        } else {
-            stringResource(id = R.string.data_error)
+        when {
+            !isPermissionEnable -> stringResource(id = R.string.location_permission_error)
+            !isGPSOn -> stringResource(id = R.string.gps_error)
+            isUnderMaintenance -> stringResource(id = R.string.under_maintenance)
+            else -> stringResource(id = R.string.data_error)
         }
+
     Surface(
         shape = AIKTheme.shapes.medium,
         color = AIKTheme.colors.core_container,
@@ -378,26 +385,39 @@ fun ErrorBanner(
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Column(modifier = Modifier.padding(15.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                Icon(
-                    painter = painterResource(id = AIKIcons.Error),
-                    tint = error,
-                    contentDescription = null,
-                    modifier = Modifier.size(GPSErrorIconSize)
-                )
-                Spacer(modifier = Modifier.size(20.dp))
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(15.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = AIKIcons.Error),
+                tint = error,
+                contentDescription = null,
+                modifier = Modifier.size(GPSErrorIconSize)
+            )
+            Spacer(modifier = Modifier.size(20.dp))
+            Column {
                 Text(
                     text = text,
                     color = AIKTheme.colors.on_core_container,
-                    style = AIKTheme.typography.body1,
+                    style = AIKTheme.typography.subtitle2,
                 )
+                if (!isPermissionEnable) {
+                    TextButton(
+                        onClick = onSettingButtonClick,
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(
+                            text = "SETTINGS",
+                            color = AIKTheme.colors.core,
+                            style = AIKTheme.typography.button
+                        )
+                    }
+                }
             }
         }
     }
@@ -938,12 +958,17 @@ fun KoreaForecastMap(
 @Composable
 fun HomeScreenPreviewSuccess() {
     val homeUiState =
-        HomeUiState.Success(
-            location = Location(
-                `do` = "Gangwon-do",
-                sigungu = "Gangneung-si",
-                eupmyeondong = "Gangdong-myeon",
-                station = "옥천동"
+        HomeUiState(
+            userLocation = UserLocation(
+                location = Location(
+                    `do` = "Gangwon-do",
+                    sigungu = "Gangneung-si",
+                    eupmyeondong = "Gangdong-myeon",
+                    station = "옥천동"
+                ),
+                isBookmark = false,
+                isSelected = true,
+                isGPS = true
             ),
             dataTime = "Saturday 12/25/2022 9:10 PM ",
             airLevel = AirLevel.Level1,
@@ -998,12 +1023,13 @@ fun HomeScreenPreviewSuccess() {
         )
     HomeScreen(
         onRefresh = {},
+        onSettingButtonClick = {},
         onManageLocationClick = {},
         onParticulateMatterInfoClick = {},
         onAppInfoClick = {},
         onDrawerLocationClick = {},
         homeUiState = homeUiState,
-        drawerUiState = DrawerUiState.Loading
+        drawerUiState = DrawerUiState()
     )
 }
 
@@ -1011,16 +1037,17 @@ fun HomeScreenPreviewSuccess() {
 @Preview
 @Composable
 fun HomeScreenPreviewEmptyData() {
-    val homeUiState = HomeUiState.Success()
+    val homeUiState = HomeUiState()
     AIKTheme(airLevel = AirLevel.Level1) {
         HomeScreen(
             onRefresh = {},
+            onSettingButtonClick = {},
             onManageLocationClick = {},
             onParticulateMatterInfoClick = {},
             onAppInfoClick = {},
             onDrawerLocationClick = {},
             homeUiState = homeUiState,
-            drawerUiState = DrawerUiState.Loading
+            drawerUiState = DrawerUiState()
         )
     }
 }

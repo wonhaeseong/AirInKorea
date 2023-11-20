@@ -6,8 +6,6 @@ import com.phil.airinkorea.data.repository.AppGuideRepository
 import com.phil.airinkorea.data.repository.AppGuideRepositoryImpl
 import com.phil.airinkorea.data.repository.AppInfoRepository
 import com.phil.airinkorea.data.repository.AppInfoRepositoryImpl
-import com.phil.airinkorea.data.repository.AppStatusRepository
-import com.phil.airinkorea.data.repository.AppStatusRepositoryImpl
 import com.phil.airinkorea.data.repository.LocationRepository
 import com.phil.airinkorea.data.repository.LocationRepositoryImpl
 import dagger.Module
@@ -27,11 +25,6 @@ class DataModule {
     fun provideAirDataRepository(
         airDataRepository: AirDataRepositoryImpl
     ): AirDataRepository = airDataRepository
-
-    @Provides
-    fun provideAppStatusRepository(
-        appStatusRepository: AppStatusRepositoryImpl
-    ): AppStatusRepository = appStatusRepository
 
     @Provides
     fun provideAppGuideRepository(

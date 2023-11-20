@@ -1,21 +1,14 @@
 package com.phil.airinkorea.data.model
 
-/**
- * @param location 위치 정보
- * @param date 데이터를 서버에서 가져온 시간
- * @param information 현재 한국의 대기 오염 상태에 대한 원인 및 정보
- * @param koreaForecastMapImgUrl 한반도 대기 오염 예측 모델의 이미지 URL
- */
-
 data class AirData(
-    val station: String?,
+    val userLocation: UserLocation?,
     val date: String?,
     val airLevel: AirLevel,
-    val detailAirData : DetailAirData,
+    val detailAirData: DetailAirData,
     val dailyForecast: List<DailyForecast>,
     val information: String?,
     val koreaForecastModelGif: KoreaForecastModelGif
-    )
+)
 
 /**
  * 공기질에 따라 6단계로 분류

@@ -16,7 +16,7 @@ fun AddLocationRoute(
     AddLocationScreen(
         addLocationUiState = addLocationUiState,
         onBackButtonClick = onBackButtonClick,
-        onSearchTextChange = { addLocationViewModel.getSearchResult(it.text) },
+        onSearchTextChange = { addLocationViewModel.onSearchTextChange(it.text) },
         onDialogConfirmButtonClick = {addLocationViewModel.addUserLocation(it)}
     )
 }

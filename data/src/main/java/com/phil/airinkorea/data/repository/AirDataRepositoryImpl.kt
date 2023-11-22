@@ -1,6 +1,7 @@
 package com.phil.airinkorea.data.repository
 
 import android.util.Log
+import com.phil.airinkorea.data.NetworkDataSource
 import com.phil.airinkorea.data.database.dao.AirDataDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
 import com.phil.airinkorea.data.database.model.mapToExternalModel
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class AirDataRepositoryImpl @Inject constructor(
     private val airDataDao: AirDataDao,
     private val userLocationsDao: UserLocationsDao,
-    private val networkDataSource: FirebaseClient//인터페이스
+    private val networkDataSource: NetworkDataSource
 ) : AirDataRepository {
     override fun getAirDataStream(): Flow<AirData> =
         airDataDao.getAirDataForSelectedUserLocations().map {

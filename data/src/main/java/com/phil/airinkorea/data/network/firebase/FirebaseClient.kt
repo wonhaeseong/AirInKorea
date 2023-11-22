@@ -3,17 +3,17 @@ package com.phil.airinkorea.data.network.firebase
 import android.util.Log
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
-import com.phil.airinkorea.data.network.NetworkDataSource
+import com.phil.airinkorea.data.NetworkDataSource
 import com.phil.airinkorea.data.network.model.NetworkAirData
 import com.phil.airinkorea.data.network.model.NetworkCoordinateResult
-import com.phil.airinkorea.data.network.model.NetworkLocation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
-class FirebaseClient:NetworkDataSource {
+class FirebaseClient @Inject constructor(): NetworkDataSource {
     private val functions = FirebaseFunctions.getInstance("asia-northeast3")
 
     override suspend fun getAirData(station: String): NetworkAirData? = withContext(Dispatchers.IO) {

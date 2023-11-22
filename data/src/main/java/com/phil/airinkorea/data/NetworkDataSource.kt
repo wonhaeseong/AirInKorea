@@ -1,4 +1,4 @@
-package com.phil.airinkorea.data.network
+package com.phil.airinkorea.data
 
 import com.phil.airinkorea.data.network.model.NetworkAirData
 import com.phil.airinkorea.data.network.model.NetworkCoordinateResult

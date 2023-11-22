@@ -9,7 +9,7 @@ import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.UserLocation
 import com.phil.airinkorea.data.model.mapToAirDataEntity
 import com.phil.airinkorea.data.model.mapToUserLocationEntity
-import com.phil.airinkorea.data.network.firebase.FirebaseClient
+import com.phil.airinkorea.data.NetworkDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -23,7 +23,7 @@ class LocationRepositoryImpl @Inject constructor(
     private val locationDao: LocationDao,
     private val userLocationsDao: UserLocationsDao,
     private val airDataDao: AirDataDao,
-    private val networkDataSource: FirebaseClient
+    private val networkDataSource: NetworkDataSource
 ) : LocationRepository {
     override fun getSearchResult(query: String): Flow<List<Location>> =
         locationDao.searchLocation(query).map { locationList ->

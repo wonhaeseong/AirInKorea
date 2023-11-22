@@ -190,7 +190,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 else -> {
-                    airDataRepository.updateAirData(homeUiState.value.location!!.station)
+                    airDataRepository.updateAirData()
                     _isInitializing.value = false
                 }
             }
@@ -215,7 +215,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 else -> {
-                    airDataRepository.updateAirData(homeUiState.value.location!!.station)
+                    airDataRepository.updateAirData()
                     _isRefreshing.value = false
                 }
             }
@@ -243,7 +243,7 @@ class HomeViewModel @Inject constructor(
         _isPageLoading.value = true
         viewModelScope.launch {
             locationRepository.updatePage(Page.Bookmark)
-            airDataRepository.updateAirData(homeUiState.value.location!!.station)
+            airDataRepository.updateAirData()
             _isPageLoading.value = false
         }
     }
@@ -252,7 +252,7 @@ class HomeViewModel @Inject constructor(
         _isPageLoading.value = true
         viewModelScope.launch {
             locationRepository.updatePage(Page.CustomLocation(index))
-            airDataRepository.updateAirData(homeUiState.value.location!!.station)
+            airDataRepository.updateAirData()
             _isPageLoading.value = false
         }
     }

@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface AirDataRepository {
     fun getAirDataStream(): Flow<AirData>
-    suspend fun updateAirData(station: String)
+    suspend fun updateAirData()
 }

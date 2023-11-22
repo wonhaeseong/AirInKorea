@@ -9,11 +9,13 @@ import com.phil.airinkorea.data.model.AirData
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.data.model.mapToAirDataEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -70,12 +72,31 @@ class AirDataRepositoryImpl @Inject constructor(
             }
         }.flowOn(Dispatchers.IO)
 
-    override suspend fun updateAirData(station: String): Unit =
+    override suspend fun updateAirData() {
         withContext(Dispatchers.IO) {
-            networkDataSource.getAirData(station)?.let {
-                airDataDao.upsertAirData(
-                    it.mapToAirDataEntity(station)
-                )
+            val location: Location? =
+                when (val page = localPageStore.getCurrentPageStream().first()) {
+                    Page.GPS -> {
+                        userLocationsDao.getGPSLocationStream().first()?.mapToExternalModel()
+                    }
+
+                    Page.Bookmark -> {
+                        userLocationsDao.getBookmarkStream().first()?.mapToExternalModel()
+                    }
+
+                    is Page.CustomLocation -> {
+                        userLocationsDao.getCustomLocationListStream()
+                            .first()[page.pageNum].mapToExternalModel()
+                    }
+                }
+            location?.let {
+                networkDataSource.getAirData(it.station)?.let { networkAirData->
+                    airDataDao.upsertAirData(
+                        networkAirData.mapToAirDataEntity(it.station)
+                    )
+                }
             }
         }
+
+    }
 }

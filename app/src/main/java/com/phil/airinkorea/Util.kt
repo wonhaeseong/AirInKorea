@@ -3,7 +3,7 @@ package com.phil.airinkorea
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
+fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> combine(
     flow: Flow<T1>,
     flow2: Flow<T2>,
     flow3: Flow<T3>,
@@ -13,12 +13,14 @@ fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
     flow7: Flow<T7>,
     flow8: Flow<T8>,
     flow9: Flow<T9>,
-    transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9) -> R
+    flow10: Flow<T10>,
+    transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> R
 ): Flow<R> = combine(
     combine(flow, flow2, flow3, ::Triple),
     combine(flow4, flow5, flow6, ::Triple),
-    combine(flow7, flow8, flow9, ::Triple)
-) { t1, t2, t3 ->
+    combine(flow7, flow8, flow9, ::Triple),
+    flow10
+) { t1, t2, t3, t4 ->
     transform(
         t1.first,
         t1.second,
@@ -28,6 +30,7 @@ fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
         t2.third,
         t3.first,
         t3.second,
-        t3.third
+        t3.third,
+        t4
     )
 }

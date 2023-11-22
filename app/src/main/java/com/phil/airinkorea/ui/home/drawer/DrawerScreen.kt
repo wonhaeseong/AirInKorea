@@ -41,8 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.data.model.SelectedLocation
-import com.phil.airinkorea.data.model.UserLocation
+import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.bookmark
 import com.phil.airinkorea.ui.theme.divider
@@ -57,7 +56,9 @@ fun DrawerScreen(
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onDrawerLocationClick: (UserLocation?) -> Unit
+    onDrawerGPSClick: () -> Unit,
+    onDrawerBookmarkClick: () -> Unit,
+    onDrawerCustomLocationClick: (Int) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Box(
@@ -83,9 +84,9 @@ fun DrawerScreen(
             Spacer(modifier = Modifier.size(30.dp))
             //GPS
             GPS(
-                userLocation = drawerUiState.gps,
-                onClick = { onDrawerLocationClick(it) },
-                selectedLocation = drawerUiState.selectedLocation
+                location = drawerUiState.gps,
+                onClick = { onDrawerGPSClick() },
+                page = drawerUiState.page
             )
 
             Spacer(modifier = Modifier.size(3.dp))
@@ -96,9 +97,9 @@ fun DrawerScreen(
             )
             //bookmark
             Bookmark(
-                userLocation = drawerUiState.bookmark,
-                onClick = { onDrawerLocationClick(it) },
-                selectedLocation = drawerUiState.selectedLocation
+                location = drawerUiState.bookmark,
+                onClick = { onDrawerBookmarkClick() },
+                page = drawerUiState.page
             )
             Spacer(modifier = Modifier.size(3.dp))
             Divider(
@@ -109,8 +110,9 @@ fun DrawerScreen(
 
             //My locations
             MyLocations(
-                userLocationList = drawerUiState.userLocationList,
-                onClick = { onDrawerLocationClick(it) }
+                locationList = drawerUiState.userLocationList,
+                onClick = { onDrawerCustomLocationClick(it) },
+                page = drawerUiState.page
             )
 
             //manage locations Button
@@ -159,26 +161,26 @@ fun DrawerScreen(
 @Composable
 fun GPS(
     modifier: Modifier = Modifier,
-    userLocation: UserLocation?,
-    onClick: (UserLocation?) -> Unit,
-    selectedLocation: SelectedLocation
+    location: Location?,
+    onClick: () -> Unit,
+    page: Page
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
             icon = painterResource(id = AIKIcons.Location),
             stringId = R.string.gps
         )
-        if (userLocation == null) {
+        if (location == null) {
             DrawerItem(
                 text = stringResource(id = R.string.unable_gps),
-                onClick = { onClick(null) },
-                isSelected = SelectedLocation.GPS == selectedLocation,
+                onClick = { onClick() },
+                isSelected = Page.GPS == page,
                 hasData = false
             )
         } else {
             DrawerItem(
-                text = userLocation.location.eupmyeondong, onClick = { onClick(userLocation) },
-                isSelected = SelectedLocation.GPS == selectedLocation
+                text = location.eupmyeondong, onClick = { onClick() },
+                isSelected = Page.GPS == page
             )
         }
     }
@@ -187,9 +189,9 @@ fun GPS(
 @Composable
 fun Bookmark(
     modifier: Modifier = Modifier,
-    userLocation: UserLocation?,
-    onClick: (UserLocation) -> Unit,
-    selectedLocation: SelectedLocation
+    location: Location?,
+    onClick: () -> Unit,
+    page: Page
 ) {
     Column(modifier = modifier) {
         DrawerTitle(
@@ -197,17 +199,17 @@ fun Bookmark(
             tint = bookmark,
             stringId = R.string.bookmark
         )
-        if (userLocation == null) {
+        if (location == null) {
             DrawerItem(
                 text = stringResource(id = R.string.bookmark_is_not_set),
                 itemEnable = false,
-                isSelected = SelectedLocation.Bookmark == selectedLocation,
+                isSelected = Page.Bookmark == page,
                 hasData = false
             )
         } else {
             DrawerItem(
-                text = userLocation.location.eupmyeondong, onClick = { onClick(userLocation) },
-                isSelected = SelectedLocation.Bookmark == selectedLocation
+                text = location.eupmyeondong, onClick = { onClick() },
+                isSelected = Page.Bookmark == page
             )
         }
     }
@@ -216,8 +218,9 @@ fun Bookmark(
 @Composable
 fun MyLocations(
     modifier: Modifier = Modifier,
-    userLocationList: List<UserLocation>,
-    onClick: (UserLocation) -> Unit
+    locationList: List<Location>,
+    onClick: (Int) -> Unit,
+    page: Page
 ) {
     Column(
         modifier = modifier
@@ -229,7 +232,7 @@ fun MyLocations(
             stringId = R.string.my_locations,
             tint = heart
         )
-        if (userLocationList.isEmpty()) {
+        if (locationList.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -247,11 +250,11 @@ fun MyLocations(
                     .fillMaxWidth()
                     .height(250.dp)
             ) {
-                itemsIndexed(userLocationList) { index, userLocation ->
+                itemsIndexed(locationList) { index, location ->
                     DrawerItem(
-                        text = userLocation.location.eupmyeondong,
-                        onClick = { onClick(userLocation) },
-                        isSelected = userLocation.isSelected
+                        text = location.eupmyeondong,
+                        onClick = { onClick(index) },
+                        isSelected = page is Page.CustomLocation && page.pageNum == index
                     )
                 }
             }
@@ -346,79 +349,51 @@ fun DrawerPreviewSuccess() {
     AIKTheme(AirLevel.Level1) {
         DrawerScreen(
             drawerUiState = DrawerUiState(
-                gps = UserLocation(
-                    location =
-                    Location(
-                        `do` = "Gangwon-do",
-                        sigungu = "Gangneung-si",
-                        eupmyeondong = "Gangdong-myeon",
-                        station = "옥천동"
-                    ), isGPS = true,
-                    isBookmark = false,
-                    isSelected = true
+                gps = Location(
+                    `do` = "Gangwon-do",
+                    sigungu = "Gangneung-si",
+                    eupmyeondong = "Gangdong-myeon",
+                    station = "옥천동"
                 ),
-                bookmark = UserLocation(
-                    location =
-                    Location(
-                        `do` = "Gangwon-do",
-                        sigungu = "Gangneung-si",
-                        eupmyeondong = "Gangdong-myeon",
-                        station = "옥천동"
-                    ), isGPS = false,
-                    isBookmark = true,
-                    isSelected = false
+                bookmark = Location(
+                    `do` = "Gangwon-do",
+                    sigungu = "Gangneung-si",
+                    eupmyeondong = "Gangdong-myeon",
+                    station = "옥천동"
                 ),
                 userLocationList = listOf(
-                    UserLocation(
-                        location =
-                        Location(
-                            `do` = "Gangwon-do",
-                            sigungu = "Gangneung-si",
-                            eupmyeondong = "Gangdong-myeon",
-                            station = "옥천동"
-                        ), isGPS = false,
-                        isBookmark = false,
-                        isSelected = false
+                    Location(
+                        `do` = "Gangwon-do",
+                        sigungu = "Gangneung-si",
+                        eupmyeondong = "Gangdong-myeon",
+                        station = "옥천동"
                     ),
-                    UserLocation(
-                        location =
-                        Location(
-                            `do` = "Gangwon-do",
-                            sigungu = "Gangneung-si",
-                            eupmyeondong = "Gangdong-myeon",
-                            station = "옥천동"
-                        ), isGPS = false,
-                        isBookmark = false,
-                        isSelected = false
+                    Location(
+                        `do` = "Gangwon-do",
+                        sigungu = "Gangneung-si",
+                        eupmyeondong = "Gangdong-myeon",
+                        station = "옥천동"
                     ),
-                    UserLocation(
-                        location =
-                        Location(
-                            `do` = "Gangwon-do",
-                            sigungu = "Gangneung-si",
-                            eupmyeondong = "Gangdong-myeon",
-                            station = "옥천동"
-                        ), isGPS = false,
-                        isBookmark = false,
-                        isSelected = false
+                    Location(
+                        `do` = "Gangwon-do",
+                        sigungu = "Gangneung-si",
+                        eupmyeondong = "Gangdong-myeon",
+                        station = "옥천동"
                     ),
-                    UserLocation(
-                        location =
-                        Location(
-                            `do` = "Gangwon-do",
-                            sigungu = "Gangneung-si",
-                            eupmyeondong = "Gangdong-myeon",
-                            station = "옥천동"
-                        ), isGPS = false,
-                        isBookmark = false,
-                        isSelected = false
+                    Location(
+                        `do` = "Gangwon-do",
+                        sigungu = "Gangneung-si",
+                        eupmyeondong = "Gangdong-myeon",
+                        station = "옥천동"
                     )
                 )
             ),
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {},
-            onDrawerLocationClick = { }
+            onDrawerGPSClick = {},
+            onDrawerBookmarkClick = {},
+            onDrawerCustomLocationClick = {}
         )
     }
 }
@@ -432,7 +407,9 @@ fun DrawerPreviewEmptyData() {
             onManageLocationClick = {},
             onAppInfoClick = {},
             onParticulateMatterInfoClick = {},
-            onDrawerLocationClick = {}
+            onDrawerGPSClick = {},
+            onDrawerBookmarkClick = {},
+            onDrawerCustomLocationClick = {}
         )
     }
 }

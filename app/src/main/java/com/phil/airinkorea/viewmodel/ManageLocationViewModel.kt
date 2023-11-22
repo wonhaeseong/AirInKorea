@@ -2,7 +2,7 @@ package com.phil.airinkorea.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.phil.airinkorea.data.model.UserLocation
+import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ManageLocationUiState(
-    var bookmark: UserLocation? = null,
-    var userLocationList: List<UserLocation> = emptyList()
+    var bookmark: Location? = null,
+    var userLocationList: List<Location> = emptyList()
 )
 
 @HiltViewModel
@@ -39,21 +39,18 @@ class ManageLocationViewModel @Inject constructor(
             ManageLocationUiState()
         )
 
-    fun deleteLocation(userLocation: UserLocation) {
+    fun deleteLocation(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            locationRepository.deleteUserLocation(userLocation)
-            if (locationRepository.getSelectedLocationStream().first() == null){
-                locationRepository.selectBookmark()
-            }
+            locationRepository.deleteCustomLocation(location)
         }
     }
 
-    fun updateBookmark(userLocation: UserLocation) {
+    fun updateBookmark(location: Location) {
         viewModelScope.launch(Dispatchers.IO) {
                 manageLocationUiState.value.bookmark?.let {
                     locationRepository.updateBookmark(
                         oldBookmark = it,
-                        newBookmark = userLocation
+                        newBookmark = location
                     )
                 }
         }

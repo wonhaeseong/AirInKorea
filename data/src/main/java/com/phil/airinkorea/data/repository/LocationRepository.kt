@@ -1,8 +1,7 @@
 package com.phil.airinkorea.data.repository
 
 import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.data.model.SelectedLocation
-import com.phil.airinkorea.data.model.UserLocation
+import com.phil.airinkorea.data.model.Page
 import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {
@@ -10,14 +9,14 @@ interface LocationRepository {
         query: String
     ): Flow<List<Location>>
 
-    fun getCustomLocationListStream(): Flow<List<UserLocation>>
-    fun getBookmarkStream(): Flow<UserLocation>
-    fun getGPSLocationStream(): Flow<UserLocation?>
-    fun getSelectedLocationStream(): Flow<UserLocation?>
-    suspend fun deleteUserLocation(userLocation: UserLocation)
+    fun getCurrentPageStream(): Flow<Page>
+    fun getCustomLocationListStream(): Flow<List<Location>>
+    fun getBookmarkStream(): Flow<Location>
+    fun getGPSLocationStream(): Flow<Location?>
+    fun getSelectedLocationStream(): Flow<Location?>
+    suspend fun deleteCustomLocation(location: Location)
     suspend fun addUserLocation(location: Location)
-    suspend fun updateBookmark(newBookmark: UserLocation, oldBookmark: UserLocation)
+    suspend fun updateBookmark(newBookmark: Location, oldBookmark: Location)
     suspend fun fetchGPSLocationByCoordinate(latitude: Double, longitude: Double)
-    suspend fun selectLocation(newLocation: UserLocation?, oldLocation: UserLocation?)
-    suspend fun selectBookmark()
+    suspend fun updatePage(newPage: Page)
 }

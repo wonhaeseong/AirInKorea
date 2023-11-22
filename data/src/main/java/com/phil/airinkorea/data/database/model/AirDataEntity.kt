@@ -1,18 +1,12 @@
 package com.phil.airinkorea.data.database.model
 
-import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.phil.airinkorea.data.model.*
-
 import kotlinx.serialization.Serializable
 
-
-/**
- * 측정소 별 오염 데이터를 가지는 entity
- */
 @Entity(tableName = "airData")
 data class AirDataEntity(
     @PrimaryKey
@@ -26,9 +20,8 @@ data class AirDataEntity(
     @Embedded val koreaModelGif: KoreaForecastModelGifEntity
 )
 
-fun AirDataEntity.mapToExternalModel(userLocation: UserLocation?): AirData =
+fun AirDataEntity.mapToExternalModel(): AirData =
     AirData(
-        userLocation = userLocation,
         date = date,
         airLevel = airLevel,
         detailAirData = detailAirDataEntity.mapToExternalModel(),

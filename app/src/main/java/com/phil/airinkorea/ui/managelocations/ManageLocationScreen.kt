@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -36,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.phil.airinkorea.R
 import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.data.model.UserLocation
 import com.phil.airinkorea.ui.commoncomponent.CommonTopAppBar
 import com.phil.airinkorea.ui.theme.AIKTheme
 import com.phil.airinkorea.ui.theme.bookmark
@@ -53,8 +51,8 @@ import com.phil.airinkorea.viewmodel.ManageLocationUiState
 @Composable
 fun ManageLocationScreen(
     onBackButtonClick: () -> Unit,
-    onBookmarkDialogConfirmButtonClick: (UserLocation) -> Unit,
-    onDeleteDialogConfirmButtonClick: (UserLocation) -> Unit,
+    onBookmarkDialogConfirmButtonClick: (Location) -> Unit,
+    onDeleteDialogConfirmButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
     manageLocationUiState: ManageLocationUiState
 ) {
@@ -64,7 +62,7 @@ fun ManageLocationScreen(
     var changeBookmarkDialogOpen by remember {
         mutableStateOf(false)
     }
-    var dialogLocation: UserLocation? by remember {
+    var dialogLocation: Location? by remember {
         mutableStateOf(null)
     }
 
@@ -82,7 +80,7 @@ fun ManageLocationScreen(
             ManageLocationChangeBookmarkDialog(
                 onConfirmButtonClick = onBookmarkDialogConfirmButtonClick,
                 onDismissRequest = { changeBookmarkDialogOpen = false },
-                userLocation = dialogLocation!!,
+                location = dialogLocation!!,
             )
         }
 
@@ -90,7 +88,7 @@ fun ManageLocationScreen(
             ManageLocationDeleteLocationDialog(
                 onConfirmButtonClick = onDeleteDialogConfirmButtonClick,
                 onDismissRequest = { deleteDialogOpen = false },
-                userLocation = dialogLocation!!
+                location = dialogLocation!!
             )
         }
         ManageLocationContent(
@@ -112,8 +110,8 @@ fun ManageLocationScreen(
 @Composable
 fun ManageLocationContent(
     manageLocationUiState: ManageLocationUiState,
-    onBookmarkButtonClick: (UserLocation) -> Unit,
-    onLocationDeleteButtonClick: (UserLocation) -> Unit,
+    onBookmarkButtonClick: (Location) -> Unit,
+    onLocationDeleteButtonClick: (Location) -> Unit,
     onAddLocationButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -155,8 +153,8 @@ fun ManageLocationContent(
 
 @Composable
 fun ManageLocationsBookmark(
-    bookmarkedLocation: UserLocation?,
-    onLocationDeleteButtonClick: (UserLocation) -> Unit,
+    bookmarkedLocation: Location?,
+    onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -178,7 +176,7 @@ fun ManageLocationsBookmark(
             Spacer(modifier = Modifier.size(10.dp))
             ManageLocationsItem(
                 isBookmarked = true,
-                userLocation = bookmarkedLocation,
+                location = bookmarkedLocation,
                 onLocationDeleteButtonClick = onLocationDeleteButtonClick,
             )
         }
@@ -187,9 +185,9 @@ fun ManageLocationsBookmark(
 
 @Composable
 fun ManageLocationsLocationList(
-    locationData: List<UserLocation>,
-    onBookmarkButtonClick: (UserLocation) -> Unit,
-    onLocationDeleteButtonClick: (UserLocation) -> Unit,
+    locationData: List<Location>,
+    onBookmarkButtonClick: (Location) -> Unit,
+    onLocationDeleteButtonClick: (Location) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -210,7 +208,7 @@ fun ManageLocationsLocationList(
                 items(locationData) { location ->
                     ManageLocationsItem(
                         isBookmarked = false,
-                        userLocation = location,
+                        location = location,
                         onBookmarkButtonClick = onBookmarkButtonClick,
                         onLocationDeleteButtonClick = onLocationDeleteButtonClick
                     )
@@ -231,9 +229,9 @@ fun ManageLocationsLocationList(
 fun ManageLocationsItem(
     modifier: Modifier = Modifier,
     isBookmarked: Boolean,
-    userLocation: UserLocation,
-    onBookmarkButtonClick: (UserLocation) -> Unit = {},
-    onLocationDeleteButtonClick: (UserLocation) -> Unit
+    location: Location,
+    onBookmarkButtonClick: (Location) -> Unit = {},
+    onLocationDeleteButtonClick: (Location) -> Unit
 ) {
 
     Row(
@@ -256,7 +254,7 @@ fun ManageLocationsItem(
         ) {
             IconButton(
                 onClick = {
-                    onBookmarkButtonClick(userLocation)
+                    onBookmarkButtonClick(location)
                 },
                 enabled = !isBookmarked
             ) {
@@ -276,19 +274,19 @@ fun ManageLocationsItem(
                     .padding(top = 10.dp, bottom = 10.dp, start = 30.dp)
             ) {
                 Text(
-                    text = userLocation.location.eupmyeondong,
+                    text = location.eupmyeondong,
                     maxLines = 1,
                     style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = userLocation.location.sigungu,
+                    text = location.sigungu,
                     maxLines = 1,
                     style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = userLocation.location.`do`,
+                    text = location.`do`,
                     maxLines = 1,
                     style = AIKTheme.typography.subtitle2,
                     textAlign = TextAlign.Center
@@ -296,7 +294,7 @@ fun ManageLocationsItem(
             }
         }
         if (!isBookmarked) {
-            IconButton(onClick = { onLocationDeleteButtonClick(userLocation) }) {
+            IconButton(onClick = { onLocationDeleteButtonClick(location) }) {
                 Icon(painter = painterResource(id = AIKIcons.TrashCan), contentDescription = null)
             }
         }
@@ -305,9 +303,9 @@ fun ManageLocationsItem(
 
 @Composable
 fun ManageLocationChangeBookmarkDialog(
-    onConfirmButtonClick: (UserLocation) -> Unit,
+    onConfirmButtonClick: (Location) -> Unit,
     onDismissRequest: () -> Unit,
-    userLocation: UserLocation
+    location: Location
 ) {
     AlertDialog(
         backgroundColor = common_background,
@@ -324,7 +322,7 @@ fun ManageLocationChangeBookmarkDialog(
             Text(
                 text = stringResource(
                     id = R.string.change_bookmark_dialog_text,
-                    userLocation.location.eupmyeondong
+                    location.eupmyeondong
                 ),
                 style = AIKTheme.typography.body1,
                 color = manage_location_on_core_container
@@ -332,7 +330,7 @@ fun ManageLocationChangeBookmarkDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onConfirmButtonClick(userLocation)
+                onConfirmButtonClick(location)
                 onDismissRequest()
             }) {
                 Text(
@@ -356,9 +354,9 @@ fun ManageLocationChangeBookmarkDialog(
 
 @Composable
 fun ManageLocationDeleteLocationDialog(
-    onConfirmButtonClick: (UserLocation) -> Unit,
+    onConfirmButtonClick: (Location) -> Unit,
     onDismissRequest: () -> Unit,
-    userLocation: UserLocation
+    location: Location
 ) {
     AlertDialog(
         backgroundColor = common_background,
@@ -375,7 +373,7 @@ fun ManageLocationDeleteLocationDialog(
             Text(
                 text = stringResource(
                     id = R.string.delete_location_dialog_text,
-                    userLocation.location.eupmyeondong
+                    location.eupmyeondong
                 ),
                 style = AIKTheme.typography.body1,
                 color = manage_location_on_core_container
@@ -383,7 +381,7 @@ fun ManageLocationDeleteLocationDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onConfirmButtonClick(userLocation)
+                onConfirmButtonClick(location)
                 onDismissRequest()
             }) {
                 Text(
@@ -414,57 +412,43 @@ fun ManageLocationScreenPreviewSuccess() {
         onDeleteDialogConfirmButtonClick = {},
         onAddLocationButtonClick = {},
         manageLocationUiState = ManageLocationUiState(
-            bookmark = UserLocation(
-                location = Location(
+            bookmark = Location(
+                `do` = "Gyeongsangnam-do",
+                sigungu = "Hamyang-gun",
+                eupmyeondong = "Anui-myeon",
+                station = "Dd"
+            ),
+            userLocationList =
+            listOf(
+                Location(
+                    `do` = "abc",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
+                ),
+                Location(
                     `do` = "Gyeongsangnam-do",
                     sigungu = "Hamyang-gun",
                     eupmyeondong = "Anui-myeon",
                     station = "Dd"
                 ),
-                isBookmark = true,
-            ),
-            userLocationList =
-            listOf(
-                UserLocation(
-                    location =
-                    Location(
-                        `do` = "abc",
-                        sigungu = "Hamyang-gun",
-                        eupmyeondong = "Anui-myeon",
-                        station = "Dd"
-                    )
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
-                UserLocation(
-                    Location(
-                        `do` = "Gyeongsangnam-do",
-                        sigungu = "Hamyang-gun",
-                        eupmyeondong = "Anui-myeon",
-                        station = "Dd"
-                    )
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 ),
-                UserLocation(
-                    Location(
-                        `do` = "Gyeongsangnam-do",
-                        sigungu = "Hamyang-gun",
-                        eupmyeondong = "Anui-myeon",
-                        station = "Dd"
-                    )
-                ),
-                UserLocation(
-                    Location(
-                        `do` = "Gyeongsangnam-do",
-                        sigungu = "Hamyang-gun",
-                        eupmyeondong = "Anui-myeon",
-                        station = "Dd"
-                    )
-                ),
-                UserLocation(
-                    Location(
-                        `do` = "Gyeongsangnam-do",
-                        sigungu = "Hamyang-gun",
-                        eupmyeondong = "Anui-myeon",
-                        station = "Dd"
-                    )
+                Location(
+                    `do` = "Gyeongsangnam-do",
+                    sigungu = "Hamyang-gun",
+                    eupmyeondong = "Anui-myeon",
+                    station = "Dd"
                 )
             )
         )
@@ -480,13 +464,11 @@ fun ManageLocationScreenPreviewEmpty() {
         onDeleteDialogConfirmButtonClick = {},
         onAddLocationButtonClick = {},
         manageLocationUiState = ManageLocationUiState(
-            bookmark = UserLocation(
-                Location(
-                    `do` = "Gyeongsangnam-do",
-                    sigungu = "Hamyang-gun",
-                    eupmyeondong = "Anui-myeon",
-                    station = "Dd"
-                )
+            bookmark = Location(
+                `do` = "Gyeongsangnam-do",
+                sigungu = "Hamyang-gun",
+                eupmyeondong = "Anui-myeon",
+                station = "Dd"
             )
         )
     )

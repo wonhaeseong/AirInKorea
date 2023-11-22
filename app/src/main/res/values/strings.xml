@@ -26,7 +26,7 @@
     <string name="gps">GPS</string>
     <string name="my_locations">My locations</string>
     <string name="locations">Locations</string>
-    <string name="unable_gps">Unable to retrieve GPS information</string>
+    <string name="unable_gps">No GPS Data</string>
     <string name="bookmark_is_not_set">Bookmark is not set</string>
     <string name="please_add_a_location">Please add a location.</string>
     <string name="manage_locations">Manage locations</string>

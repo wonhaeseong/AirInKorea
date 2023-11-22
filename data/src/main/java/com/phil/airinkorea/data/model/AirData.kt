@@ -1,7 +1,6 @@
 package com.phil.airinkorea.data.model
 
 data class AirData(
-    val userLocation: UserLocation?,
     val date: String?,
     val airLevel: AirLevel,
     val detailAirData: DetailAirData,
@@ -20,7 +19,7 @@ enum class AirLevel(val value: String) {
     Level4("Unhealthy"),
     Level5("Very Unhealthy"),
     Level6("Hazardous"),
-    LevelError("Error")
+    LevelError("No Data")
 }
 
 /**

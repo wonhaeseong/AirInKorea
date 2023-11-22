@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -55,15 +54,15 @@ fun HomeRoute(
         onRefresh = { homeViewModel.onRefreshHomeScreen() },
         onSettingButtonClick = {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data= Uri.fromParts("package",packageName,null)
+            intent.data = Uri.fromParts("package", packageName, null)
             context.startActivity(intent)
         },
         onManageLocationClick = onManageLocationClick,
         onParticulateMatterInfoClick = onParticulateMatterInfoClick,
         onAppInfoClick = onAppInfoClick,
-        onDrawerLocationClick = {
-            homeViewModel.onDrawerLocationClick(it)
-        },
+        onDrawerGPSClick = { homeViewModel.onDrawerGPSClick() },
+        onDrawerBookmarkClick = { homeViewModel.onDrawerBookmarkClick() },
+        onDrawerCustomLocationClick = { homeViewModel.onDrawerCustomLocationClick(it) },
         homeUiState = homeUiState,
         drawerUiState = drawerUiState
     )
@@ -74,8 +73,8 @@ fun HomeRoute(
         }
     }
 
-    LaunchedEffect(homeUiState.resolvableApiException){
-        if (homeUiState.resolvableApiException!=null){
+    LaunchedEffect(homeUiState.resolvableApiException) {
+        if (homeUiState.resolvableApiException != null) {
             val intentSenderRequest =
                 IntentSenderRequest.Builder(homeUiState.resolvableApiException!!.resolution)
                     .build()

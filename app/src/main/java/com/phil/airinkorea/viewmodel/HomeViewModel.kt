@@ -10,28 +10,24 @@ import com.phil.airinkorea.data.model.DailyForecast
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
 import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.data.model.SelectedLocation
-import com.phil.airinkorea.data.model.UserLocation
+import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.data.repository.AirDataRepository
 import com.phil.airinkorea.data.repository.LocationRepository
 import com.phil.airinkorea.manager.LocationManager
 import com.phil.airinkorea.manager.PermissionManager
 import com.phil.airinkorea.manager.SettingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class HomeUiState(
-    val userLocation: UserLocation? = null,
+    val location: Location? = null,
+    val page: Page = Page.GPS,
     val dataTime: String? = null,
     val airLevel: AirLevel = AirLevel.LevelError,
     val detailAirData: DetailAirData = DetailAirData(
@@ -83,7 +79,6 @@ data class HomeUiState(
         pm10GifUrl = null,
         pm25GifUrl = null
     ),
-    val selectedLocation: SelectedLocation = SelectedLocation.GPS,
     val isRefreshing: Boolean = false,  //당겨서 새로고침 상태
     val isInitializing: Boolean = false,
     val requestLocationPermission: Boolean = false,
@@ -94,10 +89,10 @@ data class HomeUiState(
 )
 
 data class DrawerUiState(
-    val gps: UserLocation? = null,
-    val bookmark: UserLocation? = null,
-    val userLocationList: List<UserLocation> = emptyList(),
-    val selectedLocation: SelectedLocation = SelectedLocation.GPS
+    val gps: Location? = null,
+    val bookmark: Location? = null,
+    val userLocationList: List<Location> = emptyList(),
+    val page: Page = Page.GPS
 )
 
 @HiltViewModel
@@ -116,24 +111,22 @@ class HomeViewModel @Inject constructor(
     private val _requestLocationPermission = MutableStateFlow(false)
     private val _resolvableApiException: MutableStateFlow<ResolvableApiException?> =
         MutableStateFlow(null)
-    private val _selectedLocation: StateFlow<UserLocation?> =
-        locationRepository.getSelectedLocationStream().flowOn(Dispatchers.IO).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
+    private val _page: StateFlow<Page> = locationRepository.getCurrentPageStream().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = Page.GPS
+    )
     val drawerUiState: StateFlow<DrawerUiState> = combine(
         locationRepository.getGPSLocationStream(),
         locationRepository.getBookmarkStream(),
         locationRepository.getCustomLocationListStream(),
-        _selectedLocation
-    ) { gpsLocation, bookmark, customLocationList, selectedLocation ->
+        _page
+    ) { gpsLocation, bookmark, customLocationList, page ->
         DrawerUiState(
             gps = gpsLocation,
             bookmark = bookmark,
             userLocationList = customLocationList,
-            selectedLocation = mapToSelectedLocation(selectedLocation)
+            page = page
         )
     }.stateIn(
         scope = viewModelScope,
@@ -143,7 +136,8 @@ class HomeViewModel @Inject constructor(
 
     val homeUiState: StateFlow<HomeUiState> = combine(
         airDataRepository.getAirDataStream(),
-        _selectedLocation,
+        locationRepository.getSelectedLocationStream(),
+        _page,
         _isRefreshing,
         _isInitializing,
         _isPageLoading,
@@ -151,16 +145,16 @@ class HomeViewModel @Inject constructor(
         _isGPSOn,
         _resolvableApiException,
         _requestLocationPermission
-    ) { airData, selectedLocation, isRefreshing, isInitializing, isPageLoading, isPermissionEnable, isGPSOn, resolvableApiException, requestLocationPermission ->
+    ) { airData, location, page, isRefreshing, isInitializing, isPageLoading, isPermissionEnable, isGPSOn, resolvableApiException, requestLocationPermission ->
         HomeUiState(
-            userLocation = airData.userLocation,
+            location = location,
+            page = page,
             dataTime = airData.date,
             airLevel = airData.airLevel,
             detailAirData = airData.detailAirData,
             information = airData.information,
             dailyForecast = airData.dailyForecast,
             forecastModelUrl = airData.koreaForecastModelGif,
-            selectedLocation = mapToSelectedLocation(selectedLocation),
             isRefreshing = isRefreshing,
             isInitializing = isInitializing,
             isPageLoading = isPageLoading,
@@ -179,26 +173,10 @@ class HomeViewModel @Inject constructor(
         initState()
     }
 
-    private suspend fun mapToSelectedLocation(userLocation: UserLocation?) =
-        if (userLocation != null) {
-            when {
-                userLocation.isGPS -> SelectedLocation.GPS
-                userLocation.isBookmark -> SelectedLocation.Bookmark
-                else -> {
-                    SelectedLocation.UserLocation(
-                        locationRepository.getCustomLocationListStream().first()
-                            .indexOf(userLocation)
-                    )
-                }
-            }
-        } else {
-            SelectedLocation.GPS
-        }
-
     private fun initState() {
         viewModelScope.launch {
-            when (mapToSelectedLocation(_selectedLocation.value)) {
-                SelectedLocation.GPS -> {
+            when (_page.value) {
+                Page.GPS -> {
                     when {
                         !checkLocationPermission() -> Unit
 
@@ -212,7 +190,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 else -> {
-                    airDataRepository.updateAirData(_selectedLocation.value!!.location.station)
+                    airDataRepository.updateAirData(homeUiState.value.location!!.station)
                     _isInitializing.value = false
                 }
             }
@@ -222,8 +200,8 @@ class HomeViewModel @Inject constructor(
     fun onRefreshHomeScreen() {
         _isRefreshing.value = true
         viewModelScope.launch {
-            when (mapToSelectedLocation(_selectedLocation.value)) {
-                SelectedLocation.GPS -> {
+            when (_page.value) {
+                Page.GPS -> {
                     when {
                         !checkLocationPermission() -> Unit
 
@@ -237,40 +215,45 @@ class HomeViewModel @Inject constructor(
                 }
 
                 else -> {
-                    airDataRepository.updateAirData(_selectedLocation.value!!.location.station)
+                    airDataRepository.updateAirData(homeUiState.value.location!!.station)
                     _isRefreshing.value = false
                 }
             }
 
         }
     }
-
-    fun onDrawerLocationClick(userLocation: UserLocation?) {
+    fun onDrawerGPSClick(){
         _isPageLoading.value = true
         viewModelScope.launch {
-            locationRepository.selectLocation(
-                newLocation = userLocation,
-                oldLocation = _selectedLocation.value
-            )
-            when (mapToSelectedLocation(_selectedLocation.value)) {
-                SelectedLocation.GPS -> {
-                    when {
-                        !checkLocationPermission() -> Unit
+            locationRepository.updatePage(Page.GPS)
+            when {
+                !checkLocationPermission() -> Unit
 
-                        !enableLocationSetting() -> Unit
-
-                        else -> {
-                            fetchGPSLocationByCoordinate()
-                            _isPageLoading.value = false
-                        }
-                    }
-                }
+                !enableLocationSetting() -> Unit
 
                 else -> {
-                    airDataRepository.updateAirData(_selectedLocation.value!!.location.station)
+                    fetchGPSLocationByCoordinate()
                     _isPageLoading.value = false
                 }
             }
+        }
+    }
+
+    fun onDrawerBookmarkClick(){
+        _isPageLoading.value = true
+        viewModelScope.launch {
+            locationRepository.updatePage(Page.Bookmark)
+            airDataRepository.updateAirData(homeUiState.value.location!!.station)
+            _isPageLoading.value = false
+        }
+    }
+
+    fun onDrawerCustomLocationClick(index:Int){
+        _isPageLoading.value = true
+        viewModelScope.launch {
+            locationRepository.updatePage(Page.CustomLocation(index))
+            airDataRepository.updateAirData(homeUiState.value.location!!.station)
+            _isPageLoading.value = false
         }
     }
 

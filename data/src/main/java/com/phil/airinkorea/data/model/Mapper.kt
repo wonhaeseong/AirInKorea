@@ -48,7 +48,6 @@ private fun NetworkForecastItem.mapToDailyForecastEntity(): DailyForecastEntity 
         airLevel = airLevel.mapToAirLevel()
     )
 
-
 private fun String?.mapToAirLevel(): AirLevel =
     when (this) {
         AirLevel.Level1.value -> AirLevel.Level1
@@ -62,11 +61,9 @@ private fun String?.mapToAirLevel(): AirLevel =
         }
     }
 
-
 fun Location.mapToUserLocationEntity(
     isGPS: Boolean = false,
-    isBookmark: Boolean = false,
-    isSelected: Boolean = false
+    isBookmark: Boolean = false
 ) =
     UserLocationEntity(
         enDo = `do`,
@@ -74,25 +71,12 @@ fun Location.mapToUserLocationEntity(
         enEupmyeondong = eupmyeondong,
         station = station,
         isGPS = if (isGPS) 1 else 0,
-        isBookmark = if (isBookmark) 1 else 0,
-        isSelected = if (isSelected) 1 else 0
+        isBookmark = if (isBookmark) 1 else 0
     )
-
-fun UserLocation.mapToUserLocationEntity()
-= UserLocationEntity(
-    enDo = location.`do`,
-    enSigungu = location.sigungu,
-    enEupmyeondong = location.eupmyeondong,
-    station = location.station,
-    isGPS = if (isGPS) 1 else 0,
-    isBookmark = if (isBookmark) 1 else 0,
-    isSelected = if (isSelected) 1 else 0
-)
 
 fun NetworkLocation.mapToUserLocationEntity(
     isGPS: Boolean = false,
-    isBookmark: Boolean = false,
-    isSelected: Boolean = false
+    isBookmark: Boolean = false
 ) =
     UserLocationEntity(
         enDo = `do`,
@@ -101,6 +85,5 @@ fun NetworkLocation.mapToUserLocationEntity(
         station = station,
         isGPS = if (isGPS) 1 else 0,
         isBookmark = if (isBookmark) 1 else 0,
-        isSelected = if (isSelected) 1 else 0
     )
 

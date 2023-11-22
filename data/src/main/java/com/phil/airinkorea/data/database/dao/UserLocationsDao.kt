@@ -3,9 +3,7 @@ package com.phil.airinkorea.data.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.phil.airinkorea.data.database.model.UserLocationEntity
 import kotlinx.coroutines.flow.Flow
@@ -48,22 +46,6 @@ interface UserLocationsDao {
     )
     fun getBookmarkStream(): Flow<UserLocationEntity?>
 
-    @Query(
-        """
-        SELECT *
-        FROM user_locations
-        WHERE is_selected = 1    
-        """
-    )
-    fun getSelectedLocationStream(): Flow<UserLocationEntity?>
-    @Query(
-        """
-        SELECT *
-        FROM user_locations
-        WHERE is_selected = 1    
-        """
-    )
-    fun getSelectedLocation(): UserLocationEntity?
     @Insert(entity = UserLocationEntity::class)
     fun insertUserLocation(newData: UserLocationEntity)
 

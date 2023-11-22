@@ -15,9 +15,9 @@ data class Location(
     val station: String
 )
 
-data class UserLocation(
-    val location: Location,
-    val isGPS: Boolean = false,
-    val isBookmark: Boolean = false,
-    val isSelected: Boolean = false
-)
+//data class UserLocation(
+//    val location: Location,
+//    val isGPS: Boolean = false,
+//    val isBookmark: Boolean = false,
+//    val isSelected: Boolean = false
+//)

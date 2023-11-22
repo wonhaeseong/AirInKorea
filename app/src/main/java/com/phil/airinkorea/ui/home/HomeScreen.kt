@@ -34,8 +34,7 @@ import com.phil.airinkorea.data.model.DailyForecast
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
 import com.phil.airinkorea.data.model.Location
-import com.phil.airinkorea.data.model.SelectedLocation
-import com.phil.airinkorea.data.model.UserLocation
+import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.ui.home.drawer.DrawerScreen
 import com.phil.airinkorea.ui.theme.*
 import com.phil.airinkorea.ui.theme.icon.AIKIcons
@@ -59,7 +58,9 @@ fun HomeScreen(
     onManageLocationClick: () -> Unit,
     onParticulateMatterInfoClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onDrawerLocationClick: (UserLocation?) -> Unit,
+    onDrawerGPSClick: () -> Unit,
+    onDrawerBookmarkClick: () -> Unit,
+    onDrawerCustomLocationClick: (Int) -> Unit,
     homeUiState: HomeUiState,
     drawerUiState: DrawerUiState
 ) {
@@ -85,8 +86,8 @@ fun HomeScreen(
                     backgroundColor = Color.Transparent,
                     topBar = {
                         HomeTopAppBar(
-                            isGPS = homeUiState.selectedLocation == SelectedLocation.GPS,
-                            userLocation = homeUiState.userLocation,
+                            isGPS = homeUiState.page == Page.GPS,
+                            location = homeUiState.location,
                             onMenuButtonClicked = { scope.launch { scaffoldState.drawerState.open() } }
                         )
                     },
@@ -96,9 +97,17 @@ fun HomeScreen(
                             onManageLocationClick = onManageLocationClick,
                             onParticulateMatterInfoClick = onParticulateMatterInfoClick,
                             onAppInfoClick = onAppInfoClick,
-                            onDrawerLocationClick = {
+                            onDrawerGPSClick = {
                                 scope.launch { scaffoldState.drawerState.close() }
-                                onDrawerLocationClick(it)
+                                onDrawerGPSClick()
+                            },
+                            onDrawerBookmarkClick = {
+                                scope.launch { scaffoldState.drawerState.close() }
+                                onDrawerBookmarkClick()
+                            },
+                            onDrawerCustomLocationClick = {
+                                scope.launch { scaffoldState.drawerState.close() }
+                                onDrawerCustomLocationClick(it)
                             }
                         )
                     },
@@ -248,7 +257,7 @@ fun LoadingIndicator(
 fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     isGPS: Boolean,
-    userLocation: UserLocation?,
+    location: Location?,
     onMenuButtonClicked: () -> Unit = {}
 ) {
     TopAppBar(
@@ -287,7 +296,7 @@ fun HomeTopAppBar(
                     )
                 }
                 Text(
-                    text = userLocation?.location?.eupmyeondong ?: "???",
+                    text = location?.eupmyeondong ?: " ",
                     style = AIKTheme.typography.subtitle2,
                     color = AIKTheme.colors.on_core,
                     textAlign = TextAlign.Center
@@ -959,16 +968,11 @@ fun KoreaForecastMap(
 fun HomeScreenPreviewSuccess() {
     val homeUiState =
         HomeUiState(
-            userLocation = UserLocation(
-                location = Location(
-                    `do` = "Gangwon-do",
-                    sigungu = "Gangneung-si",
-                    eupmyeondong = "Gangdong-myeon",
-                    station = "옥천동"
-                ),
-                isBookmark = false,
-                isSelected = true,
-                isGPS = true
+            location = Location(
+                `do` = "Gangwon-do",
+                sigungu = "Gangneung-si",
+                eupmyeondong = "Gangdong-myeon",
+                station = "옥천동"
             ),
             dataTime = "Saturday 12/25/2022 9:10 PM ",
             airLevel = AirLevel.Level1,
@@ -1027,7 +1031,9 @@ fun HomeScreenPreviewSuccess() {
         onManageLocationClick = {},
         onParticulateMatterInfoClick = {},
         onAppInfoClick = {},
-        onDrawerLocationClick = {},
+        onDrawerGPSClick = {},
+        onDrawerBookmarkClick = {},
+        onDrawerCustomLocationClick = {},
         homeUiState = homeUiState,
         drawerUiState = DrawerUiState()
     )
@@ -1045,7 +1051,9 @@ fun HomeScreenPreviewEmptyData() {
             onManageLocationClick = {},
             onParticulateMatterInfoClick = {},
             onAppInfoClick = {},
-            onDrawerLocationClick = {},
+            onDrawerGPSClick = {},
+            onDrawerBookmarkClick = {},
+            onDrawerCustomLocationClick = {},
             homeUiState = homeUiState,
             drawerUiState = DrawerUiState()
         )

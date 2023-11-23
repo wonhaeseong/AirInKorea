@@ -17,6 +17,5 @@ interface LocationRepository {
     suspend fun deleteCustomLocation(location: Location)
     suspend fun addUserLocation(location: Location)
     suspend fun updateBookmark(newBookmark: Location, oldBookmark: Location)
-    suspend fun fetchGPSLocationByCoordinate(latitude: Double, longitude: Double)
     suspend fun updatePage(newPage: Page)
 }

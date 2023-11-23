@@ -11,5 +11,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 abstract class LocalPageModule {
     @Binds
-    abstract fun provideDatastore(aikDatastore: AIKDatastore): LocalPageStore
+    abstract fun bindDatastore(aikDatastore: AIKDatastore): LocalPageStore
 }

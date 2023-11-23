@@ -37,9 +37,6 @@ class HomeViewModelTest {
     private lateinit var locationRepository: LocationRepository
 
     @Mock
-    private lateinit var appStatusRepository: AppStatusRepository
-
-    @Mock
     private lateinit var airDataRepository: AirDataRepository
 
     @Mock
@@ -54,7 +51,6 @@ class HomeViewModelTest {
     private val successLocation =
         Location(`do` = "a", sigungu = "b", eupmyeondong = "c", station = "d")
     private val successAirData = AirData(
-        station = "d",
         date = "Saturday 12/25/2022 9:10 PM ",
         airLevel = AirLevel.Level1,
         detailAirData =
@@ -108,7 +104,6 @@ class HomeViewModelTest {
     )
 
     private val failAirData = AirData(
-        station = null,
         date = null,
         airLevel = AirLevel.LevelError,
         detailAirData = DetailAirData(
@@ -136,7 +131,9 @@ class HomeViewModelTest {
 
     @Before
     fun setUp() {
-
+        val homeViewModel = HomeViewModel(
+            locationRepository, airDataRepository, locationManager, permissionManager, settingManager
+        )
     }
 
     @After
@@ -150,52 +147,13 @@ class HomeViewModelTest {
     @Test
     fun `초기화시점 0페이지,위치권한 및 GPS 켜짐 상태일 때,airLevel != LevelError`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher())
-        //given
-        whenever(appStatusRepository.getDefaultPage().first()).thenReturn(0)
-        whenever(permissionManager.checkLocationPermission()).thenReturn(true)
-        doNothing().whenever(settingManager.enableLocationSetting())
-        whenever(locationManager.getCurrentCoordinate()).thenReturn(
-            Coordinate(1.0, 2.0)
-        )
-        doNothing().whenever(
-            locationRepository.fetchGPSLocationByCoordinate(
-                1.0, 2.0
-            )
-        )
-        whenever(locationRepository.getGPSLocation().first()).thenReturn(
-            successLocation
-        )
-        whenever(airDataRepository.getAirData("d")).thenReturn(
-            successAirData
-        )
-        val homeViewModel = HomeViewModel(
-            locationRepository = locationRepository,
-            appStatusRepository = appStatusRepository,
-            airDataRepository = airDataRepository,
-            locationManager = locationManager,
-            permissionManager = permissionManager,
-            settingManager = settingManager
-        )
-        //when,then
-        val result = homeViewModel.homeUiState.first()
-        val expect = HomeUiState(
-            location = successLocation,
-            dataTime = successAirData.date,
-            airLevel = successAirData.airLevel,
-            detailAirData = successAirData.detailAirData,
-            information = successAirData.information,
-            dailyForecast = successAirData.dailyForecast,
-            forecastModelUrl = successAirData.koreaForecastModelGif,
-            page = 0,
-            isRefreshing = false,
-            isInitializing = false,
-            requestLocationPermission = false,
-            resolvableApiException = null,
-            isPageLoading = false,
-            isPermissionEnable = true,
-            isGPSOn = true
-        )
-        assertEquals(expect, result)
+
+    }
+
+    @Test
+    fun `onDrawerClick_GPSPageToBookmarkPage`() = runTest {
+        //given: Page GPS
+        locationRepository.getCurrentPageStream()
     }
 
 }

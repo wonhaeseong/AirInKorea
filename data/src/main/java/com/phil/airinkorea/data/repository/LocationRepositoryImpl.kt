@@ -1,15 +1,11 @@
 package com.phil.airinkorea.data.repository
 
-import android.util.Log
 import com.phil.airinkorea.data.LocalPageStore
-import com.phil.airinkorea.data.NetworkDataSource
-import com.phil.airinkorea.data.database.dao.AirDataDao
 import com.phil.airinkorea.data.database.dao.LocationDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
 import com.phil.airinkorea.data.database.model.mapToExternalModel
 import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.Page
-import com.phil.airinkorea.data.model.mapToAirDataEntity
 import com.phil.airinkorea.data.model.mapToUserLocationEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,8 +20,6 @@ import javax.inject.Inject
 class LocationRepositoryImpl @Inject constructor(
     private val locationDao: LocationDao,
     private val userLocationsDao: UserLocationsDao,
-    private val airDataDao: AirDataDao,
-    private val networkDataSource: NetworkDataSource,
     private val localPageStore: LocalPageStore
 ) : LocationRepository {
     override fun getSearchResult(query: String): Flow<List<Location>> =
@@ -98,31 +92,6 @@ class LocationRepositoryImpl @Inject constructor(
             userLocationsDao.updateUserLocation(
                 newBookmark.mapToUserLocationEntity(isBookmark = true)
             )
-        }
-
-    override suspend fun fetchGPSLocationByCoordinate(latitude: Double, longitude: Double) =
-        withContext(Dispatchers.IO) {
-            val networkResult = networkDataSource.getAirDataByCoordinate(latitude, longitude)
-            val locationEntity = networkResult?.networkLocation
-            val networkAirData = networkResult?.networkAirData
-            Log.d("TAG fetchGPS", locationEntity.toString())
-            if (networkAirData != null && locationEntity != null) {
-                if (userLocationsDao.isGPSExist()) {
-                    userLocationsDao.updateGPSLocation(
-                        enDo = locationEntity.`do`,
-                        sigungu = locationEntity.sigungu,
-                        eupmyeondong = locationEntity.eupmyeondong,
-                        station = locationEntity.station
-                    )
-                } else {
-                    userLocationsDao.insertUserLocation(
-                        locationEntity.mapToUserLocationEntity(isGPS = true)
-                    )
-                }
-                airDataDao.upsertAirData(
-                    networkAirData.mapToAirDataEntity(locationEntity.station)
-                )
-            }
         }
 
     override suspend fun updatePage(newPage: Page) {

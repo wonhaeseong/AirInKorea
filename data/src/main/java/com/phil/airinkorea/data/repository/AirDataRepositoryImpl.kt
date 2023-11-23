@@ -1,7 +1,9 @@
 package com.phil.airinkorea.data.repository
 
+import android.util.Log
 import com.phil.airinkorea.data.LocalPageStore
 import com.phil.airinkorea.data.NetworkDataSource
+import com.phil.airinkorea.data.UserGPSDataSource
 import com.phil.airinkorea.data.database.dao.AirDataDao
 import com.phil.airinkorea.data.database.dao.UserLocationsDao
 import com.phil.airinkorea.data.database.model.mapToExternalModel
@@ -9,9 +11,9 @@ import com.phil.airinkorea.data.model.AirData
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
-import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.data.model.mapToAirDataEntity
+import com.phil.airinkorea.data.model.mapToUserLocationEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +28,8 @@ class AirDataRepositoryImpl @Inject constructor(
     private val airDataDao: AirDataDao,
     private val userLocationsDao: UserLocationsDao,
     private val networkDataSource: NetworkDataSource,
-    private val localPageStore: LocalPageStore
+    private val localPageStore: LocalPageStore,
+    private val userGPSDataSource: UserGPSDataSource
 ) : AirDataRepository {
     private val noAirData = AirData(
         date = null,
@@ -72,31 +75,61 @@ class AirDataRepositoryImpl @Inject constructor(
             }
         }.flowOn(Dispatchers.IO)
 
-    override suspend fun updateAirData() {
+    override suspend fun updateAirData(page: Page) {
         withContext(Dispatchers.IO) {
-            val location: Location? =
-                when (val page = localPageStore.getCurrentPageStream().first()) {
-                    Page.GPS -> {
-                        userLocationsDao.getGPSLocationStream().first()?.mapToExternalModel()
-                    }
-
-                    Page.Bookmark -> {
-                        userLocationsDao.getBookmarkStream().first()?.mapToExternalModel()
-                    }
-
-                    is Page.CustomLocation -> {
-                        userLocationsDao.getCustomLocationListStream()
-                            .first()[page.pageNum].mapToExternalModel()
+            when (page) {
+                Page.GPS -> {
+                    userGPSDataSource.getUserCurrentCoordinate()?.let {
+                        fetchGPSLocationByCoordinate(it.latitude, it.longitude)
                     }
                 }
-            location?.let {
-                networkDataSource.getAirData(it.station)?.let { networkAirData->
-                    airDataDao.upsertAirData(
-                        networkAirData.mapToAirDataEntity(it.station)
-                    )
+
+                Page.Bookmark -> {
+                    userLocationsDao.getBookmarkStream().first()?.mapToExternalModel()?.let {
+                        updateAirData(it.station)
+                    }
+                }
+
+                is Page.CustomLocation -> {
+                    userLocationsDao.getCustomLocationListStream()
+                        .first()[page.pageNum].mapToExternalModel().let {
+                        updateAirData(it.station)
+                    }
                 }
             }
         }
-
     }
+
+    private suspend fun updateAirData(station: String) {
+        networkDataSource.getAirData(station)?.let { networkAirData ->
+            airDataDao.upsertAirData(
+                networkAirData.mapToAirDataEntity(station)
+            )
+        }
+    }
+
+    private suspend fun fetchGPSLocationByCoordinate(latitude: Double, longitude: Double) =
+        withContext(Dispatchers.IO) {
+            val networkResult = networkDataSource.getAirDataByCoordinate(latitude, longitude)
+            val locationEntity = networkResult?.networkLocation
+            val networkAirData = networkResult?.networkAirData
+            Log.d("TAG fetchGPS", locationEntity.toString())
+            if (networkAirData != null && locationEntity != null) {
+                if (userLocationsDao.isGPSExist()) {
+                    userLocationsDao.updateGPSLocation(
+                        enDo = locationEntity.`do`,
+                        sigungu = locationEntity.sigungu,
+                        eupmyeondong = locationEntity.eupmyeondong,
+                        station = locationEntity.station
+                    )
+                } else {
+                    userLocationsDao.insertUserLocation(
+                        locationEntity.mapToUserLocationEntity(isGPS = true)
+                    )
+                }
+                airDataDao.upsertAirData(
+                    networkAirData.mapToAirDataEntity(locationEntity.station)
+                )
+            }
+        }
 }

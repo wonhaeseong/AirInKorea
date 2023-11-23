@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.viewmodel.DrawerUiState
 import com.phil.airinkorea.viewmodel.HomeUiState
 import com.phil.airinkorea.viewmodel.HomeViewModel
@@ -60,9 +61,9 @@ fun HomeRoute(
         onManageLocationClick = onManageLocationClick,
         onParticulateMatterInfoClick = onParticulateMatterInfoClick,
         onAppInfoClick = onAppInfoClick,
-        onDrawerGPSClick = { homeViewModel.onDrawerGPSClick() },
-        onDrawerBookmarkClick = { homeViewModel.onDrawerBookmarkClick() },
-        onDrawerCustomLocationClick = { homeViewModel.onDrawerCustomLocationClick(it) },
+        onDrawerGPSClick = { homeViewModel.onDrawerLocationClick(Page.GPS) },
+        onDrawerBookmarkClick = { homeViewModel.onDrawerLocationClick(Page.Bookmark) },
+        onDrawerCustomLocationClick = { homeViewModel.onDrawerLocationClick(Page.CustomLocation(it)) },
         homeUiState = homeUiState,
         drawerUiState = drawerUiState
     )

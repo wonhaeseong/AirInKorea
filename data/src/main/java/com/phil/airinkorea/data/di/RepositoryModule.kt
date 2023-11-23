@@ -18,22 +18,22 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
     @Binds
-    abstract fun provideLocationRepository(
+    abstract fun bindLocationRepository(
         locationRepository: LocationRepositoryImpl
     ): LocationRepository
 
     @Binds
-    abstract fun provideAirDataRepository(
+    abstract fun bindAirDataRepository(
         airDataRepository: AirDataRepositoryImpl
     ): AirDataRepository
 
     @Binds
-    abstract fun provideAppGuideRepository(
+    abstract fun bindAppGuideRepository(
         appGuideRepository: AppGuideRepositoryImpl
     ): AppGuideRepository
 
     @Binds
-    abstract fun provideAppInfoRepository(
+    abstract fun bindAppInfoRepository(
         appInfoRepository: AppInfoRepositoryImpl
     ): AppInfoRepository
 }

@@ -11,5 +11,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 abstract class NetworkModule {
     @Binds
-    abstract fun provideNetworkDataSource(firebaseClient: FirebaseClient): NetworkDataSource
+    abstract fun bindNetworkDataSource(firebaseClient: FirebaseClient): NetworkDataSource
 }

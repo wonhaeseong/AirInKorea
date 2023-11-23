@@ -13,7 +13,6 @@ import com.phil.airinkorea.data.model.Location
 import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.data.repository.AirDataRepository
 import com.phil.airinkorea.data.repository.LocationRepository
-import com.phil.airinkorea.manager.LocationManager
 import com.phil.airinkorea.manager.PermissionManager
 import com.phil.airinkorea.manager.SettingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -99,7 +98,6 @@ data class DrawerUiState(
 class HomeViewModel @Inject constructor(
     private val locationRepository: LocationRepository,
     private val airDataRepository: AirDataRepository,
-    private val locationManager: LocationManager,
     private val permissionManager: PermissionManager,
     private val settingManager: SettingManager
 ) : ViewModel() {
@@ -175,24 +173,8 @@ class HomeViewModel @Inject constructor(
 
     private fun initState() {
         viewModelScope.launch {
-            when (_page.value) {
-                Page.GPS -> {
-                    when {
-                        !checkLocationPermission() -> Unit
-
-                        !enableLocationSetting() -> Unit
-
-                        else -> {
-                            fetchGPSLocationByCoordinate()
-                            _isInitializing.value = false
-                        }
-                    }
-                }
-
-                else -> {
-                    airDataRepository.updateAirData()
-                    _isInitializing.value = false
-                }
+            updateAirData(_page.value) {
+                _isInitializing.value = false
             }
         }
     }
@@ -200,70 +182,31 @@ class HomeViewModel @Inject constructor(
     fun onRefreshHomeScreen() {
         _isRefreshing.value = true
         viewModelScope.launch {
-            when (_page.value) {
-                Page.GPS -> {
-                    when {
-                        !checkLocationPermission() -> Unit
-
-                        !enableLocationSetting() -> Unit
-
-                        else -> {
-                            fetchGPSLocationByCoordinate()
-                            _isRefreshing.value = false
-                        }
-                    }
-                }
-
-                else -> {
-                    airDataRepository.updateAirData()
-                    _isRefreshing.value = false
-                }
-            }
-
-        }
-    }
-    fun onDrawerGPSClick(){
-        _isPageLoading.value = true
-        viewModelScope.launch {
-            locationRepository.updatePage(Page.GPS)
-            when {
-                !checkLocationPermission() -> Unit
-
-                !enableLocationSetting() -> Unit
-
-                else -> {
-                    fetchGPSLocationByCoordinate()
-                    _isPageLoading.value = false
-                }
+            updateAirData(_page.value) {
+                _isRefreshing.value = false
             }
         }
     }
 
-    fun onDrawerBookmarkClick(){
+    fun onDrawerLocationClick(page: Page) {
         _isPageLoading.value = true
         viewModelScope.launch {
-            locationRepository.updatePage(Page.Bookmark)
-            airDataRepository.updateAirData()
-            _isPageLoading.value = false
+            locationRepository.updatePage(page)
+            updateAirData(page) {
+                _isPageLoading.value = false
+            }
         }
     }
 
-    fun onDrawerCustomLocationClick(index:Int){
-        _isPageLoading.value = true
-        viewModelScope.launch {
-            locationRepository.updatePage(Page.CustomLocation(index))
-            airDataRepository.updateAirData()
-            _isPageLoading.value = false
-        }
-    }
-
-    private suspend fun fetchGPSLocationByCoordinate() {
-        val coordinate = locationManager.getCurrentCoordinate()
-        coordinate?.let {
-            locationRepository.fetchGPSLocationByCoordinate(
-                it.latitude,
-                it.longitude
-            )
+    private suspend fun updateAirData(page: Page, onFinish: () -> Unit) {
+        if (page == Page.GPS) {
+            if (checkLocationPermission() && enableLocationSetting()) {
+                airDataRepository.updateAirData(page)
+                onFinish()
+            }
+        } else {
+            airDataRepository.updateAirData(page)
+            onFinish()
         }
     }
 
@@ -355,13 +298,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun checkLocationPermission(): Boolean {
-        return if (permissionManager.checkLocationPermission()) {
-            _isPermissionEnable.value = true
-            true
-        } else {
-            _isPermissionEnable.value = false
-            _requestLocationPermission.value = true
-            false
+        return permissionManager.checkLocationPermission().also {
+            _isPermissionEnable.value = it
         }
     }
 }

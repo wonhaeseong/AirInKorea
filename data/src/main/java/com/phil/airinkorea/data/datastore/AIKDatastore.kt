@@ -30,7 +30,7 @@ class AIKDatastore @Inject constructor(
         when (val page = value[pageKey]) {
             null, 0 -> Page.GPS
             1 -> Page.Bookmark
-            else -> Page.CustomLocation(page)
+            else -> Page.CustomLocation(page - 2)
         }
     }.flowOn(Dispatchers.Default)
 
@@ -40,7 +40,7 @@ class AIKDatastore @Inject constructor(
                 value[pageKey] = when (newPage) {
                     Page.GPS -> 0
                     Page.Bookmark -> 1
-                    is Page.CustomLocation -> newPage.pageNum
+                    is Page.CustomLocation -> newPage.pageNum + 2
                 }
             }
         }

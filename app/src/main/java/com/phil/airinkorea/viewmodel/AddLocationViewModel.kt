@@ -36,7 +36,7 @@ class AddLocationViewModel @Inject constructor(
     }
 
     fun addUserLocation(location: Location) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             locationRepository.addUserLocation(location)
         }
     }

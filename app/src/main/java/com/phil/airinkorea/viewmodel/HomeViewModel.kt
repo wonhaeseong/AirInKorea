@@ -299,6 +299,7 @@ class HomeViewModel @Inject constructor(
 
     private fun checkLocationPermission(): Boolean {
         return permissionManager.checkLocationPermission().also {
+            if (!it) _requestLocationPermission.value = true
             _isPermissionEnable.value = it
         }
     }

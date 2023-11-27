@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,16 +39,16 @@ class ManageLocationViewModel @Inject constructor(
         )
 
     fun deleteLocation(location: Location) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             locationRepository.deleteCustomLocation(location)
         }
     }
 
     fun updateBookmark(location: Location) {
-        viewModelScope.launch(Dispatchers.IO) {
-                manageLocationUiState.value.bookmark?.let {
+        viewModelScope.launch {
+                manageLocationUiState.value.bookmark?.let {oldBookmark ->
                     locationRepository.updateBookmark(
-                        oldBookmark = it,
+                        oldBookmark = oldBookmark,
                         newBookmark = location
                     )
                 }

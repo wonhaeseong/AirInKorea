@@ -47,7 +47,7 @@ interface UserLocationsDao {
     )
     fun getBookmarkStream(): Flow<UserLocationEntity?>
 
-    @Insert(entity = UserLocationEntity::class, onConflict = OnConflictStrategy.IGNORE)
+    @Insert(entity = UserLocationEntity::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertUserLocation(newData: UserLocationEntity)
 
     @Delete

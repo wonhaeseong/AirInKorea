@@ -59,7 +59,7 @@ class LocationRepositoryImpl @Inject constructor(
                 station = "한강대로"
             ).also { defaultLocation ->
                 userLocationsDao.insertUserLocation(
-                    defaultLocation.mapToUserLocationEntity()
+                    defaultLocation.mapToUserLocationEntity(isBookmark = true)
                 )
             }
         }.flowOn(Dispatchers.IO)

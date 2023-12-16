@@ -48,6 +48,7 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -67,7 +68,7 @@ dependencies {
     def glide_compiler_version = '4.12.0'
     def glide_compose_version = '1.0.0-alpha.1'
     def glide_version = '4.14.2'
-    def mockk_version = '1.10.1'
+    def mockk_version = '1.13.8'
     def byte_buddy_version='1.10.21'
     implementation project(path: ':data')
 

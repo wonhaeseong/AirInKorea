@@ -4,7 +4,6 @@ buildscript {
         kotlinx_serialization_version = '1.4.0'
         junit_version = '4.13.2'
         hilt_version = '2.44.2'
-        mockito_version = '4.1.0'
     }
     repositories {
         google()

@@ -67,8 +67,8 @@ dependencies {
     def glide_compiler_version = '4.12.0'
     def glide_compose_version = '1.0.0-alpha.1'
     def glide_version = '4.14.2'
-    def mockito_kotlin_version = '4.1.0'
-    def mockito_core_version = '5.3.1'
+    def mockk_version = '1.10.1'
+    def byte_buddy_version='1.10.21'
     implementation project(path: ':data')
 
     implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha03")
@@ -126,9 +126,10 @@ dependencies {
     //oss-licenses
     implementation "com.google.android.gms:play-services-oss-licenses:${oss_licenses_version}"
 
-    //mockito
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockito_kotlin_version}"
-    testImplementation "org.mockito:mockito-core:${mockito_core_version}"
+    //mockK
+    testImplementation "io.mockk:mockk:${mockk_version}"
+    androidTestImplementation "io.mockk:mockk-android:${mockk_version}"
+    testRuntimeOnly "net.bytebuddy:byte-buddy:${byte_buddy_version}"
 }
 kapt {
     correctErrorTypes = true

@@ -62,9 +62,6 @@ dependencies {
     //datastore
     implementation "androidx.datastore:datastore-preferences:${datastore_version}"
 
-    //mockito
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockito_version}"
-
     //Firebase BoM
     implementation platform ("com.google.firebase:firebase-bom:${firebase_bom_version}")
 

@@ -70,6 +70,8 @@ dependencies {
     def glide_version = '4.14.2'
     def mockk_version = '1.13.8'
     def byte_buddy_version='1.10.21'
+    def turbine_version = '1.0.0'
+
     implementation project(path: ':data')
 
     implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha03")
@@ -131,6 +133,9 @@ dependencies {
     testImplementation "io.mockk:mockk:${mockk_version}"
     androidTestImplementation "io.mockk:mockk-android:${mockk_version}"
     testRuntimeOnly "net.bytebuddy:byte-buddy:${byte_buddy_version}"
+
+    //turbine
+    testImplementation "app.cash.turbine:turbine:${turbine_version}"
 }
 kapt {
     correctErrorTypes = true

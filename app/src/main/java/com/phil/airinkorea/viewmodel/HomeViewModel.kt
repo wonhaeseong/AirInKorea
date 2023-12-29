@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -109,16 +110,12 @@ class HomeViewModel @Inject constructor(
     private val _requestLocationPermission = MutableStateFlow(false)
     private val _resolvableApiException: MutableStateFlow<ResolvableApiException?> =
         MutableStateFlow(null)
-    private val _page: StateFlow<Page> = locationRepository.getCurrentPageStream().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = Page.GPS
-    )
+
     val drawerUiState: StateFlow<DrawerUiState> = combine(
         locationRepository.getGPSLocationStream(),
         locationRepository.getBookmarkStream(),
         locationRepository.getCustomLocationListStream(),
-        _page
+        locationRepository.getCurrentPageStream()
     ) { gpsLocation, bookmark, customLocationList, page ->
         DrawerUiState(
             gps = gpsLocation,
@@ -135,7 +132,7 @@ class HomeViewModel @Inject constructor(
     val homeUiState: StateFlow<HomeUiState> = combine(
         airDataRepository.getAirDataStream(),
         locationRepository.getSelectedLocationStream(),
-        _page,
+        locationRepository.getCurrentPageStream(),
         _isRefreshing,
         _isInitializing,
         _isPageLoading,
@@ -166,14 +163,13 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState(isInitializing = true)
     )
-
     init {
         initState()
     }
 
     private fun initState() {
         viewModelScope.launch {
-            updateAirData(_page.value) {
+            updateAirData(homeUiState.value.page) {
                 _isInitializing.value = false
             }
         }
@@ -182,7 +178,7 @@ class HomeViewModel @Inject constructor(
     fun onRefreshHomeScreen() {
         _isRefreshing.value = true
         viewModelScope.launch {
-            updateAirData(_page.value) {
+            updateAirData(homeUiState.value.page) {
                 _isRefreshing.value = false
             }
         }
@@ -216,7 +212,6 @@ class HomeViewModel @Inject constructor(
             _isGPSOn.value = true
             true
         } catch (e: Throwable) {
-            Log.d("location", "error $e")
             if (e is ResolvableApiException) {
                 _resolvableApiException.value = e
             }

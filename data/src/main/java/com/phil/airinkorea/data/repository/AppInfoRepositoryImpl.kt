@@ -10,7 +10,7 @@ class AppInfoRepositoryImpl @Inject constructor() : AppInfoRepository {
     private val firstName = "Won"
     private val lastName = "HaeSeong"
     private val email = "gotjd8607@gmail.com"
-    private val github = Uri.parse("https://github.com/want8607")
+    private val github = Uri.parse("https://github.com/wonhaeseong")
     private val nationality = "South Korea"
     override fun getDeveloperInfoStream(): Flow<DeveloperInfo> = flow {
         emit(

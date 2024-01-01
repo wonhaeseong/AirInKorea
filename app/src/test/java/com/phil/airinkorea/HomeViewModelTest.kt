@@ -1,52 +1,46 @@
 package com.phil.airinkorea
 
+import app.cash.turbine.test
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.common.api.Status
 import com.phil.airinkorea.data.model.AirData
 import com.phil.airinkorea.data.model.AirLevel
 import com.phil.airinkorea.data.model.DailyForecast
 import com.phil.airinkorea.data.model.DetailAirData
 import com.phil.airinkorea.data.model.KoreaForecastModelGif
 import com.phil.airinkorea.data.model.Location
+import com.phil.airinkorea.data.model.Page
 import com.phil.airinkorea.data.repository.AirDataRepository
 import com.phil.airinkorea.data.repository.LocationRepository
-import com.phil.airinkorea.manager.Coordinate
-import com.phil.airinkorea.manager.LocationManager
 import com.phil.airinkorea.manager.PermissionManager
 import com.phil.airinkorea.manager.SettingManager
-import com.phil.airinkorea.viewmodel.HomeUiState
 import com.phil.airinkorea.viewmodel.HomeViewModel
-import kotlinx.coroutines.Dispatchers
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.doNothing
-import org.mockito.kotlin.whenever
 
-@RunWith(MockitoJUnitRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
-    @Mock
+
     private lateinit var locationRepository: LocationRepository
-
-    @Mock
     private lateinit var airDataRepository: AirDataRepository
-
-    @Mock
-    private lateinit var locationManager: LocationManager
-
-    @Mock
     private lateinit var permissionManager: PermissionManager
-
-    @Mock
     private lateinit var settingManager: SettingManager
+    private lateinit var homeViewModel: HomeViewModel
 
     private val successLocation =
         Location(`do` = "a", sigungu = "b", eupmyeondong = "c", station = "d")
@@ -128,32 +122,203 @@ class HomeViewModelTest {
         )
     )
 
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setUp() {
-        val homeViewModel = HomeViewModel(
-            locationRepository, airDataRepository, locationManager, permissionManager, settingManager
+        locationRepository = mockk()
+        airDataRepository = mockk()
+        permissionManager = mockk()
+        settingManager = mockk()
+        every { airDataRepository.getAirDataStream() } returns flowOf(failAirData)
+        every { locationRepository.getSelectedLocationStream() } returns flowOf(null)
+        every { locationRepository.getGPSLocationStream() } returns flowOf(null)
+        every { locationRepository.getBookmarkStream() } returns flowOf(
+            Location(
+                `do` = "Seoul",
+                sigungu = "Yongsan-gu",
+                eupmyeondong = "Namyeong-dong",
+                station = "한강대로"
+            )
         )
-    }
-
-    @After
-    fun finish() {
-
-    }
-
-    //설정_실행_기대
-    //https://beomseok95.tistory.com/297
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `초기화시점 0페이지,위치권한 및 GPS 켜짐 상태일 때,airLevel != LevelError`() = runTest {
-        Dispatchers.setMain(StandardTestDispatcher())
-
+        every { locationRepository.getCustomLocationListStream() } returns flowOf(emptyList())
+        every { permissionManager.checkLocationPermission() } returns true
     }
 
     @Test
-    fun `onDrawerClick_GPSPageToBookmarkPage`() = runTest {
-        //given: Page GPS
-        locationRepository.getCurrentPageStream()
+    fun homeUiState_whenInitialized_thenShowInitializing() {
+        every { locationRepository.getCurrentPageStream() } returns flowOf(Page.GPS)
+        every { permissionManager.checkLocationPermission() } returns true
+        homeViewModel =
+            HomeViewModel(locationRepository, airDataRepository, permissionManager, settingManager)
+        assertEquals(true, homeViewModel.homeUiState.value.isInitializing)
     }
 
+    @Test
+    fun `onRefreshHomeScreen should update airdata on GPSPage, when GPS, Permission On `() =
+        runTest {
+            //given
+            every { locationRepository.getCurrentPageStream() } returns flowOf(Page.GPS)
+            every { permissionManager.checkLocationPermission() } returns true
+            coEvery { settingManager.enableLocationSetting() } just Runs
+            coEvery { airDataRepository.updateAirData(Page.GPS) } coAnswers { delay(500) }
+            homeViewModel =
+                HomeViewModel(
+                    locationRepository,
+                    airDataRepository,
+                    permissionManager,
+                    settingManager
+                )
+            //when
+            homeViewModel.onRefreshHomeScreen()
+            //then
+            homeViewModel.homeUiState.test {
+                assertEquals(false, awaitItem().isRefreshing)
+                assertEquals(true, awaitItem().isRefreshing)
+                assertEquals(false, awaitItem().isRefreshing)
+            }
+            coVerify {
+                airDataRepository.updateAirData(Page.GPS)
+            }
+        }
+
+    @Test
+    fun `onRefreshHomeScreen shouldn't update airdata on GPSPage, when GPS on Permission off`() =
+        runTest {
+            //given
+            every { locationRepository.getCurrentPageStream() } returns flowOf(Page.GPS)
+            every { permissionManager.checkLocationPermission() } returns false
+            coEvery { settingManager.enableLocationSetting() } just Runs
+            coEvery { airDataRepository.updateAirData(Page.GPS) } coAnswers { delay(500) }
+            homeViewModel =
+                HomeViewModel(
+                    locationRepository,
+                    airDataRepository,
+                    permissionManager,
+                    settingManager
+                )
+            //when
+            homeViewModel.onRefreshHomeScreen()
+            advanceUntilIdle()
+            //then
+            coVerify(exactly = 0) {
+                airDataRepository.updateAirData(Page.GPS)
+            }
+        }
+
+    @Test
+    fun `onRefreshHomeScreen shouldn't update airdata on GPSPage, when GPS off Permission on`() =
+        runTest {
+            val resolvableApiException = ResolvableApiException(Status.RESULT_CANCELED)
+            //given
+            every { locationRepository.getCurrentPageStream() } returns flowOf(Page.GPS)
+            every { permissionManager.checkLocationPermission() } returns true
+            coEvery { settingManager.enableLocationSetting() } throws resolvableApiException
+            coEvery { airDataRepository.updateAirData(Page.GPS) } coAnswers { delay(500) }
+            homeViewModel =
+                HomeViewModel(
+                    locationRepository,
+                    airDataRepository,
+                    permissionManager,
+                    settingManager
+                )
+            //when
+            homeViewModel.onRefreshHomeScreen()
+            advanceUntilIdle()
+
+            //then
+            coVerify(exactly = 0) {
+                airDataRepository.updateAirData(Page.GPS)
+            }
+        }
+
+
+    @Test
+    fun `onRefreshHomeScreen shouldn't update airdata on GPSPage, when GPS,Permission off`() =
+        runTest {
+            val resolvableApiException = ResolvableApiException(Status.RESULT_CANCELED)
+            //given
+            every { locationRepository.getCurrentPageStream() } returns flowOf(Page.GPS)
+            every { permissionManager.checkLocationPermission() } returns false
+            coEvery { settingManager.enableLocationSetting() } throws resolvableApiException
+            coEvery { airDataRepository.updateAirData(Page.GPS) } coAnswers { delay(500) }
+            homeViewModel =
+                HomeViewModel(
+                    locationRepository,
+                    airDataRepository,
+                    permissionManager,
+                    settingManager
+                )
+
+            //when
+            homeViewModel.onRefreshHomeScreen()
+            advanceUntilIdle()
+
+            //then
+            coVerify(exactly = 0) {
+                airDataRepository.updateAirData(Page.GPS)
+            }
+        }
+
+    @Test
+    fun `onRefreshHomeScreen should update airdata on BookmarkPage`() = runTest(
+        UnconfinedTestDispatcher()
+    ) {
+        //given
+        every { locationRepository.getCurrentPageStream() } returns flowOf(Page.Bookmark)
+        coEvery { airDataRepository.updateAirData(Page.Bookmark) } coAnswers { delay(500) }
+
+        homeViewModel =
+            HomeViewModel(
+                locationRepository,
+                airDataRepository,
+                permissionManager,
+                settingManager
+            )
+
+        //when
+        homeViewModel.homeUiState.test {
+            assertEquals(Page.GPS, awaitItem().page)
+            assertEquals(
+                Page.Bookmark,
+                awaitItem().page
+            )
+        }
+        homeViewModel.onRefreshHomeScreen()
+        advanceUntilIdle()
+        //then
+        coVerify {
+            airDataRepository.updateAirData(Page.Bookmark)
+        }
+    }
+
+    @Test
+    fun `onRefreshHomeScreen should update airdata on CustomPage`() = runTest {
+        //given
+        val expectPage = Page.CustomLocation(0)
+        every { locationRepository.getCurrentPageStream() } returns flowOf(expectPage)
+        coEvery { airDataRepository.updateAirData(expectPage) } coAnswers { delay(500) }
+        homeViewModel =
+            HomeViewModel(
+                locationRepository,
+                airDataRepository,
+                permissionManager,
+                settingManager
+            )
+        //when
+        homeViewModel.homeUiState.test {
+            assertEquals(Page.GPS, awaitItem().page)
+            assertEquals(
+                expectPage,
+                awaitItem().page
+            )
+        }
+        homeViewModel.onRefreshHomeScreen()
+        advanceUntilIdle()
+        //then
+        coVerify {
+            airDataRepository.updateAirData(expectPage)
+        }
+    }
 }
